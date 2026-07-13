@@ -87,22 +87,6 @@
             background-position: right 14px center;
             padding-right: 40px;
         }
-        select[multiple] {
-            background-image: none;
-            height: auto;
-            min-height: 120px;
-            padding: 8px 6px;
-            font-size: 15px;
-        }
-        select[multiple] option {
-            padding: 10px 12px;
-            border-radius: 6px;
-            margin-bottom: 2px;
-        }
-        select[multiple] option:checked {
-            background: #2d6a9f;
-            color: #fff;
-        }
 
         input:focus,
         select:focus,
@@ -236,6 +220,10 @@
             background: #a03226;
             box-shadow: 0 3px 12px rgba(192, 57, 43, 0.25);
         }
+        .btn-submit.loading {
+            opacity: 0.7;
+            pointer-events: none;
+        }
 
         .footer-note {
             margin-top: 20px;
@@ -275,25 +263,53 @@
             font-weight: 400;
             margin-left: 6px;
         }
-        .multi-hint {
-            font-size: 12px;
-            color: #9aabb8;
-            margin-top: 4px;
-            padding-left: 2px;
-        }
-        .multi-hint-click {
-            cursor: pointer;
-            text-decoration: underline dotted #9aabb8;
-        }
 
-        .btn-submit.loading {
-            opacity: 0.7;
-            pointer-events: none;
-        }
-
-        /* 身份证单独占一行，与姓名区分 */
         .id-row {
             margin-top: -2px;
+        }
+
+        .hidden-config {
+            display: none !important;
+        }
+
+        .success-overlay {
+            display: none;
+            text-align: center;
+            padding: 30px 20px;
+            background: #f0faf5;
+            border-radius: 12px;
+            border: 2px solid #2d7a4f;
+            margin-bottom: 18px;
+        }
+        .success-overlay.show {
+            display: block;
+        }
+        .success-overlay .icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+        .success-overlay .title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #2d7a4f;
+        }
+        .success-overlay .desc {
+            font-size: 14px;
+            color: #5a6a7a;
+            margin-top: 6px;
+        }
+        .success-overlay .btn-continue {
+            margin-top: 14px;
+            padding: 10px 30px;
+            background: #c0392b;
+            color: #fff;
+            border: none;
+            border-radius: 30px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .success-overlay .btn-continue:active {
+            transform: scale(0.95);
         }
     </style>
 </head>
@@ -304,7 +320,21 @@
     <div class="main-title">九江桥工段铁路沿线无人机飞行报备</div>
     <div class="subhead">铁路沿线安全报备 · 请如实填写</div>
 
+    <!-- ===== 成功提示遮罩 ===== -->
+    <div class="success-overlay" id="successOverlay">
+        <div class="icon">✅</div>
+        <div class="title">报备提交成功！</div>
+        <div class="desc" id="pushDesc">微信通知已发送，请注意查收</div>
+        <button class="btn-continue" onclick="location.reload()">继续报备</button>
+    </div>
+
     <form id="reportForm" autocomplete="on">
+
+        <!-- ===== PushPlus 配置（完全隐藏） ===== -->
+        <div class="hidden-config">
+            <input type="text" id="pushToken" />
+            <input type="text" id="pushTopic" />
+        </div>
 
         <!-- 单位 -->
         <div class="form-group">
@@ -312,17 +342,19 @@
             <input type="text" id="unit" placeholder="请输入单位名称" required />
         </div>
 
-        <!-- 姓名 + 身份证（身份证单独一行，在姓名下方） -->
+        <!-- 姓名 -->
         <div class="form-group">
             <label>姓名 <span class="required">*</span></label>
             <input type="text" id="fullName" placeholder="姓名" required />
         </div>
+
+        <!-- 身份证 -->
         <div class="form-group id-row">
             <label>身份证号码 <span class="required">*</span></label>
             <input type="text" id="idNumber" placeholder="18 位身份证号" required />
         </div>
 
-        <!-- 联系电话 + 无人机品牌（并列一行） -->
+        <!-- 联系电话 + 无人机品牌 -->
         <div class="inline-group">
             <div class="form-group">
                 <label>联系电话 <span class="required">*</span></label>
@@ -340,7 +372,7 @@
             <input type="text" id="droneModel" placeholder="型号及机身编号" required />
         </div>
 
-        <!-- 飞行区域：普通下拉 -->
+        <!-- 飞行区域 -->
         <div class="form-group">
             <label>飞行区域 <span class="required">*</span></label>
             <select id="flightArea" required>
@@ -381,13 +413,18 @@
             <input type="text" id="purposeOther" placeholder="选择「其他」时请备注" style="margin-top:8px;" />
         </div>
 
-        <!-- 资质上传 -->
+        <!-- ===== 操作人员资质 ===== -->
         <div class="form-group">
-            <label>操作人员资质 <span class="required">*</span> <span class="hint">（拍照上传）</span></label>
+            <label>操作证件编码 <span class="required">*</span></label>
+            <input type="text" id="certCode" placeholder="请输入操作证件编码（如：CAAC-2024-001）" required />
+        </div>
+
+        <div class="form-group">
+            <label>操作人员资质拍照 <span class="optional-tag">选填</span> <span class="hint">（拍照上传）</span></label>
             <div class="upload-box" id="uploadBox">
                 <input type="file" id="certFile" accept="image/*" capture="environment" />
                 <span class="upload-label">📸 拍照 / 选择图片</span>
-                <div id="fileStatus" class="file-status">未选择文件</div>
+                <div id="fileStatus" class="file-status">未选择文件（选填）</div>
             </div>
         </div>
 
@@ -410,14 +447,58 @@
 
 <script>
     (function() {
+        // ================================================================
+        // 🔑 多人群发配置区 —— 在这里填入您的 PushPlus 信息
+        // ================================================================
+        // 
+        // 方式一：主题群发（推荐，一人配置，全员接收）
+        //   1. 登录 https://www.pushplus.plus/ 创建主题
+        //   2. 邀请成员加入主题
+        //   3. 将主题ID填到 CONFIG_TOPIC 中
+        //
+        // 方式二：多 Token 推送（适合多个独立账号）
+        //   将多个 Token 填入 CONFIG_TOKENS 数组
+        // ================================================================
+
+        // ---------- 必填：您的 PushPlus Token ----------
+        // 在 https://www.pushplus.plus/ 登录后获取
+        var CONFIG_TOKEN = '17a791bc78be42e1a9968d676fca0d01';
+
+        // ---------- 方式一：主题群发（推荐） ----------
+        // 在 PushPlus 创建主题后，将主题ID填到这里
+        // 如果填写了主题ID，消息将推送给主题内所有成员
+        var CONFIG_TOPIC = '20260713';   // ← 替换为你的主题ID
+
+        // ---------- 方式二：多 Token 推送（备选） ----------
+        // 如果 CONFIG_TOPIC 有值，则优先使用主题群发
+        // 如需推送给多个独立账号，在这里添加多个 Token
+        var CONFIG_TOKENS = [
+            // 'token_账号1',
+            // 'token_账号2',
+            // 'token_账号3'
+        ];
+
+        // ================================================================
+        // 以下代码无需修改
+        // ================================================================
+
+        // DOM 引用
         var form = document.getElementById('reportForm');
         var toast = document.getElementById('toastMessage');
         var fileInput = document.getElementById('certFile');
         var fileStatus = document.getElementById('fileStatus');
         var uploadBox = document.getElementById('uploadBox');
         var submitBtn = document.getElementById('submitBtn');
+        var pushTokenInput = document.getElementById('pushToken');
+        var pushTopicInput = document.getElementById('pushTopic');
+        var successOverlay = document.getElementById('successOverlay');
+        var pushDesc = document.getElementById('pushDesc');
 
-        // ----- 文件选择反馈 -----
+        // 自动填充配置（隐藏域）
+        pushTokenInput.value = CONFIG_TOKEN;
+        pushTopicInput.value = CONFIG_TOPIC;
+
+        // 文件选择反馈（非必填）
         fileInput.addEventListener('change', function(e) {
             if (this.files && this.files.length > 0) {
                 var file = this.files[0];
@@ -425,8 +506,8 @@
                 fileStatus.textContent = '✅ 已选: ' + file.name + ' (' + size + ' KB)';
                 fileStatus.style.color = '#1a6e3a';
             } else {
-                fileStatus.textContent = '未选择文件';
-                fileStatus.style.color = '#2a5f3a';
+                fileStatus.textContent = '未选择文件（选填）';
+                fileStatus.style.color = '#9aabb8';
             }
         });
 
@@ -436,21 +517,43 @@
             }
         });
 
-        // ----- 辅助：显示toast -----
+        // Toast
         function showToast(msg, isError) {
             toast.textContent = msg;
             toast.className = 'toast show' + (isError ? ' error' : '');
             clearTimeout(toast._timer);
             toast._timer = setTimeout(function() {
                 toast.classList.remove('show');
-            }, 4500);
+            }, 5000);
         }
 
-        // ----- 提交逻辑 (模拟真实提交) -----
+        // 推送函数
+        function sendPush(token, topic, title, content) {
+            var data = {
+                token: token,
+                title: title,
+                content: content,
+                channel: 'wechat'
+            };
+            if (topic) {
+                data.topic = topic;
+            }
+            return fetch('https://www.pushplus.plus/api/send', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+            .then(function(response) {
+                if (!response.ok) throw new Error('HTTP ' + response.status);
+                return response.json();
+            });
+        }
+
+        // 提交逻辑
         form.addEventListener('submit', function(e) {
             e.preventDefault();
 
-            // 1. 收集字段
+            // 收集字段
             var unit = document.getElementById('unit').value.trim();
             var name = document.getElementById('fullName').value.trim();
             var idNum = document.getElementById('idNumber').value.trim();
@@ -461,9 +564,13 @@
             var locationDetail = document.getElementById('locationDetail').value.trim();
             var purposeRadio = document.querySelector('input[name="purpose"]:checked');
             var purposeOther = document.getElementById('purposeOther').value.trim();
+            var certCode = document.getElementById('certCode').value.trim();
             var certFile = fileInput.files && fileInput.files.length > 0;
 
-            // 2. 基础校验
+            var pushToken = pushTokenInput.value.trim();
+            var pushTopic = pushTopicInput.value.trim();
+
+            // ---------- 校验 ----------
             if (!unit || !name || !idNum || !phone || !brand || !model) {
                 showToast('⚠️ 请完整填写所有带 * 号的必填项', true);
                 return;
@@ -488,12 +595,18 @@
                 showToast('⚠️ 请备注「其他」的具体用途', true);
                 return;
             }
-            if (!certFile) {
-                showToast('⚠️ 请拍照上传操作人员资质证书', true);
+            if (!certCode) {
+                showToast('⚠️ 请填写操作证件编码', true);
+                return;
+            }
+            // 资质拍照改为非必填，不再校验
+            if (!pushToken || pushToken === '你的Token') {
+                showToast('⚠️ 系统配置错误，请联系管理员', true);
+                console.error('PushPlus Token 未配置');
                 return;
             }
 
-            // 3. 构造数据
+            // 构造数据
             var purposeValue = purposeRadio.value;
             if (purposeValue === '其他' && purposeOther) {
                 purposeValue = '其他: ' + purposeOther;
@@ -509,57 +622,118 @@
                 飞行区域: area,
                 地点里程: locationDetail || '未填写',
                 飞行用途: purposeValue,
-                资质文件: fileInput.files[0] ? fileInput.files[0].name : '未上传'
+                操作证件编码: certCode,
+                资质文件: fileInput.files[0] ? fileInput.files[0].name : '未上传（选填）'
             };
 
-            // 4. 模拟提交
+            // 构造消息
+            var now = new Date();
+            var timeStr = now.getFullYear() + '-' + 
+                String(now.getMonth()+1).padStart(2,'0') + '-' + 
+                String(now.getDate()).padStart(2,'0') + ' ' +
+                String(now.getHours()).padStart(2,'0') + ':' +
+                String(now.getMinutes()).padStart(2,'0');
+
+            var content = '📋 无人机飞行报备通知\n\n' +
+                '🕐 时间：' + timeStr + '\n' +
+                '🏢 单位：' + formData.单位 + '\n' +
+                '👤 姓名：' + formData.姓名 + '\n' +
+                '🆔 身份证：' + formData.身份证 + '\n' +
+                '📞 电话：' + formData.联系电话 + '\n' +
+                '✈️ 品牌：' + formData.无人机品牌 + '\n' +
+                '🔢 型号/编号：' + formData.型号编号 + '\n' +
+                '📍 区域：' + formData.飞行区域 + '\n' +
+                '📌 地点：' + formData.地点里程 + '\n' +
+                '🎯 用途：' + formData.飞行用途 + '\n' +
+                '🪪 证件编码：' + formData.操作证件编码 + '\n' +
+                '📎 资质照片：' + formData.资质文件;
+
+            var title = '🚁 无人机飞行报备通知';
+
+            // ---------- 执行推送 ----------
             submitBtn.classList.add('loading');
             submitBtn.textContent = '⏳ 提交中...';
             showToast('⏳ 正在提交报备，请稍候...', false);
 
-            // 模拟异步请求（演示环境）
-            fetch('/api/drone-report', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(formData)
-            })
-            .then(function(response) {
-                if (!response.ok) throw new Error('网络响应异常');
-                return response.json();
-            })
-            .then(function(data) {
-                console.log('📋 报备数据:', formData);
-                showToast('✅ 报备已成功提交（演示）', false);
-            })
-            .catch(function(error) {
-                console.warn('模拟提交: 因为无真实接口，使用延迟模拟成功');
-                return new Promise(function(resolve) {
-                    setTimeout(function() {
-                        resolve({ status: 'ok', message: '演示提交成功' });
-                    }, 800);
-                });
-            })
-            .then(function(result) {
-                console.log('✅ 提交结果:', result);
-                showToast('✅ 报备已成功提交（演示）', false);
-                submitBtn.classList.remove('loading');
-                submitBtn.textContent = '📨 提交报备';
-            })
-            .catch(function(err) {
-                console.error('提交失败:', err);
-                showToast('❌ 提交失败，请检查网络或稍后重试', true);
-                submitBtn.classList.remove('loading');
-                submitBtn.textContent = '📨 提交报备';
-            });
+            // 判断推送方式
+            var useTopic = pushTopic && pushTopic !== 'topic_xxxxx' && pushTopic !== '';
 
-            // 兜底恢复按钮
-            setTimeout(function() {
-                submitBtn.classList.remove('loading');
-                submitBtn.textContent = '📨 提交报备';
-            }, 5000);
+            if (useTopic) {
+                // 【方式一】主题群发 —— 推送给主题内所有人
+                sendPush(pushToken, pushTopic, title, content)
+                    .then(function(result) {
+                        console.log('主题推送响应:', result);
+                        if (result.code === 200) {
+                            pushDesc.textContent = '✅ 已推送给主题内所有成员';
+                            successOverlay.classList.add('show');
+                            form.style.display = 'none';
+                            showToast('✅ 报备已提交，群发通知已发送！', false);
+                        } else {
+                            showToast('⚠️ 推送失败: ' + (result.msg || '未知错误'), true);
+                            submitBtn.classList.remove('loading');
+                            submitBtn.textContent = '📨 提交报备';
+                        }
+                    })
+                    .catch(function(error) {
+                        console.error('推送失败:', error);
+                        showToast('⚠️ 通知发送异常，请稍后重试', true);
+                        submitBtn.classList.remove('loading');
+                        submitBtn.textContent = '📨 提交报备';
+                    });
+            } else if (CONFIG_TOKENS && CONFIG_TOKENS.length > 0) {
+                // 【方式二】多个 Token 推送
+                var validTokens = CONFIG_TOKENS.filter(function(t) { return t && t.trim() !== ''; });
+                var pushPromises = validTokens.map(function(token) {
+                    return sendPush(token, '', title, content);
+                });
+
+                Promise.all(pushPromises)
+                    .then(function(results) {
+                        var allSuccess = results.every(function(r) { return r.code === 200; });
+                        if (allSuccess) {
+                            pushDesc.textContent = '✅ 已推送给 ' + results.length + ' 个接收人';
+                            successOverlay.classList.add('show');
+                            form.style.display = 'none';
+                            showToast('✅ 报备已提交，群发通知已发送！', false);
+                        } else {
+                            var failCount = results.filter(function(r) { return r.code !== 200; }).length;
+                            showToast('⚠️ 部分推送失败 (' + failCount + '/' + results.length + ')，请检查Token', true);
+                            submitBtn.classList.remove('loading');
+                            submitBtn.textContent = '📨 提交报备';
+                        }
+                    })
+                    .catch(function(error) {
+                        console.error('多Token推送失败:', error);
+                        showToast('⚠️ 通知发送异常，请稍后重试', true);
+                        submitBtn.classList.remove('loading');
+                        submitBtn.textContent = '📨 提交报备';
+                    });
+            } else {
+                // 【默认】单账号推送
+                sendPush(pushToken, '', title, content)
+                    .then(function(result) {
+                        console.log('推送响应:', result);
+                        if (result.code === 200) {
+                            pushDesc.textContent = '✅ 微信通知已发送';
+                            successOverlay.classList.add('show');
+                            form.style.display = 'none';
+                            showToast('✅ 报备已提交，微信通知已发送！', false);
+                        } else {
+                            showToast('⚠️ 推送失败: ' + (result.msg || '未知错误'), true);
+                            submitBtn.classList.remove('loading');
+                            submitBtn.textContent = '📨 提交报备';
+                        }
+                    })
+                    .catch(function(error) {
+                        console.error('推送失败:', error);
+                        showToast('⚠️ 通知发送异常，请稍后重试', true);
+                        submitBtn.classList.remove('loading');
+                        submitBtn.textContent = '📨 提交报备';
+                    });
+            }
         });
 
-        // ----- 对「其他」输入框的辅助提示 -----
+        // 「其他」输入框提示
         var otherInput = document.getElementById('purposeOther');
         var purposeRadios = document.querySelectorAll('input[name="purpose"]');
         purposeRadios.forEach(function(radio) {
@@ -571,6 +745,17 @@
                 }
             });
         });
+
+        // 配置检查提醒（控制台）
+        if (CONFIG_TOKEN === '你的Token') {
+            console.warn('⚠️ PushPlus Token 未配置！请在代码中修改 CONFIG_TOKEN。');
+        }
+        if (CONFIG_TOPIC === 'topic_xxxxx' && CONFIG_TOKENS.length === 0) {
+            console.info('💡 提示：如需群发多人，请配置 CONFIG_TOPIC（主题ID）或 CONFIG_TOKENS（多个Token）');
+        }
+        if (CONFIG_TOPIC !== 'topic_xxxxx' && CONFIG_TOPIC !== '') {
+            console.info('✅ 已启用主题群发模式，推送给主题「' + CONFIG_TOPIC + '」内所有成员');
+        }
     })();
 </script>
 
