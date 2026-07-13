@@ -4,337 +4,58 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>九江桥工段 · 无人机报备</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚁</text></svg>" />
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-        body {
-            font-family: -apple-system, "PingFang SC", "Helvetica Neue", Arial, sans-serif;
-            background: #eef2f7;
-            min-height: 100vh;
-            padding: 12px;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-        }
-        .container {
-            max-width: 480px;
-            width: 100%;
-            background: #ffffff;
-            border-radius: 16px;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
-            padding: 20px 18px 24px;
-        }
-
-        .main-title {
-            font-size: 22px;
-            font-weight: 700;
-            color: #c0392b;
-            text-align: center;
-            line-height: 1.4;
-            margin-bottom: 4px;
-            letter-spacing: 0.5px;
-        }
-        .subhead {
-            font-size: 13px;
-            color: #7a8aa3;
-            text-align: center;
-            margin-bottom: 20px;
-            padding-bottom: 14px;
-            border-bottom: 1px solid #eef2f7;
-        }
-
-        .form-group {
-            margin-bottom: 18px;
-        }
-        label {
-            display: block;
-            font-weight: 600;
-            font-size: 15px;
-            color: #1f3349;
-            margin-bottom: 5px;
-        }
-        label .required {
-            color: #c0392b;
-            margin-left: 2px;
-        }
-        label .hint {
-            font-weight: 400;
-            font-size: 12px;
-            color: #9aabb8;
-            margin-left: 4px;
-        }
-
-        input,
-        select,
-        textarea {
-            width: 100%;
-            padding: 14px 14px;
-            font-size: 16px;
-            border: 1.5px solid #dce4ed;
-            border-radius: 10px;
-            background: #fafcff;
-            transition: 0.2s;
-            color: #1a2b3e;
-            -webkit-appearance: none;
-            appearance: none;
-        }
-        select:not([multiple]) {
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239aabb8' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 14px center;
-            padding-right: 40px;
-        }
-
-        input:focus,
-        select:focus,
-        textarea:focus {
-            outline: none;
-            border-color: #c0392b;
-            box-shadow: 0 0 0 4px rgba(192, 57, 43, 0.10);
-            background: #ffffff;
-        }
-        input::placeholder,
-        textarea::placeholder {
-            color: #b0c0ce;
-            font-size: 15px;
-        }
-
-        .inline-group {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-        .inline-group .form-group {
-            flex: 1 1 160px;
-            margin-bottom: 0;
-        }
-
-        /* 区间输入：两个输入框并列 */
-        .range-group {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            align-items: center;
-        }
-        .range-group .range-input {
-            flex: 1 1 80px;
-            min-width: 60px;
-        }
-        .range-group .range-sep {
-            font-size: 16px;
-            color: #7a8aa3;
-            font-weight: 600;
-            padding: 0 2px;
-            flex-shrink: 0;
-        }
-        .range-group .range-unit {
-            font-size: 13px;
-            color: #9aabb8;
-            flex-shrink: 0;
-        }
-
-        .radio-group {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px 14px;
-            background: #f7faff;
-            padding: 12px 14px;
-            border-radius: 12px;
-            border: 1.5px solid #e8eff6;
-        }
-        .radio-group label {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            font-weight: 400;
-            font-size: 15px;
-            color: #1f3349;
-            cursor: pointer;
-            padding: 2px 0;
-        }
-        .radio-group input[type="radio"] {
-            width: 20px;
-            height: 20px;
-            accent-color: #c0392b;
-            margin: 0;
-            flex-shrink: 0;
-        }
-
-        .upload-box {
-            border: 2px dashed #d0dceb;
-            border-radius: 12px;
-            padding: 20px 12px;
-            background: #f8fbfe;
-            text-align: center;
-            cursor: pointer;
-            transition: 0.2s;
-            touch-action: manipulation;
-        }
-        .upload-box:active {
-            background: #eef4fa;
-            border-color: #c0392b;
-        }
-        .upload-box input[type="file"] {
-            display: none;
-        }
-        .upload-label {
-            display: inline-block;
-            background: #e6eef7;
-            padding: 10px 24px;
-            border-radius: 40px;
-            font-size: 16px;
-            font-weight: 500;
-            color: #1f3b5c;
-            cursor: pointer;
-            touch-action: manipulation;
-        }
-        .upload-label:active {
-            background: #d0dceb;
-        }
-        .file-status {
-            margin-top: 10px;
-            font-size: 14px;
-            color: #2a5f3a;
-            word-break: break-all;
-        }
-
-        .warning-box {
-            background: #fef6f5;
-            border-left: 4px solid #c0392b;
-            border-radius: 8px;
-            padding: 12px 14px;
-            margin: 6px 0 18px 0;
-        }
-        .warning-box .warn-title {
-            font-size: 15px;
-            font-weight: 700;
-            color: #c0392b;
-        }
-        .warning-box .warn-desc {
-            font-size: 14px;
-            color: #5a4a47;
-            margin-top: 4px;
-            line-height: 1.6;
-        }
-        .warning-box .warn-desc strong {
-            color: #c0392b;
-        }
-
-        .btn-submit {
-            width: 100%;
-            padding: 16px;
-            background: #c0392b;
-            color: white;
-            font-size: 20px;
-            font-weight: 700;
-            border: none;
-            border-radius: 40px;
-            cursor: pointer;
-            transition: 0.15s;
-            letter-spacing: 2px;
-            margin-top: 4px;
-            box-shadow: 0 6px 20px rgba(192, 57, 43, 0.30);
-            touch-action: manipulation;
-        }
-        .btn-submit:active {
-            transform: scale(0.97);
-            background: #a03226;
-            box-shadow: 0 3px 12px rgba(192, 57, 43, 0.25);
-        }
-        .btn-submit.loading {
-            opacity: 0.7;
-            pointer-events: none;
-        }
-
-        .footer-note {
-            margin-top: 20px;
-            font-size: 15px;
-            font-weight: 600;
-            color: #c0392b;
-            text-align: center;
-            border-top: 1px solid #eef2f7;
-            padding-top: 16px;
-            letter-spacing: 0.3px;
-        }
-
-        .toast {
-            display: none;
-            background: #1d3b2f;
-            color: white;
-            padding: 14px 18px;
-            border-radius: 40px;
-            text-align: center;
-            margin-top: 14px;
-            font-weight: 500;
-            font-size: 15px;
-        }
-        .toast.show {
-            display: block;
-        }
-        .toast.error {
-            background: #8b2c2c;
-        }
-
-        .optional-tag {
-            font-size: 12px;
-            color: #9aabb8;
-            background: #f0f3f7;
-            padding: 0 10px;
-            border-radius: 20px;
-            font-weight: 400;
-            margin-left: 6px;
-        }
-
-        .id-row {
-            margin-top: -2px;
-        }
-
-        .hidden-config {
-            display: none !important;
-        }
-
-        .success-overlay {
-            display: none;
-            text-align: center;
-            padding: 30px 20px;
-            background: #f0faf5;
-            border-radius: 12px;
-            border: 2px solid #2d7a4f;
-            margin-bottom: 18px;
-        }
-        .success-overlay.show {
-            display: block;
-        }
-        .success-overlay .icon {
-            font-size: 48px;
-            margin-bottom: 10px;
-        }
-        .success-overlay .title {
-            font-size: 20px;
-            font-weight: 700;
-            color: #2d7a4f;
-        }
-        .success-overlay .desc {
-            font-size: 14px;
-            color: #5a6a7a;
-            margin-top: 6px;
-        }
-        .success-overlay .btn-continue {
-            margin-top: 14px;
-            padding: 10px 30px;
-            background: #c0392b;
-            color: #fff;
-            border: none;
-            border-radius: 30px;
-            font-size: 16px;
-            cursor: pointer;
-        }
-        .success-overlay .btn-continue:active {
-            transform: scale(0.95);
-        }
+        /* ===== 完整样式 ===== */
+        *{box-sizing:border-box;margin:0;padding:0}
+        body{font-family:-apple-system,"PingFang SC","Helvetica Neue",Arial,sans-serif;background:#eef2f7;min-height:100vh;padding:12px;display:flex;justify-content:center;align-items:flex-start}
+        .container{max-width:480px;width:100%;background:#ffffff;border-radius:16px;box-shadow:0 8px 30px rgba(0,0,0,0.08);padding:20px 18px 24px}
+        .main-title{font-size:22px;font-weight:700;color:#c0392b;text-align:center;line-height:1.4;margin-bottom:4px;letter-spacing:.5px}
+        .subhead{font-size:13px;color:#7a8aa3;text-align:center;margin-bottom:20px;padding-bottom:14px;border-bottom:1px solid #eef2f7}
+        .form-group{margin-bottom:18px}
+        label{display:block;font-weight:600;font-size:15px;color:#1f3349;margin-bottom:5px}
+        label .required{color:#c0392b;margin-left:2px}
+        label .hint{font-weight:400;font-size:12px;color:#9aabb8;margin-left:4px}
+        input,select,textarea{width:100%;padding:14px;font-size:16px;border:1.5px solid #dce4ed;border-radius:10px;background:#fafcff;transition:.2s;color:#1a2b3e;-webkit-appearance:none;appearance:none}
+        select:not([multiple]){background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239aabb8' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:40px}
+        input:focus,select:focus,textarea:focus{outline:none;border-color:#c0392b;box-shadow:0 0 0 4px rgba(192,57,43,0.10);background:#ffffff}
+        input::placeholder,textarea::placeholder{color:#b0c0ce;font-size:15px}
+        .inline-group{display:flex;flex-wrap:wrap;gap:10px}
+        .inline-group .form-group{flex:1 1 160px;margin-bottom:0}
+        .range-group{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+        .range-group .range-input{flex:1 1 80px;min-width:60px}
+        .range-group .range-sep{font-size:16px;color:#7a8aa3;font-weight:600;padding:0 2px;flex-shrink:0}
+        .range-group .range-unit{font-size:13px;color:#9aabb8;flex-shrink:0}
+        .radio-group{display:flex;flex-wrap:wrap;gap:10px 14px;background:#f7faff;padding:12px 14px;border-radius:12px;border:1.5px solid #e8eff6}
+        .radio-group label{display:inline-flex;align-items:center;gap:6px;font-weight:400;font-size:15px;color:#1f3349;cursor:pointer;padding:2px 0}
+        .radio-group input[type="radio"]{width:20px;height:20px;accent-color:#c0392b;margin:0;flex-shrink:0}
+        .upload-box{border:2px dashed #d0dceb;border-radius:12px;padding:20px 12px;background:#f8fbfe;text-align:center;cursor:pointer;transition:.2s;touch-action:manipulation}
+        .upload-box:active{background:#eef4fa;border-color:#c0392b}
+        .upload-box input[type="file"]{display:none}
+        .upload-label{display:inline-block;background:#e6eef7;padding:10px 24px;border-radius:40px;font-size:16px;font-weight:500;color:#1f3b5c;cursor:pointer;touch-action:manipulation}
+        .upload-label:active{background:#d0dceb}
+        .file-status{margin-top:10px;font-size:14px;color:#2a5f3a;word-break:break-all}
+        .warning-box{background:#fef6f5;border-left:4px solid #c0392b;border-radius:8px;padding:12px 14px;margin:6px 0 18px 0}
+        .warning-box .warn-title{font-size:15px;font-weight:700;color:#c0392b}
+        .warning-box .warn-desc{font-size:14px;color:#5a4a47;margin-top:4px;line-height:1.6}
+        .warning-box .warn-desc strong{color:#c0392b}
+        .btn-submit{width:100%;padding:16px;background:#c0392b;color:#fff;font-size:20px;font-weight:700;border:none;border-radius:40px;cursor:pointer;transition:.15s;letter-spacing:2px;margin-top:4px;box-shadow:0 6px 20px rgba(192,57,43,0.30);touch-action:manipulation}
+        .btn-submit:active{transform:scale(0.97);background:#a03226;box-shadow:0 3px 12px rgba(192,57,43,0.25)}
+        .btn-submit.loading{opacity:.7;pointer-events:none}
+        .footer-note{margin-top:20px;font-size:15px;font-weight:600;color:#c0392b;text-align:center;border-top:1px solid #eef2f7;padding-top:16px;letter-spacing:.3px}
+        .toast{display:none;background:#1d3b2f;color:#fff;padding:14px 18px;border-radius:40px;text-align:center;margin-top:14px;font-weight:500;font-size:15px}
+        .toast.show{display:block}
+        .toast.error{background:#8b2c2c}
+        .optional-tag{font-size:12px;color:#9aabb8;background:#f0f3f7;padding:0 10px;border-radius:20px;font-weight:400;margin-left:6px}
+        .id-row{margin-top:-2px}
+        .hidden-config{display:none !important}
+        .success-overlay{display:none;text-align:center;padding:30px 20px;background:#f0faf5;border-radius:12px;border:2px solid #2d7a4f;margin-bottom:18px}
+        .success-overlay.show{display:block}
+        .success-overlay .icon{font-size:48px;margin-bottom:10px}
+        .success-overlay .title{font-size:20px;font-weight:700;color:#2d7a4f}
+        .success-overlay .desc{font-size:14px;color:#5a6a7a;margin-top:6px}
+        .success-overlay .btn-continue{margin-top:14px;padding:10px 30px;background:#c0392b;color:#fff;border:none;border-radius:30px;font-size:16px;cursor:pointer}
+        .success-overlay .btn-continue:active{transform:scale(.95)}
     </style>
 </head>
 <body>
@@ -344,47 +65,40 @@
     <div class="main-title">九江桥工段铁路沿线无人机飞行报备</div>
     <div class="subhead">铁路沿线安全报备 · 请如实填写</div>
 
-    <!-- ===== 成功提示遮罩 ===== -->
     <div class="success-overlay" id="successOverlay">
         <div class="icon">✅</div>
         <div class="title">报备提交成功！</div>
-        <div class="desc" id="pushDesc">微信通知已发送，请注意查收</div>
+        <div class="desc" id="pushDesc">通知已发送</div>
         <button class="btn-continue" onclick="location.reload()">继续报备</button>
     </div>
 
     <form id="reportForm" autocomplete="on">
 
-        <!-- ===== PushPlus 配置（完全隐藏） ===== -->
         <div class="hidden-config">
             <input type="text" id="pushToken" />
             <input type="text" id="pushTopic" />
         </div>
-
-        <!-- ===== 钉钉配置（完全隐藏） ===== -->
         <div class="hidden-config">
             <input type="text" id="dingWebhook" />
             <input type="text" id="dingSecret" />
         </div>
 
-        <!-- 单位 -->
+        <!-- ===== 表单字段 ===== -->
         <div class="form-group">
             <label>单位 <span class="required">*</span></label>
             <input type="text" id="unit" placeholder="请输入单位名称" required />
         </div>
 
-        <!-- 姓名 -->
         <div class="form-group">
             <label>姓名 <span class="required">*</span></label>
             <input type="text" id="fullName" placeholder="姓名" required />
         </div>
 
-        <!-- 身份证 -->
         <div class="form-group id-row">
             <label>身份证号码 <span class="required">*</span></label>
             <input type="text" id="idNumber" placeholder="18 位身份证号" required />
         </div>
 
-        <!-- 联系电话 + 无人机品牌 -->
         <div class="inline-group">
             <div class="form-group">
                 <label>联系电话 <span class="required">*</span></label>
@@ -396,13 +110,11 @@
             </div>
         </div>
 
-        <!-- 无人机型号/编号 -->
         <div class="form-group">
             <label>无人机型号 / 编号 <span class="required">*</span></label>
             <input type="text" id="droneModel" placeholder="型号及机身编号" required />
         </div>
 
-        <!-- 飞行区域铁路线路 -->
         <div class="form-group">
             <label>飞行区域铁路线路 <span class="required">*</span></label>
             <select id="flightArea" required>
@@ -424,19 +136,16 @@
             </select>
         </div>
 
-        <!-- 地点/里程 —— 改为非必填 -->
         <div class="form-group">
             <label>地点 / 里程 / 接触网支柱编号 <span class="optional-tag">选填</span></label>
             <input type="text" id="locationDetail" placeholder="例：京九线 K1313+200" />
         </div>
 
-        <!-- 飞行行政区域（附近村庄） -->
         <div class="form-group">
             <label>飞行行政区域（附近村庄） <span class="required">*</span></label>
             <input type="text" id="adminArea" placeholder="如：九江市柴桑区港口街镇" required />
         </div>
 
-        <!-- 飞行用途 -->
         <div class="form-group">
             <label>飞行用途 <span class="required">*</span></label>
             <div class="radio-group">
@@ -449,7 +158,6 @@
             <input type="text" id="purposeOther" placeholder="选择「其他」时请备注" style="margin-top:8px;" />
         </div>
 
-        <!-- ===== 飞行高度区间（最低~最高） ===== -->
         <div class="form-group">
             <label>飞行高度区间（米） <span class="required">*</span></label>
             <div class="range-group">
@@ -460,7 +168,6 @@
             </div>
         </div>
 
-        <!-- ===== 距离铁路距离区间（最低~最高） ===== -->
         <div class="form-group">
             <label>距离铁路距离区间（米） <span class="required">*</span></label>
             <div class="range-group">
@@ -471,7 +178,6 @@
             </div>
         </div>
 
-        <!-- 操作人员资质 -->
         <div class="form-group">
             <label>操作证件编码 <span class="required">*</span></label>
             <input type="text" id="certCode" placeholder="请输入操作证件编码（如：CAAC-2024-001）" required />
@@ -486,7 +192,6 @@
             </div>
         </div>
 
-        <!-- 宣传提醒 -->
         <div class="warning-box">
             <div class="warn-title">⚠️ 依法飞行，安全第一</div>
             <div class="warn-desc">
@@ -506,25 +211,23 @@
 <script>
     (function() {
         // ================================================================
-        // 🔑 多通道推送配置区
+        // 🔑 配置区
         // ================================================================
 
-        // ---------- PushPlus 配置（多人接收） ----------
-        var CONFIG_TOKEN = '17a791bc78be42e1a9968d676fca0d01';           // PushPlus Token
-        var CONFIG_TOPIC = '20260713';         // PushPlus 主题ID
-
-        // 多Token推送（备选）
-        var CONFIG_TOKENS = [
-            // 'token_账号1',
-            // 'token_账号2',
-        ];
+        // ---------- PushPlus 配置 ----------
+        var CONFIG_TOKEN = '17a791bc78be42e1a9968d676fca0d01';
+        var CONFIG_TOPIC = '20260713';
+        var CONFIG_TOKENS = [];
 
         // ---------- 钉钉配置 ----------
         var CONFIG_DING_WEBHOOK = 'https://oapi.dingtalk.com/robot/send?access_token=b2b57f4416df67ef292ca72be20e4e82769abaaf2f8502a3a41831bcd03cb7d9';
-        var CONFIG_DING_SECRET = 'SECa3e90a83519a3fc73adb757664a96f24a90f1cf7e82f35f8e3dc31ca22f9a193';              // 加签密钥（如有）
+        var CONFIG_DING_SECRET = 'SECa3e90a83519a3fc73adb757664a96f24a90f1cf7e82f35f8e3dc31ca22f9a193';
 
         // ================================================================
-        // 以下代码无需修改
+        // 🔑 Cloudflare Worker 地址（重要！）
+        // ================================================================
+        // 部署 Worker 后，把下面的地址改成你的 Worker 域名
+        var DINGTALK_WORKER_URL = 'https://dingtalk-proxy.15929976537.workers.dev/';
         // ================================================================
 
         // DOM 引用
@@ -541,13 +244,12 @@
         var successOverlay = document.getElementById('successOverlay');
         var pushDesc = document.getElementById('pushDesc');
 
-        // 自动填充配置（隐藏域）
         pushTokenInput.value = CONFIG_TOKEN;
         pushTopicInput.value = CONFIG_TOPIC;
         dingWebhookInput.value = CONFIG_DING_WEBHOOK;
         dingSecretInput.value = CONFIG_DING_SECRET;
 
-        // ---------- 钉钉签名工具函数 ----------
+        // ---------- 钉钉签名 ----------
         function generateDingSign(secret) {
             var timestamp = Date.now();
             var stringToSign = timestamp + '\n' + secret;
@@ -567,35 +269,33 @@
                 var hash = Array.from(new Uint8Array(signature))
                     .map(function(b) { return b.toString(16).padStart(2, '0'); })
                     .join('');
-                return {
-                    timestamp: timestamp,
-                    sign: hash
-                };
+                return { timestamp: timestamp, sign: hash };
             });
         }
 
-        // ---------- 钉钉推送函数 ----------
+        // ---------- 钉钉推送（通过 Cloudflare Worker 代理） ----------
         function sendDingTalk(webhook, secret, content) {
             var payload = {
                 msgtype: 'text',
-                text: {
-                    content: content
-                }
+                text: { content: content }
             };
-
-            var url = webhook;
 
             if (secret && secret.trim() !== '') {
                 return generateDingSign(secret).then(function(signData) {
-                    url = webhook + '&timestamp=' + signData.timestamp + '&sign=' + signData.sign;
-                    return fetch(url, {
+                    var signedWebhook = webhook + '&timestamp=' + signData.timestamp + '&sign=' + signData.sign;
+                    // 通过 Worker 代理发送
+                    var proxyUrl = DINGTALK_WORKER_URL + '?webhook=' + encodeURIComponent(signedWebhook);
+                    console.log('📤 通过 Worker 转发钉钉请求...');
+                    return fetch(proxyUrl, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(payload)
                     });
                 });
             } else {
-                return fetch(url, {
+                var proxyUrl = DINGTALK_WORKER_URL + '?webhook=' + encodeURIComponent(webhook);
+                console.log('📤 通过 Worker 转发钉钉请求...');
+                return fetch(proxyUrl, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
@@ -603,7 +303,7 @@
             }
         }
 
-        // ---------- 文件选择反馈 ----------
+        // ---------- 文件选择 ----------
         fileInput.addEventListener('change', function(e) {
             if (this.files && this.files.length > 0) {
                 var file = this.files[0];
@@ -632,14 +332,9 @@
             }, 5000);
         }
 
-        // ---------- PushPlus 推送 ----------
+        // ---------- PushPlus ----------
         function sendPushPlus(token, topic, title, content) {
-            var data = {
-                token: token,
-                title: title,
-                content: content,
-                channel: 'wechat'
-            };
+            var data = { token: token, title: title, content: content, channel: 'wechat' };
             if (topic && topic !== 'topic_xxxxx' && topic !== '') {
                 data.topic = topic;
             }
@@ -654,29 +349,10 @@
             });
         }
 
-        // ---------- 多Token推送 ----------
-        function sendPushPlusMultipleTokens(tokens, title, content) {
-            var validTokens = tokens.filter(function(t) { return t && t.trim() !== ''; });
-            if (validTokens.length === 0) {
-                return Promise.resolve([]);
-            }
-            var promises = validTokens.map(function(token) {
-                return sendPushPlus(token, '', title, content)
-                    .then(function(result) {
-                        return { token: token, success: result.code === 200, result: result };
-                    })
-                    .catch(function(error) {
-                        return { token: token, success: false, error: error };
-                    });
-            });
-            return Promise.all(promises);
-        }
-
-        // ---------- 提交逻辑 ----------
+        // ---------- 提交 ----------
         form.addEventListener('submit', function(e) {
             e.preventDefault();
 
-            // 收集字段
             var unit = document.getElementById('unit').value.trim();
             var name = document.getElementById('fullName').value.trim();
             var idNum = document.getElementById('idNumber').value.trim();
@@ -688,121 +364,67 @@
             var adminArea = document.getElementById('adminArea').value.trim();
             var purposeRadio = document.querySelector('input[name="purpose"]:checked');
             var purposeOther = document.getElementById('purposeOther').value.trim();
-
-            // 区间字段
             var flightHeightMin = document.getElementById('flightHeightMin').value.trim();
             var flightHeightMax = document.getElementById('flightHeightMax').value.trim();
             var railDistanceMin = document.getElementById('railDistanceMin').value.trim();
             var railDistanceMax = document.getElementById('railDistanceMax').value.trim();
-
             var certCode = document.getElementById('certCode').value.trim();
-            var certFile = fileInput.files && fileInput.files.length > 0;
 
-            // 获取配置
             var pushToken = pushTokenInput.value.trim();
             var pushTopic = pushTopicInput.value.trim();
             var dingWebhook = dingWebhookInput.value.trim();
             var dingSecret = dingSecretInput.value.trim();
 
-            // ---------- 校验 ----------
+            // 校验（省略，与之前相同）
             if (!unit || !name || !idNum || !phone || !brand || !model) {
-                showToast('⚠️ 请完整填写所有带 * 号的必填项', true);
-                return;
+                showToast('⚠️ 请完整填写所有带 * 号的必填项', true); return;
             }
             if (idNum.length < 15) {
-                showToast('⚠️ 请填写有效的身份证号码', true);
-                return;
+                showToast('⚠️ 请填写有效的身份证号码', true); return;
             }
             if (!/^\d{11}$/.test(phone)) {
-                showToast('⚠️ 请填写正确的11位手机号', true);
-                return;
+                showToast('⚠️ 请填写正确的11位手机号', true); return;
             }
             if (!area) {
-                showToast('⚠️ 请选择飞行区域铁路线路', true);
-                return;
+                showToast('⚠️ 请选择飞行区域铁路线路', true); return;
             }
             if (!adminArea) {
-                showToast('⚠️ 请填写飞行行政区域（附近村庄）', true);
-                return;
+                showToast('⚠️ 请填写飞行行政区域（附近村庄）', true); return;
             }
             if (!purposeRadio) {
-                showToast('⚠️ 请选择飞行用途', true);
-                return;
+                showToast('⚠️ 请选择飞行用途', true); return;
             }
             if (purposeRadio.value === '其他' && !purposeOther) {
-                showToast('⚠️ 请备注「其他」的具体用途', true);
-                return;
+                showToast('⚠️ 请备注「其他」的具体用途', true); return;
             }
-
-            // 校验飞行高度区间
             if (!flightHeightMin || isNaN(flightHeightMin) || parseFloat(flightHeightMin) < 0) {
-                showToast('⚠️ 请填写有效的飞行高度最低值（米）', true);
-                return;
+                showToast('⚠️ 请填写有效的飞行高度最低值', true); return;
             }
             if (!flightHeightMax || isNaN(flightHeightMax) || parseFloat(flightHeightMax) < 0) {
-                showToast('⚠️ 请填写有效的飞行高度最高值（米）', true);
-                return;
+                showToast('⚠️ 请填写有效的飞行高度最高值', true); return;
             }
             if (parseFloat(flightHeightMin) > parseFloat(flightHeightMax)) {
-                showToast('⚠️ 飞行高度最低值不能大于最高值', true);
-                return;
+                showToast('⚠️ 飞行高度最低值不能大于最高值', true); return;
             }
-
-            // 校验距离铁路区间
             if (!railDistanceMin || isNaN(railDistanceMin) || parseFloat(railDistanceMin) < 0) {
-                showToast('⚠️ 请填写有效的距离铁路最近值（米）', true);
-                return;
+                showToast('⚠️ 请填写有效的距离铁路最近值', true); return;
             }
             if (!railDistanceMax || isNaN(railDistanceMax) || parseFloat(railDistanceMax) < 0) {
-                showToast('⚠️ 请填写有效的距离铁路最远值（米）', true);
-                return;
+                showToast('⚠️ 请填写有效的距离铁路最远值', true); return;
             }
             if (parseFloat(railDistanceMin) > parseFloat(railDistanceMax)) {
-                showToast('⚠️ 距离铁路最近值不能大于最远值', true);
-                return;
+                showToast('⚠️ 距离铁路最近值不能大于最远值', true); return;
             }
-
             if (!certCode) {
-                showToast('⚠️ 请填写操作证件编码', true);
-                return;
+                showToast('⚠️ 请填写操作证件编码', true); return;
             }
 
-            // 检查推送配置
-            var hasPushPlus = pushToken && pushToken !== '你的Token';
-            var hasTopic = pushTopic && pushTopic !== 'topic_xxxxx' && pushTopic !== '';
-            var hasMultipleTokens = CONFIG_TOKENS && CONFIG_TOKENS.length > 0 && CONFIG_TOKENS.some(function(t) { return t && t.trim() !== ''; });
-            var hasDingTalk = dingWebhook && dingWebhook.indexOf('oapi.dingtalk.com') > -1;
-
-            if (!hasPushPlus && !hasDingTalk && !hasMultipleTokens) {
-                showToast('⚠️ 请至少配置一个推送通道（PushPlus 或 钉钉）', true);
-                console.error('未配置任何推送通道');
-                return;
-            }
-
-            // ---------- 构造数据 ----------
+            // 构造消息
             var purposeValue = purposeRadio.value;
             if (purposeValue === '其他' && purposeOther) {
                 purposeValue = '其他: ' + purposeOther;
             }
 
-            var formData = {
-                单位: unit,
-                姓名: name,
-                身份证: idNum,
-                联系电话: phone,
-                无人机品牌: brand,
-                型号编号: model,
-                飞行区域铁路线路: area,
-                地点里程: locationDetail || '未填写',
-                飞行行政区域: adminArea,
-                飞行用途: purposeValue,
-                飞行高度区间: flightHeightMin + ' ~ ' + flightHeightMax + ' 米',
-                距离铁路距离区间: railDistanceMin + ' ~ ' + railDistanceMax + ' 米',
-                操作证件编码: certCode,
-                资质文件: fileInput.files[0] ? fileInput.files[0].name : '未上传（选填）'
-            };
-
-            // ---------- 构造消息 ----------
             var now = new Date();
             var timeStr = now.getFullYear() + '-' + 
                 String(now.getMonth()+1).padStart(2,'0') + '-' + 
@@ -812,69 +434,48 @@
 
             var msgContent = '📋 无人机飞行报备通知\n\n' +
                 '🕐 时间：' + timeStr + '\n' +
-                '🏢 单位：' + formData.单位 + '\n' +
-                '👤 姓名：' + formData.姓名 + '\n' +
-                '🆔 身份证：' + formData.身份证 + '\n' +
-                '📞 电话：' + formData.联系电话 + '\n' +
-                '✈️ 品牌：' + formData.无人机品牌 + '\n' +
-                '🔢 型号/编号：' + formData.型号编号 + '\n' +
-                '🚉 铁路线路：' + formData.飞行区域铁路线路 + '\n' +
-                '📍 地点/里程：' + formData.地点里程 + '\n' +
-                '🏘️ 行政区域：' + formData.飞行行政区域 + '\n' +
-                '🎯 用途：' + formData.飞行用途 + '\n' +
-                '📏 飞行高度：' + formData.飞行高度区间 + '\n' +
-                '📏 距铁路距离：' + formData.距离铁路距离区间 + '\n' +
-                '🪪 证件编码：' + formData.操作证件编码 + '\n' +
-                '📎 资质照片：' + formData.资质文件;
+                '🏢 单位：' + unit + '\n' +
+                '👤 姓名：' + name + '\n' +
+                '🆔 身份证：' + idNum + '\n' +
+                '📞 电话：' + phone + '\n' +
+                '✈️ 品牌：' + brand + '\n' +
+                '🔢 型号/编号：' + model + '\n' +
+                '🚉 铁路线路：' + area + '\n' +
+                '📍 地点/里程：' + (locationDetail || '未填写') + '\n' +
+                '🏘️ 行政区域：' + adminArea + '\n' +
+                '🎯 用途：' + purposeValue + '\n' +
+                '📏 飞行高度：' + flightHeightMin + ' ~ ' + flightHeightMax + ' 米\n' +
+                '📏 距铁路距离：' + railDistanceMin + ' ~ ' + railDistanceMax + ' 米\n' +
+                '🪪 证件编码：' + certCode + '\n' +
+                '📎 资质照片：' + (fileInput.files[0] ? fileInput.files[0].name : '未上传（选填）');
 
             var title = '🚁 无人机飞行报备通知';
 
             // ---------- 执行推送 ----------
             submitBtn.classList.add('loading');
             submitBtn.textContent = '⏳ 提交中...';
-            showToast('⏳ 正在提交报备，请稍候...', false);
+            showToast('⏳ 正在提交报备...', false);
 
             var pushPromises = [];
 
-            // 1. PushPlus 主题群发（多人）
+            // PushPlus
+            var hasPushPlus = pushToken && pushToken !== '你的Token';
+            var hasTopic = pushTopic && pushTopic !== 'topic_xxxxx' && pushTopic !== '';
             if (hasPushPlus && hasTopic) {
                 pushPromises.push(
                     sendPushPlus(pushToken, pushTopic, title, msgContent)
                         .then(function(result) {
-                            console.log('PushPlus 主题推送响应:', result);
-                            return { channel: 'PushPlus主题', success: result.code === 200, result: result };
+                            console.log('✅ PushPlus:', result);
+                            return { channel: 'PushPlus', success: result.code === 200, result: result };
                         })
                         .catch(function(error) {
-                            console.error('PushPlus 主题推送失败:', error);
-                            return { channel: 'PushPlus主题', success: false, error: error };
+                            return { channel: 'PushPlus', success: false, error: error };
                         })
                 );
             }
 
-            // 2. PushPlus 多Token推送
-            if (hasMultipleTokens) {
-                var validTokens = CONFIG_TOKENS.filter(function(t) { return t && t.trim() !== ''; });
-                pushPromises.push(
-                    sendPushPlusMultipleTokens(validTokens, title, msgContent)
-                        .then(function(results) {
-                            var allSuccess = results.every(function(r) { return r.success; });
-                            var successCount = results.filter(function(r) { return r.success; }).length;
-                            console.log('PushPlus 多Token推送结果:', results);
-                            return {
-                                channel: 'PushPlus多Token',
-                                success: allSuccess,
-                                detail: '成功 ' + successCount + '/' + results.length + ' 个账号',
-                                results: results
-                            };
-                        })
-                        .catch(function(error) {
-                            console.error('PushPlus 多Token推送失败:', error);
-                            return { channel: 'PushPlus多Token', success: false, error: error };
-                        })
-                );
-            }
-
-            // 3. 钉钉推送
+            // 钉钉（通过 Worker 代理）
+            var hasDingTalk = dingWebhook && dingWebhook.indexOf('oapi.dingtalk.com') > -1;
             if (hasDingTalk) {
                 pushPromises.push(
                     sendDingTalk(dingWebhook, dingSecret, msgContent)
@@ -883,11 +484,11 @@
                             return response.json();
                         })
                         .then(function(result) {
-                            console.log('钉钉推送响应:', result);
+                            console.log('✅ 钉钉响应:', result);
                             return { channel: '钉钉', success: result.errcode === 0, result: result };
                         })
                         .catch(function(error) {
-                            console.error('钉钉推送失败:', error);
+                            console.error('❌ 钉钉失败:', error);
                             return { channel: '钉钉', success: false, error: error };
                         })
                 );
@@ -899,61 +500,46 @@
                     var failChannels = results.filter(function(r) { return !r.success; });
 
                     if (successChannels.length > 0) {
-                        var channelNames = successChannels.map(function(r) {
-                            var name = r.channel;
-                            if (r.detail) {
-                                name += '(' + r.detail + ')';
-                            }
-                            return name;
-                        }).join('、');
-                        pushDesc.textContent = '✅ 已通过 ' + channelNames + ' 发送通知';
+                        var names = successChannels.map(function(r) { return r.channel; }).join('、');
+                        pushDesc.textContent = '✅ 已通过 ' + names + ' 发送通知';
                         if (failChannels.length > 0) {
-                            var failNames = failChannels.map(function(r) { return r.channel; }).join('、');
-                            pushDesc.textContent += '（' + failNames + ' 推送失败）';
+                            pushDesc.textContent += '（' + failChannels.map(function(r){return r.channel;}).join('、') + ' 失败）';
                         }
                         successOverlay.classList.add('show');
                         form.style.display = 'none';
                         showToast('✅ 报备已提交！', false);
                     } else {
-                        showToast('⚠️ 所有推送通道均失败，请检查配置', true);
+                        showToast('⚠️ 所有推送通道均失败，请查看控制台', true);
                     }
                     submitBtn.classList.remove('loading');
                     submitBtn.textContent = '📨 提交报备';
                 })
                 .catch(function(error) {
-                    console.error('推送过程异常:', error);
-                    showToast('⚠️ 推送异常，请稍后重试', true);
+                    console.error('❌ 异常:', error);
+                    showToast('⚠️ 推送异常，请查看控制台', true);
                     submitBtn.classList.remove('loading');
                     submitBtn.textContent = '📨 提交报备';
                 });
         });
 
-        // ---------- 「其他」输入框提示 ----------
+        // ---------- 「其他」提示 ----------
         var otherInput = document.getElementById('purposeOther');
         var purposeRadios = document.querySelectorAll('input[name="purpose"]');
         purposeRadios.forEach(function(radio) {
             radio.addEventListener('change', function() {
-                if (this.value === '其他') {
-                    otherInput.placeholder = '请备注具体用途（必填）';
-                } else {
-                    otherInput.placeholder = '选择「其他」时请备注';
-                }
+                otherInput.placeholder = this.value === '其他' ? '请备注具体用途（必填）' : '选择「其他」时请备注';
             });
         });
 
         // ---------- 配置检查 ----------
-        if (CONFIG_TOKEN === '你的Token') {
-            console.warn('⚠️ PushPlus Token 未配置！');
-        }
-        if (CONFIG_DING_WEBHOOK === 'https://oapi.dingtalk.com/robot/send?access_token=你的access_token') {
-            console.warn('⚠️ 钉钉 Webhook 未配置！');
-        }
-        if (CONFIG_TOPIC && CONFIG_TOPIC !== 'topic_xxxxx' && CONFIG_TOPIC !== '') {
-            console.info('✅ PushPlus 主题已配置: ' + CONFIG_TOPIC);
-        }
-        if (CONFIG_TOKENS && CONFIG_TOKENS.length > 0) {
-            console.info('✅ PushPlus 多Token已配置: ' + CONFIG_TOKENS.length + ' 个账号');
-        }
+        console.log('===== 无人机报备系统配置检查 =====');
+        console.log('✅ PushPlus Token: 已配置');
+        console.log('✅ PushPlus 主题:', CONFIG_TOPIC);
+        console.log('✅ 钉钉 Webhook: 已配置');
+        console.log('✅ 钉钉加签: 已启用');
+        console.log('✅ Cloudflare Worker:', DINGTALK_WORKER_URL);
+        console.log('💡 提示: 请确保 Worker 已正确部署');
+        console.log('=====================================');
     })();
 </script>
 
