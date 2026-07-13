@@ -9,722 +9,729 @@
     <title>九江桥工段 · 无人机报备</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚁</text></svg>" />
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            -webkit-tap-highlight-color: transparent;
-            -webkit-text-size-adjust: 100%;
-        }
-        
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", "Microsoft YaHei", Arial, sans-serif;
-            background: #eef2f7;
-            min-height: 100vh;
-            min-height: -webkit-fill-available;
-            padding: 12px;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            -webkit-overflow-scrolling: touch;
-        }
-        
-        .container {
-            max-width: 480px;
-            width: 100%;
-            background: #ffffff;
-            border-radius: 16px;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.08);
-            padding: 20px 18px 24px;
-        }
-        
-        .main-title {
-            font-size: 22px;
-            font-weight: 700;
-            color: #c0392b;
-            text-align: center;
-            line-height: 1.4;
-            margin-bottom: 4px;
-            letter-spacing: .5px;
-        }
-        
-        .subhead {
-            font-size: 13px;
-            color: #7a8aa3;
-            text-align: center;
-            margin-bottom: 20px;
-            padding-bottom: 14px;
-            border-bottom: 1px solid #eef2f7;
-        }
-        
-        .form-group {
-            margin-bottom: 18px;
-        }
-        
-        label {
-            display: block;
-            font-weight: 600;
-            font-size: 15px;
-            color: #1f3349;
-            margin-bottom: 5px;
-        }
-        
-        label .required {
-            color: #c0392b;
-            margin-left: 2px;
-        }
-        
-        label .hint {
-            font-weight: 400;
-            font-size: 12px;
-            color: #9aabb8;
-            margin-left: 4px;
-        }
-        
-        input, select, textarea {
-            width: 100%;
-            padding: 14px;
-            font-size: 16px;
-            border: 1.5px solid #dce4ed;
-            border-radius: 10px;
-            background: #fafcff;
-            transition: .2s;
-            color: #1a2b3e;
-            -webkit-appearance: none;
-            appearance: none;
-            font-family: inherit;
-        }
-        
-        select:not([multiple]) {
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239aabb8' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 14px center;
-            padding-right: 40px;
-        }
-        
-        input:focus, select:focus, textarea:focus {
-            outline: none;
-            border-color: #c0392b;
-            box-shadow: 0 0 0 4px rgba(192,57,43,0.10);
-            background: #ffffff;
-        }
-        
-        input::placeholder, textarea::placeholder {
-            color: #b0c0ce;
-            font-size: 15px;
-        }
-        
-        .location-input-group {
-            position: relative;
-            display: flex;
-            gap: 8px;
-            align-items: center;
-        }
-        
-        .location-input-group input {
-            flex: 1;
-        }
-        
-        /* ===== 时尚定位按钮 ===== */
-        .btn-locate {
-            flex-shrink: 0;
-            width: 50px;
-            height: 50px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: #fff;
-            border: none;
-            border-radius: 14px;
-            font-size: 20px;
-            cursor: pointer;
-            touch-action: manipulation;
-            -webkit-appearance: none;
-            appearance: none;
-            -webkit-user-select: none;
-            user-select: none;
-            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .btn-locate::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            transition: left 0.5s;
-        }
-        
-        .btn-locate:hover::before {
-            left: 100%;
-        }
-        
-        .btn-locate:active {
-            transform: scale(0.9);
-            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
-        }
-        
-        .btn-locate.locating {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            box-shadow: 0 4px 15px rgba(245, 87, 108, 0.4);
-            animation: locatePulse 1.2s ease-in-out infinite;
-        }
-        
-        .btn-locate.success {
-            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
-            box-shadow: 0 4px 15px rgba(67, 233, 123, 0.4);
-        }
-        
-        .btn-locate.error {
-            background: linear-gradient(135deg, #f5576c 0%, #ff6b6b 100%);
-            box-shadow: 0 4px 15px rgba(245, 87, 108, 0.4);
-        }
-        
-        /* 定位图标SVG */
-        .locate-icon {
-            width: 24px;
-            height: 24px;
-            transition: transform 0.3s;
-        }
-        
-        .btn-locate.locating .locate-icon {
-            animation: iconSpin 1s linear infinite;
-        }
-        
-        .btn-locate.success .locate-icon {
-            animation: iconBounce 0.5s ease;
-        }
-        
-        @keyframes locatePulse {
-            0%, 100% { box-shadow: 0 4px 15px rgba(245, 87, 108, 0.4); }
-            50% { box-shadow: 0 4px 25px rgba(245, 87, 108, 0.7); }
-        }
-        
-        @keyframes iconSpin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-        
-        @keyframes iconBounce {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.3); }
-            100% { transform: scale(1); }
-        }
-        
-        .location-status {
-            display: none;
-            margin-top: 8px;
-            padding: 10px 14px;
-            border-radius: 8px;
-            font-size: 13px;
-            line-height: 1.5;
-            animation: fadeInUp 0.3s ease;
-        }
-        
-        .location-status.show {
-            display: block;
-        }
-        
-        .location-status.success {
-            background: #e8f8f0;
-            color: #1a6e3a;
-            border: 1px solid #a3d9b1;
-        }
-        
-        .location-status.error {
-            background: #fdf0ef;
-            color: #8b2c2c;
-            border: 1px solid #f5c6cb;
-        }
-        
-        .location-status.info {
-            background: #eaf4fe;
-            color: #1a5276;
-            border: 1px solid #aed6f1;
-        }
-        
-        /* ===== 地图全屏弹窗 ===== */
-        .map-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            z-index: 2000;
-            background: #fff;
-            flex-direction: column;
-        }
-        
-        .map-modal.show {
-            display: flex;
-            animation: fadeIn 0.3s ease;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        
-        .map-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 12px 16px;
-            background: #fff;
-            border-bottom: 1px solid #eef2f7;
-            z-index: 10;
-            flex-shrink: 0;
-        }
-        
-        .map-header .map-title {
-            font-size: 16px;
-            font-weight: 700;
-            color: #1f3349;
-        }
-        
-        .map-header .btn-close-map {
-            padding: 8px 16px;
-            background: #eef2f7;
-            color: #7a8aa3;
-            border: none;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            touch-action: manipulation;
-        }
-        
-        .map-header .btn-close-map:active {
-            background: #dce4ed;
-        }
-        
-        .map-container {
-            flex: 1;
-            position: relative;
-            background: #f0f3f7;
-        }
-        
-        .map-container iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-        
-        .map-footer {
-            display: flex;
-            gap: 10px;
-            padding: 12px 16px;
-            background: #fff;
-            border-top: 1px solid #eef2f7;
-            z-index: 10;
-            flex-shrink: 0;
-        }
-        
-        .map-footer .btn-confirm-location {
-            flex: 1;
-            padding: 14px;
-            background: #c0392b;
-            color: #fff;
-            border: none;
-            border-radius: 10px;
-            font-size: 16px;
-            font-weight: 700;
-            cursor: pointer;
-            touch-action: manipulation;
-        }
-        
-        .map-footer .btn-confirm-location:active {
-            background: #a03226;
-        }
-        
-        .map-footer .btn-auto-locate {
-            flex: 1;
-            padding: 14px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: #fff;
-            border: none;
-            border-radius: 10px;
-            font-size: 16px;
-            font-weight: 700;
-            cursor: pointer;
-            touch-action: manipulation;
-            transition: all 0.3s;
-        }
-        
-        .map-footer .btn-auto-locate:active {
-            transform: scale(0.96);
-            opacity: 0.9;
-        }
-        
-        .map-footer .btn-auto-locate.locating {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            pointer-events: none;
-            animation: locatePulse 1.2s ease-in-out infinite;
-        }
-        
-        .map-hint {
-            text-align: center;
-            padding: 8px;
-            font-size: 12px;
-            color: #9aabb8;
-            background: #f8f9fa;
-            border-top: 1px solid #eef2f7;
-            flex-shrink: 0;
-        }
-        
-        .map-marker-info {
-            display: none;
-            position: absolute;
-            bottom: 80px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #fff;
-            padding: 10px 16px;
-            border-radius: 20px;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.15);
-            font-size: 14px;
-            font-weight: 600;
-            color: #1f3349;
-            z-index: 5;
-            white-space: nowrap;
-            max-width: 90%;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        
-        .map-marker-info.show {
-            display: block;
-        }
-        
-        .inline-group {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-        
-        .inline-group .form-group {
-            flex: 1 1 160px;
-            margin-bottom: 0;
-        }
-        
-        .range-group {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            align-items: center;
-        }
-        
-        .range-group .range-input {
-            flex: 1 1 80px;
-            min-width: 60px;
-        }
-        
-        .range-group .range-sep {
-            font-size: 16px;
-            color: #7a8aa3;
-            font-weight: 600;
-            padding: 0 2px;
-            flex-shrink: 0;
-        }
-        
-        .range-group .range-unit {
-            font-size: 13px;
-            color: #9aabb8;
-            flex-shrink: 0;
-        }
-        
-        .radio-group {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px 14px;
-            background: #f7faff;
-            padding: 12px 14px;
-            border-radius: 12px;
-            border: 1.5px solid #e8eff6;
-        }
-        
-        .radio-group label {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            font-weight: 400;
-            font-size: 15px;
-            color: #1f3349;
-            cursor: pointer;
-            padding: 2px 0;
-            margin-bottom: 0;
-        }
-        
-        .radio-group input[type="radio"] {
-            width: 20px;
-            height: 20px;
-            accent-color: #c0392b;
-            margin: 0;
-            flex-shrink: 0;
-        }
-        
-        .upload-box {
-            border: 2px dashed #d0dceb;
-            border-radius: 12px;
-            padding: 20px 12px;
-            background: #f8fbfe;
-            text-align: center;
-            cursor: pointer;
-            transition: .2s;
-            touch-action: manipulation;
-            -webkit-user-select: none;
-            user-select: none;
-        }
-        
-        .upload-box:active {
-            background: #eef4fa;
-            border-color: #c0392b;
-        }
-        
-        .upload-box input[type="file"] {
-            display: none;
-        }
-        
-        .upload-label {
-            display: inline-block;
-            background: #e6eef7;
-            padding: 10px 24px;
-            border-radius: 40px;
-            font-size: 16px;
-            font-weight: 500;
-            color: #1f3b5c;
-            cursor: pointer;
-            touch-action: manipulation;
-            pointer-events: none;
-        }
-        
-        .upload-box:active .upload-label {
-            background: #d0dceb;
-        }
-        
-        .file-status {
-            margin-top: 10px;
-            font-size: 14px;
-            color: #2a5f3a;
-            word-break: break-all;
-        }
-        
-        .warning-box {
-            background: #fef6f5;
-            border-left: 4px solid #c0392b;
-            border-radius: 8px;
-            padding: 12px 14px;
-            margin: 6px 0 18px 0;
-        }
-        
-        .warning-box .warn-title {
-            font-size: 15px;
-            font-weight: 700;
-            color: #c0392b;
-        }
-        
-        .warning-box .warn-desc {
-            font-size: 14px;
-            color: #5a4a47;
-            margin-top: 4px;
-            line-height: 1.6;
-        }
-        
-        .warning-box .warn-desc strong {
-            color: #c0392b;
-        }
-        
-        .btn-submit {
-            width: 100%;
-            padding: 16px;
-            background: #c0392b;
-            color: #fff;
-            font-size: 20px;
-            font-weight: 700;
-            border: none;
-            border-radius: 40px;
-            cursor: pointer;
-            transition: .15s;
-            letter-spacing: 2px;
-            margin-top: 4px;
-            box-shadow: 0 6px 20px rgba(192,57,43,0.30);
-            touch-action: manipulation;
-            -webkit-appearance: none;
-            appearance: none;
-            -webkit-user-select: none;
-            user-select: none;
-        }
-        
-        .btn-submit:active {
-            transform: scale(0.97);
-            background: #a03226;
-            box-shadow: 0 3px 12px rgba(192,57,43,0.25);
-        }
-        
-        .btn-submit.loading {
-            opacity: .7;
-            pointer-events: none;
-        }
-        
-        .footer-note {
-            margin-top: 20px;
-            font-size: 15px;
-            font-weight: 600;
-            color: #c0392b;
-            text-align: center;
-            border-top: 1px solid #eef2f7;
-            padding-top: 16px;
-            letter-spacing: .3px;
-        }
-        
-        .toast {
-            display: none;
-            background: #1d3b2f;
-            color: #fff;
-            padding: 14px 18px;
-            border-radius: 40px;
-            text-align: center;
-            margin-top: 14px;
-            font-weight: 500;
-            font-size: 15px;
-            word-break: break-all;
-        }
-        
-        .toast.show {
-            display: block;
-            animation: fadeInUp 0.3s ease;
-        }
-        
-        .toast.error {
-            background: #8b2c2c;
-        }
-        
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; -webkit-text-size-adjust: 100%; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", "Microsoft YaHei", Arial, sans-serif; background: #eef2f7; min-height: 100vh; min-height: -webkit-fill-available; padding: 12px; display: flex; justify-content: center; align-items: flex-start; -webkit-overflow-scrolling: touch; }
+        .container { max-width: 480px; width: 100%; background: #ffffff; border-radius: 16px; box-shadow: 0 8px 30px rgba(0,0,0,0.08); padding: 20px 18px 24px; }
+        .main-title { font-size: 22px; font-weight: 700; color: #c0392b; text-align: center; line-height: 1.4; margin-bottom: 4px; letter-spacing: .5px; }
+        .subhead { font-size: 13px; color: #7a8aa3; text-align: center; margin-bottom: 20px; padding-bottom: 14px; border-bottom: 1px solid #eef2f7; }
+        .form-group { margin-bottom: 18px; }
+        label { display: block; font-weight: 600; font-size: 15px; color: #1f3349; margin-bottom: 5px; }
+        label .required { color: #c0392b; margin-left: 2px; }
+        label .hint { font-weight: 400; font-size: 12px; color: #9aabb8; margin-left: 4px; }
+        input, select, textarea { width: 100%; padding: 14px; font-size: 16px; border: 1.5px solid #dce4ed; border-radius: 10px; background: #fafcff; transition: .2s; color: #1a2b3e; -webkit-appearance: none; appearance: none; font-family: inherit; }
+        select:not([multiple]) { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239aabb8' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 40px; }
+        input:focus, select:focus, textarea:focus { outline: none; border-color: #c0392b; box-shadow: 0 0 0 4px rgba(192,57,43,0.10); background: #ffffff; }
+        input::placeholder, textarea::placeholder { color: #b0c0ce; font-size: 15px; }
+        .location-input-group { display: flex; gap: 8px; align-items: center; }
+        .location-input-group input { flex: 1; }
+        .btn-locate { flex-shrink: 0; width: 50px; height: 50px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #fff; border: none; border-radius: 14px; font-size: 20px; cursor: pointer; touch-action: manipulation; -webkit-appearance: none; appearance: none; -webkit-user-select: none; user-select: none; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4); position: relative; overflow: hidden; }
+        .btn-locate::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent); transition: left 0.5s; }
+        .btn-locate:active { transform: scale(0.9); box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3); }
+        .btn-locate.locating { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); box-shadow: 0 4px 15px rgba(245, 87, 108, 0.4); animation: locatePulse 1.2s ease-in-out infinite; }
+        .btn-locate.success { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); box-shadow: 0 4px 15px rgba(67, 233, 123, 0.4); }
+        .btn-locate.error { background: linear-gradient(135deg, #f5576c 0%, #ff6b6b 100%); box-shadow: 0 4px 15px rgba(245, 87, 108, 0.4); }
+        .locate-icon { width: 24px; height: 24px; transition: transform 0.3s; }
+        @keyframes locatePulse { 0%, 100% { box-shadow: 0 4px 15px rgba(245, 87, 108, 0.4); } 50% { box-shadow: 0 4px 25px rgba(245, 87, 108, 0.7); } }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .location-status { display: none; margin-top: 8px; padding: 10px 14px; border-radius: 8px; font-size: 13px; line-height: 1.5; animation: fadeInUp 0.3s ease; }
+        .location-status.show { display: block; }
+        .location-status.success { background: #e8f8f0; color: #1a6e3a; border: 1px solid #a3d9b1; }
+        .location-status.error { background: #fdf0ef; color: #8b2c2c; border: 1px solid #f5c6cb; }
+        .location-status.info { background: #eaf4fe; color: #1a5276; border: 1px solid #aed6f1; }
+        .map-modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 2000; background: #fff; flex-direction: column; }
+        .map-modal.show { display: flex; animation: fadeIn 0.3s ease; }
+        .map-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; background: #fff; border-bottom: 1px solid #eef2f7; z-index: 10; flex-shrink: 0; }
+        .map-header .map-title { font-size: 16px; font-weight: 700; color: #1f3349; }
+        .map-header .btn-close-map { padding: 8px 16px; background: #eef2f7; color: #7a8aa3; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; touch-action: manipulation; }
+        .map-header .btn-close-map:active { background: #dce4ed; }
+        .map-container { flex: 1; position: relative; background: #f0f3f7; }
+        .map-container iframe { width: 100%; height: 100%; border: none; }
+        .map-footer { display: flex; gap: 10px; padding: 12px 16px; background: #fff; border-top: 1px solid #eef2f7; z-index: 10; flex-shrink: 0; }
+        .map-footer .btn-confirm-location { flex: 1; padding: 14px; background: #c0392b; color: #fff; border: none; border-radius: 10px; font-size: 16px; font-weight: 700; cursor: pointer; touch-action: manipulation; }
+        .map-footer .btn-confirm-location:active { background: #a03226; }
+        .map-footer .btn-auto-locate { flex: 1; padding: 14px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #fff; border: none; border-radius: 10px; font-size: 16px; font-weight: 700; cursor: pointer; touch-action: manipulation; transition: all 0.3s; }
+        .map-footer .btn-auto-locate:active { transform: scale(0.96); opacity: 0.9; }
+        .map-footer .btn-auto-locate.locating { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); pointer-events: none; animation: locatePulse 1.2s ease-in-out infinite; }
+        .map-hint { text-align: center; padding: 8px; font-size: 12px; color: #9aabb8; background: #f8f9fa; border-top: 1px solid #eef2f7; flex-shrink: 0; }
+        .map-marker-info { display: none; position: absolute; bottom: 80px; left: 50%; transform: translateX(-50%); background: #fff; padding: 10px 16px; border-radius: 20px; box-shadow: 0 4px 16px rgba(0,0,0,0.15); font-size: 14px; font-weight: 600; color: #1f3349; z-index: 5; white-space: nowrap; max-width: 90%; overflow: hidden; text-overflow: ellipsis; }
+        .map-marker-info.show { display: block; }
+        .inline-group { display: flex; flex-wrap: wrap; gap: 10px; }
+        .inline-group .form-group { flex: 1 1 160px; margin-bottom: 0; }
+        .range-group { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+        .range-group .range-input { flex: 1 1 80px; min-width: 60px; }
+        .range-group .range-sep { font-size: 16px; color: #7a8aa3; font-weight: 600; padding: 0 2px; flex-shrink: 0; }
+        .range-group .range-unit { font-size: 13px; color: #9aabb8; flex-shrink: 0; }
+        .radio-group { display: flex; flex-wrap: wrap; gap: 10px 14px; background: #f7faff; padding: 12px 14px; border-radius: 12px; border: 1.5px solid #e8eff6; }
+        .radio-group label { display: inline-flex; align-items: center; gap: 6px; font-weight: 400; font-size: 15px; color: #1f3349; cursor: pointer; padding: 2px 0; margin-bottom: 0; }
+        .radio-group input[type="radio"] { width: 20px; height: 20px; accent-color: #c0392b; margin: 0; flex-shrink: 0; }
+        .upload-box { border: 2px dashed #d0dceb; border-radius: 12px; padding: 20px 12px; background: #f8fbfe; text-align: center; cursor: pointer; transition: .2s; touch-action: manipulation; -webkit-user-select: none; user-select: none; }
+        .upload-box:active { background: #eef4fa; border-color: #c0392b; }
+        .upload-box input[type="file"] { display: none; }
+        .upload-label { display: inline-block; background: #e6eef7; padding: 10px 24px; border-radius: 40px; font-size: 16px; font-weight: 500; color: #1f3b5c; cursor: pointer; touch-action: manipulation; pointer-events: none; }
+        .upload-box:active .upload-label { background: #d0dceb; }
+        .file-status { margin-top: 10px; font-size: 14px; color: #2a5f3a; word-break: break-all; }
+        .warning-box { background: #fef6f5; border-left: 4px solid #c0392b; border-radius: 8px; padding: 12px 14px; margin: 6px 0 18px 0; }
+        .warning-box .warn-title { font-size: 15px; font-weight: 700; color: #c0392b; }
+        .warning-box .warn-desc { font-size: 14px; color: #5a4a47; margin-top: 4px; line-height: 1.6; }
+        .warning-box .warn-desc strong { color: #c0392b; }
+        .btn-submit { width: 100%; padding: 16px; background: #c0392b; color: #fff; font-size: 20px; font-weight: 700; border: none; border-radius: 40px; cursor: pointer; transition: .15s; letter-spacing: 2px; margin-top: 4px; box-shadow: 0 6px 20px rgba(192,57,43,0.30); touch-action: manipulation; -webkit-appearance: none; appearance: none; -webkit-user-select: none; user-select: none; }
+        .btn-submit:active { transform: scale(0.97); background: #a03226; box-shadow: 0 3px 12px rgba(192,57,43,0.25); }
+        .btn-submit.loading { opacity: .7; pointer-events: none; }
+        .footer-note { margin-top: 20px; font-size: 15px; font-weight: 600; color: #c0392b; text-align: center; border-top: 1px solid #eef2f7; padding-top: 16px; letter-spacing: .3px; }
+        .toast { display: none; background: #1d3b2f; color: #fff; padding: 14px 18px; border-radius: 40px; text-align: center; margin-top: 14px; font-weight: 500; font-size: 15px; word-break: break-all; }
+        .toast.show { display: block; animation: fadeInUp 0.3s ease; }
+        .toast.error { background: #8b2c2c; }
+        .optional-tag { font-size: 12px; color: #9aabb8; background: #f0f3f7; padding: 0 10px; border-radius: 20px; font-weight: 400; margin-left: 6px; }
+        .success-overlay { display: none; text-align: center; padding: 30px 20px; background: #f0faf5; border-radius: 12px; border: 2px solid #2d7a4f; margin-bottom: 18px; }
+        .success-overlay.show { display: block; animation: fadeInUp 0.4s ease; }
+        .success-overlay .icon { font-size: 48px; margin-bottom: 10px; }
+        .success-overlay .title { font-size: 20px; font-weight: 700; color: #2d7a4f; }
+        .success-overlay .desc { font-size: 14px; color: #5a6a7a; margin-top: 6px; line-height: 1.6; white-space: pre-line; }
+        .success-overlay .btn-continue { margin-top: 14px; padding: 10px 30px; background: #c0392b; color: #fff; border: none; border-radius: 30px; font-size: 16px; cursor: pointer; touch-action: manipulation; -webkit-appearance: none; appearance: none; }
+        .success-overlay .btn-continue:active { transform: scale(.95); }
+        .success-notice { background: #fff8e1; border-left: 4px solid #f39c12; border-radius: 6px; padding: 14px 16px; margin-top: 16px; text-align: left; font-size: 14px; color: #5a4a47; line-height: 1.8; }
+        .success-notice strong { color: #c0392b; }
+        .success-notice .highlight { color: #e67e22; font-weight: 700; }
+        .datetime-group { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+        .datetime-group .form-group { flex: 1 1 160px; margin-bottom: 0; }
+        .datetime-group .range-sep { font-size: 16px; color: #7a8aa3; font-weight: 600; padding: 0 2px; flex-shrink: 0; }
+        .datetime-group input[type="datetime-local"] { padding: 12px 14px; }
+        @supports (-webkit-touch-callout: none) { input, select, textarea { font-size: 16px !important; } }
+        @media screen and (max-width: 320px) { .container { padding: 16px 12px 20px; } .main-title { font-size: 19px; } input, select, textarea { padding: 12px; font-size: 15px; } .btn-locate { width: 44px; height: 44px; } }
+        @media (prefers-color-scheme: dark) { body { background: #eef2f7; } }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="main-title">九江桥工段铁路沿线无人机飞行报备</div>
+    <div class="subhead">铁路沿线安全报备 · 请如实填写</div>
+
+    <div class="success-overlay" id="successOverlay">
+        <div class="icon">✅</div>
+        <div class="title">报备提交成功！</div>
+        <div class="desc" id="pushDesc">通知已发送至管理部门</div>
+        <div class="success-notice">
+            <strong>📢 温馨提示：</strong><br />
+            感谢您的配合！<br />
+            工作人员将在 <span class="highlight">24小时内</span> 与您取得联系，<br />
+            <strong style="color:#c0392b;">在未接到工作人员电话确认前，严禁擅自飞行！</strong><br />
+            如有疑问，请联系：九江桥工段 安设办 ☎️ 0792-7022335
+        </div>
+        <button class="btn-continue" onclick="location.reload()">继续报备</button>
+    </div>
+
+    <div class="map-modal" id="mapModal">
+        <div class="map-header">
+            <span class="map-title">📍 选择飞行位置</span>
+            <button class="btn-close-map" id="btnCloseMap">✕ 关闭</button>
+        </div>
+        <div class="map-container">
+            <iframe id="mapIframe" src="" allow="geolocation" style="width:100%;height:100%;border:none;"></iframe>
+        </div>
+        <div class="map-marker-info" id="mapMarkerInfo">📍 拖动地图选择位置</div>
+        <div class="map-hint">💡 提示：可拖动地图选择精确位置，或点击下方"自动定位"</div>
+        <div class="map-footer">
+            <button class="btn-auto-locate" id="btnAutoLocate">📍 自动定位</button>
+            <button class="btn-confirm-location" id="btnConfirmLocation">✅ 确认此位置</button>
+        </div>
+    </div>
+
+    <form id="reportForm" autocomplete="on">
+        <div class="form-group"><label>申请单位 <span class="required">*</span></label><input type="text" id="unit" placeholder="请输入申请单位名称" required autocomplete="organization" /></div>
+        <div class="form-group"><label>申请人 <span class="required">*</span></label><input type="text" id="fullName" placeholder="申请人姓名" required autocomplete="name" /></div>
+        <div class="form-group id-row"><label>身份证号码 <span class="required">*</span></label><input type="text" id="idNumber" placeholder="18 位身份证号" required autocomplete="off" inputmode="numeric" /></div>
+        <div class="inline-group">
+            <div class="form-group"><label>联系电话 <span class="required">*</span></label><input type="tel" id="phone" placeholder="手机号" required autocomplete="tel" inputmode="numeric" /></div>
+            <div class="form-group"><label>无人机品牌 <span class="required">*</span></label><input type="text" id="droneBrand" placeholder="如：大疆" required autocomplete="off" /></div>
+        </div>
+        <div class="form-group"><label>无人机型号 / 编号 <span class="required">*</span></label><input type="text" id="droneModel" placeholder="型号及机身编号" required autocomplete="off" /></div>
+        <div class="form-group">
+            <label>飞行区域铁路线路 <span class="required">*</span></label>
+            <select id="flightArea" required>
+                <option value="">-- 请选择铁路线路 --</option>
+                <option value="衢九线">衢九线</option><option value="铜九线">铜九线</option><option value="湖口疏解线">湖口疏解线</option>
+                <option value="京九线">京九线</option><option value="昌九城际">昌九城际</option><option value="京港高铁">京港高铁</option>
+                <option value="武九线">武九线</option><option value="武九客专">武九客专</option><option value="西到线">西到线</option>
+                <option value="发西线">发西线</option><option value="沙浔线">沙浔线</option><option value="九江上行疏解线">九江上行疏解线</option>
+                <option value="武九西南联络线">武九西南联络线</option><option value="武九客专九江联络线">武九客专九江联络线</option>
+            </select>
+        </div>
+        <div class="form-group"><label>地点 / 里程 / 接触网支柱编号 <span class="optional-tag">选填</span></label><input type="text" id="locationDetail" placeholder="例：京九线 K1313+200" autocomplete="off" /></div>
+        <div class="form-group">
+            <label>飞行行政区域（附近村庄） <span class="required">*</span><span class="hint">（点击定位按钮在地图上选择位置）</span></label>
+            <div class="location-input-group">
+                <input type="text" id="adminArea" placeholder="如：九江市柴桑区港口街镇" required autocomplete="off" />
+                <button type="button" class="btn-locate" id="btnLocate" title="打开地图选择位置">
+                    <svg class="locate-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="10" r="3"/><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="location-status" id="locationStatus"></div>
+        </div>
+        <div class="form-group">
+            <label>飞行用途 <span class="required">*</span></label>
+            <div class="radio-group">
+                <label><input type="radio" name="purpose" value="无人机农业打药" /> 农业打药</label>
+                <label><input type="radio" name="purpose" value="无人机航拍" /> 航拍</label>
+                <label><input type="radio" name="purpose" value="无人机勘察测量" /> 勘察测量</label>
+                <label><input type="radio" name="purpose" value="应急救援" /> 应急救援</label>
+                <label><input type="radio" name="purpose" value="其他" /> 其他</label>
+            </div>
+            <input type="text" id="purposeOther" placeholder="选择「其他」时请备注" style="margin-top:8px;display:none;" autocomplete="off" />
+        </div>
+        <div class="form-group">
+            <label>作业起止时间 <span class="required">*</span></label>
+            <div class="datetime-group">
+                <div class="form-group"><input type="datetime-local" id="workStart" required /></div>
+                <span class="range-sep">至</span>
+                <div class="form-group"><input type="datetime-local" id="workEnd" required /></div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label>飞行高度区间（米） <span class="required">*</span></label>
+            <div class="range-group">
+                <input type="number" id="flightHeightMin" class="range-input" placeholder="最低" min="0" step="1" required inputmode="numeric" />
+                <span class="range-sep">~</span>
+                <input type="number" id="flightHeightMax" class="range-input" placeholder="最高" min="0" step="1" required inputmode="numeric" />
+                <span class="range-unit">米</span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label>距离铁路距离区间（米） <span class="required">*</span></label>
+            <div class="range-group">
+                <input type="number" id="railDistanceMin" class="range-input" placeholder="最近" min="0" step="1" required inputmode="numeric" />
+                <span class="range-sep">~</span>
+                <input type="number" id="railDistanceMax" class="range-input" placeholder="最远" min="0" step="1" required inputmode="numeric" />
+                <span class="range-unit">米</span>
+            </div>
+        </div>
+        <div class="form-group"><label>操作证件编码 <span class="required">*</span></label><input type="text" id="certCode" placeholder="请输入操作证件编码（如：CAAC-2024-001）" required autocomplete="off" /></div>
+        <div class="form-group">
+            <label>操作人员资质拍照 <span class="optional-tag">选填</span> <span class="hint">（拍照上传）</span></label>
+            <div class="upload-box" id="uploadBox">
+                <input type="file" id="certFile" accept="image/*" capture="environment" />
+                <span class="upload-label">📸 拍照 / 选择图片</span>
+                <div id="fileStatus" class="file-status">未选择文件（选填）</div>
+            </div>
+        </div>
+        <div class="warning-box">
+            <div class="warn-title">⚠️ 依法飞行，安全第一</div>
+            <div class="warn-desc">铁路沿线无人机 <strong>黑飞属于违法行为</strong>，可能危及铁路运行安全。<br />请确保填写数据 <strong>真实、完整</strong>，如有虚假将承担相应责任。</div>
+        </div>
+        <button type="submit" class="btn-submit" id="submitBtn">📨 提交报备</button>
+    </form>
+    <div id="toastMessage" class="toast">✅ 报备已提交</div>
+    <div class="footer-note">中国铁路南昌局集团公司九江桥工段</div>
+</div>
+
+<script>
+// 使用 IIFE + ES5 语法确保兼容性
+(function() {
+    'use strict';
+
+    // 配置
+    var CONFIG = {
+        dingWebhook: 'https://oapi.dingtalk.com/robot/send?access_token=b2ccb8e7bba75a6a234ac8343488dcd66b39da2dc23ae4307a2e0e2b567f13e5',
+        pushplusGroupCode: '20260713',
+        pushplusTokens: [],
+        proxyUrl: 'https://dingtalk-proxy.netlify.app/.netlify/functions',
+        locationTimeout: 15000,
+        enableHighAccuracy: true
+    };
+
+    function getPushPlusTargets() {
+        var targets = [];
+        if (CONFIG.pushplusGroupCode && CONFIG.pushplusGroupCode.trim()) {
+            targets.push({ token: CONFIG.pushplusGroupCode.trim(), type: '群组', name: '九江桥工段通知群' });
+        }
+        if (CONFIG.pushplusTokens && CONFIG.pushplusTokens.length > 0) {
+            CONFIG.pushplusTokens.forEach(function(token, index) {
+                if (token && token.trim()) {
+                    targets.push({ token: token.trim(), type: '个人', name: '管理员' + (index + 1) });
+                }
+            });
+        }
+        return targets;
+    }
+
+    // DOM元素
+    var form = document.getElementById('reportForm');
+    var toast = document.getElementById('toastMessage');
+    var fileInput = document.getElementById('certFile');
+    var fileStatus = document.getElementById('fileStatus');
+    var uploadBox = document.getElementById('uploadBox');
+    var submitBtn = document.getElementById('submitBtn');
+    var successOverlay = document.getElementById('successOverlay');
+    var pushDesc = document.getElementById('pushDesc');
+    var purposeOtherInput = document.getElementById('purposeOther');
+    var adminAreaInput = document.getElementById('adminArea');
+    var btnLocate = document.getElementById('btnLocate');
+    var locationStatus = document.getElementById('locationStatus');
+    var mapModal = document.getElementById('mapModal');
+    var mapIframe = document.getElementById('mapIframe');
+    var btnCloseMap = document.getElementById('btnCloseMap');
+    var btnAutoLocate = document.getElementById('btnAutoLocate');
+    var btnConfirmLocation = document.getElementById('btnConfirmLocation');
+    var mapMarkerInfo = document.getElementById('mapMarkerInfo');
+
+    var locationData = { latitude: null, longitude: null, accuracy: null, address: null, timestamp: null };
+    var mapSelectedLocation = { latitude: null, longitude: null, address: null };
+
+    var isWechat = /MicroMessenger/i.test(navigator.userAgent);
+    var isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+    var isAndroid = /Android/i.test(navigator.userAgent);
+
+    // 文件上传
+    fileInput.addEventListener('change', function() {
+        if (this.files && this.files.length > 0) {
+            var file = this.files[0];
+            var sizeKB = (file.size / 1024).toFixed(1);
+            var sizeMB = (file.size / (1024 * 1024)).toFixed(1);
+            var sizeText = sizeKB > 1024 ? sizeMB + ' MB' : sizeKB + ' KB';
+            fileStatus.textContent = '\u2705 已选: ' + file.name + ' (' + sizeText + ')';
+            fileStatus.style.color = '#1a6e3a';
+        } else {
+            fileStatus.textContent = '未选择文件（选填）';
+            fileStatus.style.color = '#9aabb8';
+        }
+    });
+
+    uploadBox.addEventListener('click', function(e) {
+        if (e.target.tagName !== 'INPUT') fileInput.click();
+    });
+
+    // Toast
+    var toastTimer = null;
+    function showToast(msg, isError) {
+        toast.textContent = msg;
+        toast.className = 'toast show' + (isError ? ' error' : '');
+        if (toastTimer) clearTimeout(toastTimer);
+        toastTimer = setTimeout(function() { toast.classList.remove('show'); }, 5000);
+    }
+
+    function showLocationStatus(type, message) {
+        locationStatus.className = 'location-status show ' + type;
+        locationStatus.innerHTML = '<span class="status-icon"></span>' + message;
+        setTimeout(function() { locationStatus.className = 'location-status'; }, 5000);
+    }
+
+    // 地图弹窗
+    function buildMapUrl(lat, lng) {
+        var url = 'https://uri.amap.com/marker?callnative=1';
+        if (lat && lng) url += '&position=' + lng + ',' + lat + '&name=当前位置';
+        return url;
+    }
+
+    function openMapModal(presetLat, presetLng) {
+        var mapUrl;
+        if (presetLat && presetLng) {
+            mapUrl = buildMapUrl(presetLat, presetLng);
+        } else {
+            mapUrl = 'https://uri.amap.com/marker?position=115.97,29.71&name=请选择位置&callnative=1';
+        }
+        mapIframe.src = mapUrl;
+        mapModal.classList.add('show');
+        document.body.style.overflow = 'hidden';
+        mapSelectedLocation.latitude = presetLat || null;
+        mapSelectedLocation.longitude = presetLng || null;
+        mapSelectedLocation.address = null;
+        if (presetLat && presetLng) {
+            mapMarkerInfo.textContent = '\uD83D\uDCCD GPS：' + presetLat.toFixed(6) + ', ' + presetLng.toFixed(6);
+        } else {
+            mapMarkerInfo.textContent = '\uD83D\uDCA1 拖动地图或点击自动定位';
+        }
+        mapMarkerInfo.classList.add('show');
+        btnAutoLocate.className = 'btn-auto-locate';
+        btnAutoLocate.innerHTML = '\uD83D\uDCCD 自动定位';
+    }
+
+    function closeMapModal() {
+        mapModal.classList.remove('show');
+        document.body.style.overflow = '';
+        mapIframe.src = '';
+        mapMarkerInfo.classList.remove('show');
+    }
+
+    function confirmMapLocation() {
+        if (mapSelectedLocation.latitude && mapSelectedLocation.longitude) {
+            reverseGeocodeAndFill(mapSelectedLocation.latitude, mapSelectedLocation.longitude);
+        } else {
+            showToast('\u26A0\uFE0F 请先点击"自动定位"或在地图上选择位置', true);
+        }
+    }
+
+    function autoLocateInMap() {
+        if (!navigator.geolocation) {
+            showToast('\u26A0\uFE0F 浏览器不支持定位功能', true);
+            return;
+        }
+        btnAutoLocate.className = 'btn-auto-locate locating';
+        btnAutoLocate.innerHTML = '\u23F3 定位中...';
+        mapMarkerInfo.textContent = '\uD83D\uDD04 正在获取GPS位置...';
+        mapMarkerInfo.classList.add('show');
+
+        var options = { enableHighAccuracy: CONFIG.enableHighAccuracy, timeout: CONFIG.locationTimeout, maximumAge: 60000 };
+        navigator.geolocation.getCurrentPosition(
+            function(position) {
+                var lat = position.coords.latitude;
+                var lng = position.coords.longitude;
+                var accuracy = position.coords.accuracy;
+                mapSelectedLocation.latitude = lat;
+                mapSelectedLocation.longitude = lng;
+                locationData.latitude = lat;
+                locationData.longitude = lng;
+                locationData.accuracy = accuracy;
+                locationData.timestamp = position.timestamp;
+                mapIframe.src = buildMapUrl(lat, lng);
+                mapMarkerInfo.textContent = '\uD83D\uDCCD GPS：' + lat.toFixed(6) + ', ' + lng.toFixed(6) + ' (精度\u00B1' + accuracy.toFixed(1) + 'm)';
+                mapMarkerInfo.classList.add('show');
+                btnAutoLocate.className = 'btn-auto-locate';
+                btnAutoLocate.innerHTML = '\uD83D\uDCCD 重新定位';
+                reverseGeocodeInMap(lat, lng);
+            },
+            function(error) {
+                var msg = '定位失败';
+                switch(error.code) {
+                    case error.PERMISSION_DENIED: msg = '定位权限被拒绝'; break;
+                    case error.POSITION_UNAVAILABLE: msg = '位置信息不可用'; break;
+                    case error.TIMEOUT: msg = '定位超时'; break;
+                }
+                mapMarkerInfo.textContent = '\u26A0\uFE0F ' + msg + '，请手动输入地址';
+                mapMarkerInfo.classList.add('show');
+                btnAutoLocate.className = 'btn-auto-locate';
+                btnAutoLocate.innerHTML = '\uD83D\uDCCD 重试定位';
+                showToast('\u26A0\uFE0F ' + msg, true);
+            },
+            options
+        );
+    }
+
+    function reverseGeocodeInMap(lat, lng) {
+        var url = 'https://nominatim.openstreetmap.org/reverse?format=json&lat=' + lat + '&lon=' + lng + '&zoom=18&addressdetails=1';
+        fetch(url, { headers: { 'Accept-Language': 'zh-CN', 'User-Agent': 'DroneReportApp/1.0' } })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            var address = extractAddress(data);
+            if (address) {
+                mapSelectedLocation.address = address;
+                mapMarkerInfo.textContent = '\uD83D\uDCCD ' + address;
+                mapMarkerInfo.classList.add('show');
             }
-            to {
-                opacity: 1;
-                transform: translateY(0);
+        }).catch(function() {});
+    }
+
+    function reverseGeocodeAndFill(lat, lng) {
+        mapMarkerInfo.textContent = '\uD83D\uDD04 正在解析地址...';
+        mapMarkerInfo.classList.add('show');
+        var url = 'https://nominatim.openstreetmap.org/reverse?format=json&lat=' + lat + '&lon=' + lng + '&zoom=18&addressdetails=1';
+        fetch(url, { headers: { 'Accept-Language': 'zh-CN', 'User-Agent': 'DroneReportApp/1.0' } })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            var address = extractAddress(data);
+            if (address) {
+                locationData.address = address;
+                locationData.latitude = lat;
+                locationData.longitude = lng;
+                adminAreaInput.value = address;
+                btnLocate.className = 'btn-locate success';
+                mapMarkerInfo.textContent = '\u2705 ' + address;
+                showLocationStatus('success', '\u2705 位置已确认：' + address);
+                setTimeout(function() { closeMapModal(); }, 800);
+            } else {
+                locationData.address = null;
+                locationData.latitude = lat;
+                locationData.longitude = lng;
+                adminAreaInput.value = '';
+                adminAreaInput.placeholder = '请手动输入附近村庄名称';
+                mapMarkerInfo.textContent = '\u26A0\uFE0F 无法解析地址，请手动输入';
+                showLocationStatus('info', '\u26A0\uFE0F GPS坐标已记录，请手动填写地名');
+                adminAreaInput.focus();
             }
+        }).catch(function() {
+            locationData.latitude = lat;
+            locationData.longitude = lng;
+            locationData.address = null;
+            adminAreaInput.value = '';
+            adminAreaInput.placeholder = '请手动输入附近村庄名称';
+            mapMarkerInfo.textContent = '\u26A0\uFE0F 网络异常，请手动输入地址';
+            showLocationStatus('info', '\u26A0\uFE0F GPS坐标已记录，请手动填写地名');
+            adminAreaInput.focus();
+        });
+    }
+
+    function extractAddress(data) {
+        var address = '';
+        if (data && data.address) {
+            var addr = data.address, parts = [];
+            if (addr.province || addr.state) { var p = (addr.province || addr.state || '').replace(/省|市|自治区|特别行政区/g, ''); if (p) parts.push(p); }
+            if (addr.city || addr.prefecture) { var c = (addr.city || addr.prefecture || '').replace(/市|自治州|地区/g, ''); if (c) parts.push(c); }
+            if (addr.county || addr.district) { var co = (addr.county || addr.district || '').replace(/区|县|县级市/g, ''); if (co) parts.push(co); }
+            if (addr.town || addr.township) { var t = (addr.town || addr.township || '').replace(/镇|乡|街道/g, ''); if (t) parts.push(t); }
+            if (addr.village || addr.hamlet || addr.suburb || addr.neighbourhood) { var v = (addr.village || addr.hamlet || addr.suburb || addr.neighbourhood || ''); if (v) parts.push(v); }
+            address = parts.join('');
         }
-        
-        .optional-tag {
-            font-size: 12px;
-            color: #9aabb8;
-            background: #f0f3f7;
-            padding: 0 10px;
-            border-radius: 20px;
-            font-weight: 400;
-            margin-left: 6px;
+        if (!address && data && data.display_name) address = data.display_name;
+        if (address) { address = address.replace(/\s+/g, '').replace(/^\d+,?\s*/, ''); }
+        return (address && address.length > 2) ? address : '';
+    }
+
+    // 按钮事件
+    btnLocate.addEventListener('click', function() {
+        if (locationData.latitude && locationData.longitude) {
+            openMapModal(locationData.latitude, locationData.longitude);
+        } else {
+            openMapModal(null, null);
         }
-        
-        .success-overlay {
-            display: none;
-            text-align: center;
-            padding: 30px 20px;
-            background: #f0faf5;
-            border-radius: 12px;
-            border: 2px solid #2d7a4f;
-            margin-bottom: 18px;
+    });
+    btnCloseMap.addEventListener('click', closeMapModal);
+    btnAutoLocate.addEventListener('click', autoLocateInMap);
+    btnConfirmLocation.addEventListener('click', confirmMapLocation);
+
+    // 时间格式化
+    function formatDateTime(dtStr) {
+        if (!dtStr) return '未填写';
+        try {
+            var d = new Date(dtStr);
+            if (isNaN(d.getTime())) return dtStr;
+            return d.getFullYear() + '年' + String(d.getMonth() + 1).padStart(2, '0') + '月' + String(d.getDate()).padStart(2, '0') + '日 ' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+        } catch(e) {
+            return dtStr;
         }
-        
-        .success-overlay.show {
-            display: block;
-            animation: fadeInUp 0.4s ease;
+    }
+
+    function getCurrentFormattedTime() {
+        return formatDateTime(new Date().toISOString());
+    }
+
+    // 推送函数
+    function sendDingTalk(webhook, content) {
+        var payload = { msgtype: 'text', text: { content: content } };
+        var url = CONFIG.proxyUrl + '/dingtalk?webhook=' + encodeURIComponent(webhook);
+        return fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
+        .then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+        .then(function(r) {
+            if (r && r.errcode === 0) return { success: true, channel: '钉钉' };
+            throw new Error(r && r.errmsg ? r.errmsg : '异常');
+        }).catch(function(e) { return { success: false, channel: '钉钉', error: e.message }; });
+    }
+
+    function sendPushPlusToAll(title, content) {
+        var targets = getPushPlusTargets();
+        if (targets.length === 0) {
+            return Promise.resolve({ success: true, skipped: true, channel: '微信', totalTargets: 0, successCount: 0, failCount: 0, details: [] });
         }
-        
-        .success-overlay .icon {
-            font-size: 48px;
-            margin-bottom: 10px;
+        var proms = targets.map(function(t) {
+            var p = { token: t.token, title: title, content: content, template: 'html' };
+            return fetch(CONFIG.proxyUrl + '/pushplus', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(p) })
+            .then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+            .then(function(r) {
+                if (r && r.code === 200) return { success: true, target: t, response: r };
+                throw new Error(r && r.msg ? r.msg : '异常');
+            }).catch(function(e) { return { success: false, target: t, error: e.message }; });
+        });
+        return Promise.all(proms).then(function(results) {
+            var sc = results.filter(function(r) { return r.success; }).length;
+            var fc = results.filter(function(r) { return !r.success; }).length;
+            return { success: sc > 0, skipped: false, channel: '微信', totalTargets: targets.length, successCount: sc, failCount: fc, details: results };
+        });
+    }
+
+    // 用途选择
+    var purposeRadios = document.querySelectorAll('input[name="purpose"]');
+    purposeRadios.forEach(function(r) {
+        r.addEventListener('change', function() {
+            if (this.value === '其他') { purposeOtherInput.style.display = 'block'; purposeOtherInput.focus(); }
+            else { purposeOtherInput.style.display = 'none'; purposeOtherInput.value = ''; }
+        });
+    });
+
+    // 默认时间
+    function setDefaultTimes() {
+        var now = new Date();
+        var tomorrow = new Date(now.getTime() + 86400000);
+        function f(d) {
+            return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0') + 'T' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
         }
-        
-        .success-overlay .title {
-            font-size: 20px;
-            font-weight: 700;
-            color: #2d7a4f;
+        var s = document.getElementById('workStart');
+        var e = document.getElementById('workEnd');
+        if (!s.value) s.value = f(now);
+        if (!e.value) e.value = f(tomorrow);
+    }
+    setDefaultTimes();
+
+    // 输入限制
+    document.getElementById('idNumber').addEventListener('input', function() {
+        this.value = this.value.replace(/[^\dXx]/g, '').toUpperCase();
+        if (this.value.length > 18) this.value = this.value.slice(0, 18);
+    });
+    document.getElementById('phone').addEventListener('input', function() {
+        this.value = this.value.replace(/[^\d]/g, '');
+        if (this.value.length > 11) this.value = this.value.slice(0, 11);
+    });
+    ['flightHeightMin', 'flightHeightMax', 'railDistanceMin', 'railDistanceMax'].forEach(function(id) {
+        var inp = document.getElementById(id);
+        if (!inp) return;
+        inp.addEventListener('input', function() {
+            this.value = this.value.replace(/[^\d.]/g, '');
+            var parts = this.value.split('.');
+            if (parts.length > 2) this.value = parts[0] + '.' + parts.slice(1).join('');
+        });
+    });
+
+    // 表单提交
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        var unit = document.getElementById('unit').value.trim();
+        var name = document.getElementById('fullName').value.trim();
+        var idNum = document.getElementById('idNumber').value.trim();
+        var phone = document.getElementById('phone').value.trim();
+        var brand = document.getElementById('droneBrand').value.trim();
+        var model = document.getElementById('droneModel').value.trim();
+        var area = document.getElementById('flightArea').value;
+        var locationDetail = document.getElementById('locationDetail').value.trim();
+        var adminArea = document.getElementById('adminArea').value.trim();
+        var purposeRadio = document.querySelector('input[name="purpose"]:checked');
+        var purposeOther = document.getElementById('purposeOther').value.trim();
+        var workStart = document.getElementById('workStart').value;
+        var workEnd = document.getElementById('workEnd').value;
+        var fhMin = document.getElementById('flightHeightMin').value.trim();
+        var fhMax = document.getElementById('flightHeightMax').value.trim();
+        var rdMin = document.getElementById('railDistanceMin').value.trim();
+        var rdMax = document.getElementById('railDistanceMax').value.trim();
+        var certCode = document.getElementById('certCode').value.trim();
+
+        if (!unit || !name || !idNum || !phone || !brand || !model) { showToast('请完整填写所有带 * 号的必填项', true); return; }
+        if (idNum.length < 15 || idNum.length > 18) { showToast('请填写有效的身份证号码', true); return; }
+        if (!/^\d{11}$/.test(phone)) { showToast('请填写正确的11位手机号', true); return; }
+        if (!area) { showToast('请选择飞行区域铁路线路', true); return; }
+        if (!adminArea) { showToast('请填写飞行行政区域（附近村庄）', true); return; }
+        if (!purposeRadio) { showToast('请选择飞行用途', true); return; }
+        if (!workStart || !workEnd) { showToast('请设置作业起止时间', true); return; }
+        if (new Date(workStart) >= new Date(workEnd)) { showToast('结束时间必须晚于开始时间', true); return; }
+        if (!fhMin || !fhMax) { showToast('请填写飞行高度区间', true); return; }
+        if (parseFloat(fhMin) > parseFloat(fhMax)) { showToast('最高高度应大于最低高度', true); return; }
+        if (!rdMin || !rdMax) { showToast('请填写距离铁路距离区间', true); return; }
+        if (parseFloat(rdMin) > parseFloat(rdMax)) { showToast('最远距离应大于最近距离', true); return; }
+        if (!certCode) { showToast('请填写操作证件编码', true); return; }
+
+        var purpose = purposeRadio.value;
+        if (purpose === '其他' && purposeOther) purpose += '（' + purposeOther + '）';
+
+        var dc = '【无人机飞行报备通知】\n\n';
+        dc += '📋 申请单位：' + unit + '\n';
+        dc += '👤 申请人：' + name + '\n';
+        dc += '🆔 身份证号：' + idNum + '\n';
+        dc += '📱 联系电话：' + phone + '\n';
+        dc += '🚁 无人机品牌：' + brand + '\n';
+        dc += '🔧 型号/编号：' + model + '\n';
+        dc += '🛤️ 铁路线路：' + area + '\n';
+        if (locationDetail) dc += '📍 地点里程：' + locationDetail + '\n';
+        dc += '🏘️ 行政区域：' + adminArea + '\n';
+        if (locationData.latitude && locationData.longitude) {
+            dc += '🗺️ GPS：' + locationData.latitude.toFixed(6) + ', ' + locationData.longitude.toFixed(6);
+            if (locationData.accuracy) dc += ' (精度±' + locationData.accuracy.toFixed(1) + 'm)';
+            dc += '\n';
         }
-        
-        .success-overlay .desc {
-            font-size: 14px;
-            color: #5a6a7a;
-            margin-top: 6px;
-            line-height: 1.6;
+        dc += '🎯 用途：' + purpose + '\n';
+        dc += '⏰ 时间：' + formatDateTime(workStart) + ' 至 ' + formatDateTime(workEnd) + '\n';
+        dc += '📏 高度：' + fhMin + 'm ~ ' + fhMax + 'm\n';
+        dc += '📐 距离：' + rdMin + 'm ~ ' + rdMax + 'm\n';
+        dc += '📝 证件：' + certCode + '\n';
+        dc += '\n⏰ 报备：' + getCurrentFormattedTime();
+        dc += '\n📱 环境：' + (isWechat ? '微信' : (isIOS ? 'iOS' : (isAndroid ? 'Android' : 'PC')));
+        if (fileInput.files && fileInput.files.length > 0) dc += '\n📎 照片：' + fileInput.files[0].name;
+        dc += '\n\n⚠️ 请24小时内核实并联系确认。';
+
+        var pc = '<h2 style="color:#c0392b;">🚁 无人机飞行报备通知</h2>';
+        pc += '<table style="width:100%;border-collapse:collapse;font-size:14px;">';
+        pc += '<tr><td style="padding:8px;border:1px solid #eee;background:#f5f5f5;"><strong>📋 单位</strong></td><td style="padding:8px;border:1px solid #eee;">' + unit + '</td></tr>';
+        pc += '<tr><td style="padding:8px;border:1px solid #eee;background:#f5f5f5;"><strong>👤 申请人</strong></td><td style="padding:8px;border:1px solid #eee;">' + name + '</td></tr>';
+        pc += '<tr><td style="padding:8px;border:1px solid #eee;background:#f5f5f5;"><strong>📱 电话</strong></td><td style="padding:8px;border:1px solid #eee;color:#c0392b;font-weight:bold;">' + phone + '</td></tr>';
+        pc += '<tr><td style="padding:8px;border:1px solid #eee;background:#f5f5f5;"><strong>🚁 品牌</strong></td><td style="padding:8px;border:1px solid #eee;">' + brand + '</td></tr>';
+        pc += '<tr><td style="padding:8px;border:1px solid #eee;background:#f5f5f5;"><strong>🔧 型号</strong></td><td style="padding:8px;border:1px solid #eee;">' + model + '</td></tr>';
+        pc += '<tr><td style="padding:8px;border:1px solid #eee;background:#f5f5f5;"><strong>🛤️ 线路</strong></td><td style="padding:8px;border:1px solid #eee;color:#c0392b;">' + area + '</td></tr>';
+        if (locationDetail) pc += '<tr><td style="padding:8px;border:1px solid #eee;background:#f5f5f5;"><strong>📍 里程</strong></td><td style="padding:8px;border:1px solid #eee;">' + locationDetail + '</td></tr>';
+        pc += '<tr><td style="padding:8px;border:1px solid #eee;background:#f5f5f5;"><strong>🏘️ 区域</strong></td><td style="padding:8px;border:1px solid #eee;">' + adminArea + '</td></tr>';
+        if (locationData.latitude && locationData.longitude) {
+            pc += '<tr><td style="padding:8px;border:1px solid #eee;background:#f5f5f5;"><strong>🗺️ GPS</strong></td><td style="padding:8px;border:1px solid #eee;">' + locationData.latitude.toFixed(6) + ', ' + locationData.longitude.toFixed(6) + '</td></tr>';
         }
-        
-        .success-overlay .btn-continue {
-            margin-top: 14px;
-            padding: 10px 30px;
-            background: #c0392b;
-            color: #fff;
-            border: none;
-            border-radius: 30px;
-            font-size: 16px;
-            cursor: pointer;
-            touch-action: manipulation;
-            -webkit-appearance: none;
-            appearance: none;
-        }
-        
-        .success-overlay .btn-continue:active {
-            transform: scale(.95);
-        }
-        
-        .success-notice {
-            background: #fff8e1;
-            border-left: 4px solid #f39c12;
-            border-radius: 6px;
-            padding: 14px 16px;
-            margin-top: 16px;
-            text-align: left;
-            font-size: 14px;
-            color: #5a4a47;
-            line-height: 1.8;
-        }
-        
-        .success-notice strong {
-            color: #c0392b;
-        }
-        
-        .success-notice .highlight {
-            color: #e67e22;
-            font-weight: 700;
-        }
-        
-        .datetime-group {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            align-items: center;
-        }
-        
-        .datetime-group .form-group {
-            flex: 1 1 160px;
-            margin-bottom: 0;
-        }
-        
-        .datetime-group .range-sep {
-            font-size: 16px;
-            color: #7a8aa3;
-            font-weight: 600;
-            padding: 0 2px;
-            flex-shrink: 0;
-        }
-        
-        .datetime-group input[type="datetime-local"] {
-            padding: 12px 14px;
-        }
-        
-        @supports (-webkit-touch-callout: none) {
-            input, select, textarea {
-                font-size: 16px !important;
+        pc += '<tr><td style="padding:8px;border:1px solid #eee;background:#f5f5f5;"><strong>🎯 用途</strong></td><td style="padding:8px;border:1px solid #eee;">' + purpose + '</td></tr>';
+        pc += '<tr><td style="padding:8px;border:1px solid #eee;background:#f5f5f5;"><strong>⏰ 时间</strong></td><td style="padding:8px;border:1px solid #eee;">' + formatDateTime(workStart) + '<br/>至 ' + formatDateTime(workEnd) + '</td></tr>';
+        pc += '<tr><td style="padding:8px;border:1px solid #eee;background:#f5f5f5;"><strong>📏 高度</strong></td><td style="padding:8px;border:1px solid #eee;">' + fhMin + 'm ~ ' + fhMax + 'm</td></tr>';
+        pc += '<tr><td style="padding:8px;border:1px solid #eee;background:#f5f5f5;"><strong>📐 距离</strong></td><td style="padding:8px;border:1px solid #eee;">' + rdMin + 'm ~ ' + rdMax + 'm</td></tr>';
+        pc += '<tr><td style="padding:8px;border:1px solid #eee;background:#f5f5f5;"><strong>📝 证件</strong></td><td style="padding:8px;border:1px solid #eee;">' + certCode + '</td></tr>';
+        pc += '</table>';
+        pc += '<p style="color:#999;margin-top:10px;">⏰ ' + getCurrentFormattedTime() + ' | 📱 ' + (isWechat ? '微信' : (isIOS ? 'iOS' : (isAndroid ? 'Android' : 'PC'))) + '</p>';
+        if (fileInput.files && fileInput.files.length > 0) pc += '<p style="color:#999;">📎 照片：' + fileInput.files[0].name + '</p>';
+        pc += '<div style="background:#fff3cd;padding:12px;border-left:4px solid #ffc107;margin-top:10px;"><strong style="color:#c0392b;">⚠️ 请24小时内核实并联系确认。</strong></div>';
+
+        submitBtn.classList.add('loading');
+        submitBtn.textContent = '⏳ 提交中...';
+        submitBtn.disabled = true;
+
+        var all = [sendDingTalk(CONFIG.dingWebhook, dc), sendPushPlusToAll('【无人机报备】' + name + ' - ' + unit + ' - ' + area, pc)];
+
+        Promise.all(all).then(function(results) {
+            var sc = 0, fc = 0, sch = [], fch = [];
+            results.forEach(function(r) {
+                if (r.success) {
+                    sc++;
+                    if (r.channel === '微信' && r.successTargets) sch.push('微信(' + r.successCount + '人)');
+                    else if (!r.skipped) sch.push(r.channel);
+                } else {
+                    fc++;
+                    if (r.channel) fch.push(r.channel);
+                }
+            });
+            if (sc > 0) {
+                form.style.display = 'none';
+                successOverlay.classList.add('show');
+                pushDesc.textContent = '已发送至：' + sch.join('、') + (fch.length > 0 ? '\n(部分失败：' + fch.join('、') + ')' : '');
+                showToast('✅ 报备成功！', false);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                form.reset();
+                fileStatus.textContent = '未选择文件';
+                fileStatus.style.color = '#9aabb8';
+                purposeOtherInput.style.display = 'none';
+                setDefaultTimes();
+                btnLocate.className = 'btn-locate';
+                locationData = { latitude: null, longitude: null, accuracy: null, address: null, timestamp: null };
+            } else {
+                showToast('推送失败，请重试', true);
+                submitBtn.classList.remove('loading');
+                submitBtn.textContent = '📨 重新提交';
+                submitBtn.disabled = false;
             }
-       
+        }).catch(function() {
+            showToast('提交异常，请重试', true);
+            submitBtn.classList.remove('loading');
+            submitBtn.textContent = '📨 重新提交';
+            submitBtn.disabled = false;
+        });
+    });
+
+    // iOS/微信兼容
+    if (isIOS) {
+        document.addEventListener('focusin', function(e) {
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT' || e.target.tagName === 'TEXTAREA') {
+                setTimeout(function() { e.target.scrollIntoViewIfNeeded(true); }, 300);
+            }
+        });
+    }
+    if (isWechat) {
+        document.addEventListener('WeixinJSBridgeReady', function() {
+            if (typeof WeixinJSBridge !== 'undefined') WeixinJSBridge.call('hideOptionMenu');
+        });
+        document.addEventListener('touchmove', function(e) {
+            if (e.target === document.documentElement || e.target === document.body) e.preventDefault();
+        }, { passive: false });
+    }
+
+    console.log('无人机报备系统 v3.0 初始化完成');
+})();
+</script>
+</body>
+</html>
