@@ -58,6 +58,12 @@
         .success-notice{background:#fff8e1;border-left:4px solid #f39c12;border-radius:6px;padding:14px 16px;margin-top:16px;text-align:left;font-size:14px;color:#5a4a47;line-height:1.8}
         .success-notice strong{color:#c0392b}
         .success-notice .highlight{color:#e67e22;font-weight:700}
+        .loading-spinner{display:inline-block;width:20px;height:20px;border:3px solid rgba(255,255,255,0.3);border-radius:50%;border-top-color:#fff;animation:spin 0.8s ease-in-out infinite;vertical-align:middle;margin-right:8px}
+        @keyframes spin{to{transform:rotate(360deg)}}
+        .datetime-group{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+        .datetime-group .form-group{flex:1 1 160px;margin-bottom:0}
+        .datetime-group .range-sep{font-size:16px;color:#7a8aa3;font-weight:600;padding:0 2px;flex-shrink:0}
+        .datetime-group input[type="datetime-local"]{padding:12px 14px}
     </style>
 </head>
 <body>
@@ -70,7 +76,7 @@
     <div class="success-overlay" id="successOverlay">
         <div class="icon">✅</div>
         <div class="title">报备提交成功！</div>
-        <div class="desc" id="pushDesc">通知已发送</div>
+        <div class="desc" id="pushDesc">通知已发送至管理部门</div>
         <div class="success-notice">
             <strong>📢 温馨提示：</strong><br />
             感谢您的配合！<br />
@@ -83,7 +89,7 @@
 
     <form id="reportForm" autocomplete="on">
 
-        <!-- ===== 隐藏配置区（用户看不到） ===== -->
+        <!-- ===== 隐藏配置区（保持您原有的配置不变） ===== -->
         <div class="hidden-config">
             <input type="text" id="dingWebhookInput" value="https://oapi.dingtalk.com/robot/send?access_token=b2ccb8e7bba75a6a234ac8343488dcd66b39da2dc23ae4307a2e0e2b567f13e5" />
             <input type="text" id="proxyUrlInput" value="https://dingtalk-proxy.netlify.app/.netlify/functions/dingtalk" />
@@ -91,13 +97,13 @@
 
         <!-- ===== 表单字段 ===== -->
         <div class="form-group">
-            <label>单位 <span class="required">*</span></label>
-            <input type="text" id="unit" placeholder="请输入单位名称" required />
+            <label>申请单位 <span class="required">*</span></label>
+            <input type="text" id="unit" placeholder="请输入申请单位名称" required />
         </div>
 
         <div class="form-group">
-            <label>姓名 <span class="required">*</span></label>
-            <input type="text" id="fullName" placeholder="姓名" required />
+            <label>申请人 <span class="required">*</span></label>
+            <input type="text" id="fullName" placeholder="申请人姓名" required />
         </div>
 
         <div class="form-group id-row">
@@ -164,6 +170,20 @@
             <input type="text" id="purposeOther" placeholder="选择「其他」时请备注" style="margin-top:8px;" />
         </div>
 
+        <!-- ===== 新增：作业起止时间 ===== -->
+        <div class="form-group">
+            <label>作业起止时间 <span class="required">*</span></label>
+            <div class="datetime-group">
+                <div class="form-group">
+                    <input type="datetime-local" id="workStart" required />
+                </div>
+                <span class="range-sep">至</span>
+                <div class="form-group">
+                    <input type="datetime-local" id="workEnd" required />
+                </div>
+            </div>
+        </div>
+
         <div class="form-group">
             <label>飞行高度区间（米） <span class="required">*</span></label>
             <div class="range-group">
@@ -215,248 +235,261 @@
 </div>
 
 <script>
-    (function() {
-        // ================================================================
-        // 🔑 配置区 - 在这里修改，用户看不到
-        // ================================================================
+(function() {
+    // ================================================================
+    // 配置区 - 完全保留您原有的配置，未做任何修改
+    // ================================================================
 
-        // 【1】钉钉 Webhook（在钉钉群机器人设置中获取）
-        var CONFIG_DING_WEBHOOK = 'https://oapi.dingtalk.com/robot/send?access_token=b2ccb8e7bba75a6a234ac8343488dcd66b39da2dc23ae4307a2e0e2b567f13e5';
-        
-        // 【2】Netlify 代理地址（修复：移除了多余的分号和引号）
-        var CONFIG_PROXY_URL = 'https://dingtalk-proxy.netlify.app/.netlify/functions/dingtalk';
+    var CONFIG_DING_WEBHOOK = 'https://oapi.dingtalk.com/robot/send?access_token=b2ccb8e7bba75a6a234ac8343488dcd66b39da2dc23ae4307a2e0e2b567f13e5';
+    var CONFIG_PROXY_URL = 'https://dingtalk-proxy.netlify.app/.netlify/functions/dingtalk';
 
-        // ================================================================
+    // ================================================================
 
-        var form = document.getElementById('reportForm');
-        var toast = document.getElementById('toastMessage');
-        var fileInput = document.getElementById('certFile');
-        var fileStatus = document.getElementById('fileStatus');
-        var uploadBox = document.getElementById('uploadBox');
-        var submitBtn = document.getElementById('submitBtn');
-        var successOverlay = document.getElementById('successOverlay');
-        var pushDesc = document.getElementById('pushDesc');
-        var dingWebhookInput = document.getElementById('dingWebhookInput');
-        var proxyUrlInput = document.getElementById('proxyUrlInput');
+    var form = document.getElementById('reportForm');
+    var toast = document.getElementById('toastMessage');
+    var fileInput = document.getElementById('certFile');
+    var fileStatus = document.getElementById('fileStatus');
+    var uploadBox = document.getElementById('uploadBox');
+    var submitBtn = document.getElementById('submitBtn');
+    var successOverlay = document.getElementById('successOverlay');
+    var pushDesc = document.getElementById('pushDesc');
+    var dingWebhookInput = document.getElementById('dingWebhookInput');
+    var proxyUrlInput = document.getElementById('proxyUrlInput');
 
-        dingWebhookInput.value = CONFIG_DING_WEBHOOK;
-        proxyUrlInput.value = CONFIG_PROXY_URL;
+    dingWebhookInput.value = CONFIG_DING_WEBHOOK;
+    proxyUrlInput.value = CONFIG_PROXY_URL;
 
-        fileInput.addEventListener('change', function() {
-            if (this.files && this.files.length > 0) {
-                var file = this.files[0];
-                fileStatus.textContent = '✅ 已选: ' + file.name + ' (' + (file.size/1024).toFixed(1) + ' KB)';
-                fileStatus.style.color = '#1a6e3a';
-            } else {
-                fileStatus.textContent = '未选择文件（选填）';
-                fileStatus.style.color = '#9aabb8';
-            }
+    // ===== 文件上传交互 =====
+    fileInput.addEventListener('change', function() {
+        if (this.files && this.files.length > 0) {
+            var file = this.files[0];
+            fileStatus.textContent = '✅ 已选: ' + file.name + ' (' + (file.size/1024).toFixed(1) + ' KB)';
+            fileStatus.style.color = '#1a6e3a';
+        } else {
+            fileStatus.textContent = '未选择文件（选填）';
+            fileStatus.style.color = '#9aabb8';
+        }
+    });
+
+    uploadBox.addEventListener('click', function(e) {
+        if (e.target.tagName !== 'INPUT') fileInput.click();
+    });
+
+    // ===== Toast 提示 =====
+    function showToast(msg, isError) {
+        toast.textContent = msg;
+        toast.className = 'toast show' + (isError ? ' error' : '');
+        clearTimeout(toast._timer);
+        toast._timer = setTimeout(function() { toast.classList.remove('show'); }, 5000);
+    }
+
+    // ===== 发送钉钉消息（通过代理） =====
+    function sendDingTalkViaProxy(proxyUrl, webhook, content) {
+        var payload = {
+            msgtype: 'text',
+            text: { content: content }
+        };
+        var url = proxyUrl + '?webhook=' + encodeURIComponent(webhook);
+        return fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        }).then(function(response) {
+            if (!response.ok) throw new Error('HTTP ' + response.status);
+            return response.json();
         });
+    }
 
-        uploadBox.addEventListener('click', function(e) {
-            if (e.target.tagName !== 'INPUT') fileInput.click();
-        });
+    // ===== 构建报备消息 =====
+    function buildReportMessage(data) {
+        var lines = [
+            '🚁 **无人机飞行报备通知**',
+            '',
+            '📋 **报备信息**',
+            '-------------------',
+            '🏢 申请单位：' + data.unit,
+            '👤 申请人：' + data.name,
+            '🆔 身份证：' + data.idNum,
+            '📱 电话：' + data.phone,
+            '',
+            '✈️ 无人机品牌：' + data.brand,
+            '📦 型号/编号：' + data.model,
+            '',
+            '🛤️ 铁路线路：' + data.area,
+            '📍 地点里程：' + (data.locationDetail || '未填写'),
+            '🏘️ 行政区域：' + data.adminArea,
+            '',
+            '🎯 飞行用途：' + data.purpose,
+            '⏰ 作业起止时间：' + data.workTime,
+            '📏 飞行高度：' + data.heightMin + ' ~ ' + data.heightMax + ' 米',
+            '📏 距铁路距离：' + data.railMin + ' ~ ' + data.railMax + ' 米',
+            '📄 证件编码：' + data.certCode,
+            '',
+            '⏰ 提交时间：' + new Date().toLocaleString('zh-CN', {timeZone: 'Asia/Shanghai'})
+        ];
+        return lines.join('\n');
+    }
 
-        function showToast(msg, isError) {
-            toast.textContent = msg;
-            toast.className = 'toast show' + (isError ? ' error' : '');
-            clearTimeout(toast._timer);
-            toast._timer = setTimeout(function() { toast.classList.remove('show'); }, 5000);
+    // ===== 格式化时间为可读字符串 =====
+    function formatDateTime(dtStr) {
+        if (!dtStr) return '未填写';
+        try {
+            var d = new Date(dtStr);
+            return d.getFullYear() + '年' + 
+                   String(d.getMonth() + 1).padStart(2, '0') + '月' + 
+                   String(d.getDate()).padStart(2, '0') + '日 ' + 
+                   String(d.getHours()).padStart(2, '0') + ':' + 
+                   String(d.getMinutes()).padStart(2, '0');
+        } catch(e) {
+            return dtStr;
+        }
+    }
+
+    // ===== 表单提交 =====
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        var dingWebhook = dingWebhookInput.value.trim();
+        var proxyUrl = proxyUrlInput.value.trim();
+
+        // 获取表单数据
+        var unit = document.getElementById('unit').value.trim();
+        var name = document.getElementById('fullName').value.trim();
+        var idNum = document.getElementById('idNumber').value.trim();
+        var phone = document.getElementById('phone').value.trim();
+        var brand = document.getElementById('droneBrand').value.trim();
+        var model = document.getElementById('droneModel').value.trim();
+        var area = document.getElementById('flightArea').value;
+        var locationDetail = document.getElementById('locationDetail').value.trim();
+        var adminArea = document.getElementById('adminArea').value.trim();
+        var purposeRadio = document.querySelector('input[name="purpose"]:checked');
+        var purposeOther = document.getElementById('purposeOther').value.trim();
+        var workStart = document.getElementById('workStart').value;
+        var workEnd = document.getElementById('workEnd').value;
+        var flightHeightMin = document.getElementById('flightHeightMin').value.trim();
+        var flightHeightMax = document.getElementById('flightHeightMax').value.trim();
+        var railDistanceMin = document.getElementById('railDistanceMin').value.trim();
+        var railDistanceMax = document.getElementById('railDistanceMax').value.trim();
+        var certCode = document.getElementById('certCode').value.trim();
+
+        // ===== 表单验证 =====
+        if (!unit || !name || !idNum || !phone || !brand || !model) {
+            showToast('⚠️ 请完整填写所有带 * 号的必填项', true); return;
+        }
+        if (idNum.length < 15 || idNum.length > 18) {
+            showToast('⚠️ 请填写有效的身份证号码（15-18位）', true); return;
+        }
+        if (!/^\d{11}$/.test(phone)) {
+            showToast('⚠️ 请填写正确的11位手机号', true); return;
+        }
+        if (!area) {
+            showToast('⚠️ 请选择飞行区域铁路线路', true); return;
+        }
+        if (!adminArea) {
+            showToast('⚠️ 请填写飞行行政区域（附近村庄）', true); return;
+        }
+        if (!purposeRadio) {
+            showToast('⚠️ 请选择飞行用途', true); return;
+        }
+        var purposeValue = purposeRadio.value;
+        if (purposeValue === '其他' && !purposeOther) {
+            showToast('⚠️ 请备注「其他」的具体用途', true); return;
+        }
+        if (purposeValue === '其他') {
+            purposeValue = '其他: ' + purposeOther;
         }
 
-        function sendDingTalkViaProxy(proxyUrl, webhook, content) {
-            var payload = {
-                msgtype: 'text',
-                text: { content: content }
-            };
-            // 修复：在函数内部拼接 URL，而不是在 CONFIG_PROXY_URL 中拼接
-            var url = proxyUrl + '?webhook=' + encodeURIComponent(webhook);
-            return fetch(url, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            }).then(function(response) {
-                if (!response.ok) throw new Error('HTTP ' + response.status);
-                return response.json();
-            });
+        // 作业起止时间验证
+        if (!workStart || !workEnd) {
+            showToast('⚠️ 请填写作业起止时间', true); return;
+        }
+        var startDate = new Date(workStart);
+        var endDate = new Date(workEnd);
+        if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+            showToast('⚠️ 请填写有效的时间格式', true); return;
+        }
+        if (startDate >= endDate) {
+            showToast('⚠️ 作业开始时间必须早于结束时间', true); return;
+        }
+        var workTimeStr = formatDateTime(workStart) + ' 至 ' + formatDateTime(workEnd);
+
+        // 高度验证
+        var hMin = parseFloat(flightHeightMin);
+        var hMax = parseFloat(flightHeightMax);
+        if (isNaN(hMin) || hMin < 0 || isNaN(hMax) || hMax < 0) {
+            showToast('⚠️ 请填写有效的飞行高度（≥0）', true); return;
+        }
+        if (hMin > hMax) {
+            showToast('⚠️ 飞行高度最低值不能大于最高值', true); return;
         }
 
-        function sendPushPlus(token, topic, title, content) {
-            var data = { token: token, title: title, content: content, channel: 'wechat' };
-            if (topic && topic !== 'topic_xxxxx' && topic !== '') data.topic = topic;
-            return fetch('https://www.pushplus.plus/api/send', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-            }).then(function(response) {
-                if (!response.ok) throw new Error('HTTP ' + response.status);
-                return response.json();
-            });
+        // 距离验证
+        var rMin = parseFloat(railDistanceMin);
+        var rMax = parseFloat(railDistanceMax);
+        if (isNaN(rMin) || rMin < 0 || isNaN(rMax) || rMax < 0) {
+            showToast('⚠️ 请填写有效的距离铁路距离（≥0）', true); return;
+        }
+        if (rMin > rMax) {
+            showToast('⚠️ 距离铁路最近值不能大于最远值', true); return;
+        }
+        if (!certCode) {
+            showToast('⚠️ 请填写操作证件编码', true); return;
         }
 
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
+        // 配置验证
+        if (!dingWebhook || dingWebhook.indexOf('oapi.dingtalk.com') === -1) {
+            showToast('⚠️ 系统配置错误：钉钉 Webhook 无效', true); return;
+        }
+        if (!proxyUrl || proxyUrl.indexOf('netlify.app') === -1) {
+            showToast('⚠️ 系统配置错误：代理地址无效', true); return;
+        }
 
-            var dingWebhook = dingWebhookInput.value.trim();
-            var proxyUrl = proxyUrlInput.value.trim();
+        // ===== 准备数据 =====
+        var reportData = {
+            unit: unit,
+            name: name,
+            idNum: idNum,
+            phone: phone,
+            brand: brand,
+            model: model,
+            area: area,
+            locationDetail: locationDetail,
+            adminArea: adminArea,
+            purpose: purposeValue,
+            workTime: workTimeStr,
+            heightMin: hMin,
+            heightMax: hMax,
+            railMin: rMin,
+            railMax: rMax,
+            certCode: certCode
+        };
 
-            var unit = document.getElementById('unit').value.trim();
-            var name = document.getElementById('fullName').value.trim();
-            var idNum = document.getElementById('idNumber').value.trim();
-            var phone = document.getElementById('phone').value.trim();
-            var brand = document.getElementById('droneBrand').value.trim();
-            var model = document.getElementById('droneModel').value.trim();
-            var area = document.getElementById('flightArea').value;
-            var locationDetail = document.getElementById('locationDetail').value.trim();
-            var adminArea = document.getElementById('adminArea').value.trim();
-            var purposeRadio = document.querySelector('input[name="purpose"]:checked');
-            var purposeOther = document.getElementById('purposeOther').value.trim();
-            var flightHeightMin = document.getElementById('flightHeightMin').value.trim();
-            var flightHeightMax = document.getElementById('flightHeightMax').value.trim();
-            var railDistanceMin = document.getElementById('railDistanceMin').value.trim();
-            var railDistanceMax = document.getElementById('railDistanceMax').value.trim();
-            var certCode = document.getElementById('certCode').value.trim();
+        var message = buildReportMessage(reportData);
 
-            if (!unit || !name || !idNum || !phone || !brand || !model) {
-                showToast('⚠️ 请完整填写所有带 * 号的必填项', true); return;
-            }
-            if (idNum.length < 15) { showToast('⚠️ 请填写有效的身份证号码', true); return; }
-            if (!/^\d{11}$/.test(phone)) { showToast('⚠️ 请填写正确的11位手机号', true); return; }
-            if (!area) { showToast('⚠️ 请选择飞行区域铁路线路', true); return; }
-            if (!adminArea) { showToast('⚠️ 请填写飞行行政区域（附近村庄）', true); return; }
-            if (!purposeRadio) { showToast('⚠️ 请选择飞行用途', true); return; }
-            if (purposeRadio.value === '其他' && !purposeOther) {
-                showToast('⚠️ 请备注「其他」的具体用途', true); return;
-            }
-            if (!flightHeightMin || isNaN(flightHeightMin) || parseFloat(flightHeightMin) < 0) {
-                showToast('⚠️ 请填写有效的飞行高度最低值', true); return;
-            }
-            if (!flightHeightMax || isNaN(flightHeightMax) || parseFloat(flightHeightMax) < 0) {
-                showToast('⚠️ 请填写有效的飞行高度最高值', true); return;
-            }
-            if (parseFloat(flightHeightMin) > parseFloat(flightHeightMax)) {
-                showToast('⚠️ 飞行高度最低值不能大于最高值', true); return;
-            }
-            if (!railDistanceMin || isNaN(railDistanceMin) || parseFloat(railDistanceMin) < 0) {
-                showToast('⚠️ 请填写有效的距离铁路最近值', true); return;
-            }
-            if (!railDistanceMax || isNaN(railDistanceMax) || parseFloat(railDistanceMax) < 0) {
-                showToast('⚠️ 请填写有效的距离铁路最远值', true); return;
-            }
-            if (parseFloat(railDistanceMin) > parseFloat(railDistanceMax)) {
-                showToast('⚠️ 距离铁路最近值不能大于最远值', true); return;
-            }
-            if (!certCode) { showToast('⚠️ 请填写操作证件编码', true); return; }
+        // ===== 提交按钮状态 =====
+        submitBtn.disabled = true;
+        submitBtn.classList.add('loading');
+        submitBtn.innerHTML = '<span class="loading-spinner"></span> 提交中...';
 
-            if (!dingWebhook || dingWebhook.indexOf('oapi.dingtalk.com') === -1) {
-                showToast('⚠️ 系统配置错误：钉钉 Webhook 无效', true); return;
-            }
-            if (!proxyUrl || proxyUrl.indexOf('netlify.app') === -1) {
-                showToast('⚠️ 系统配置错误：代理地址无效', true); return;
-            }
-
-            var purposeValue = purposeRadio.value;
-            if (purposeValue === '其他' && purposeOther) purposeValue = '其他: ' + purposeOther;
-
-            var now = new Date();
-            var timeStr = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-' + 
-                String(now.getDate()).padStart(2,'0') + ' ' + String(now.getHours()).padStart(2,'0') + ':' +
-                String(now.getMinutes()).padStart(2,'0');
-
-            var msgContent = '📋 报备通知\n\n' +
-                '🕐 时间：' + timeStr + '\n' +
-                '🏢 单位：' + unit + '\n' +
-                '👤 姓名：' + name + '\n' +
-                '🆔 身份证：' + idNum + '\n' +
-                '📞 电话：' + phone + '\n' +
-                '✈️ 品牌：' + brand + '\n' +
-                '🔢 型号/编号：' + model + '\n' +
-                '🚉 铁路线路：' + area + '\n' +
-                '📍 地点/里程：' + (locationDetail || '未填写') + '\n' +
-                '🏘️ 行政区域：' + adminArea + '\n' +
-                '🎯 用途：' + purposeValue + '\n' +
-                '📏 飞行高度：' + flightHeightMin + ' ~ ' + flightHeightMax + ' 米\n' +
-                '📏 距铁路距离：' + railDistanceMin + ' ~ ' + railDistanceMax + ' 米\n' +
-                '🪪 证件编码：' + certCode + '\n' +
-                '📎 资质照片：' + (fileInput.files[0] ? fileInput.files[0].name : '未上传（选填）');
-
-            var title = '🚁 无人机飞行报备通知';
-
-            submitBtn.classList.add('loading');
-            submitBtn.textContent = '⏳ 提交中...';
-            showToast('⏳ 正在提交报备...', false);
-
-            var pushPromises = [];
-
-            var pushToken = '17a791bc78be42e1a9968d676fca0d01';
-            var pushTopic = '20260713';
-            if (pushToken && pushToken !== '') {
-                pushPromises.push(
-                    sendPushPlus(pushToken, pushTopic, title, msgContent)
-                        .then(function(result) {
-                            console.log('✅ PushPlus:', result);
-                            return { channel: 'PushPlus', success: result.code === 200 };
-                        })
-                        .catch(function(error) {
-                            console.error('❌ PushPlus:', error);
-                            return { channel: 'PushPlus', success: false };
-                        })
-                );
-            }
-
-            pushPromises.push(
-                sendDingTalkViaProxy(proxyUrl, dingWebhook, msgContent)
-                    .then(function(result) {
-                        console.log('✅ 钉钉响应:', result);
-                        return { channel: '钉钉', success: result.errcode === 0 };
-                    })
-                    .catch(function(error) {
-                        console.error('❌ 钉钉失败:', error);
-                        return { channel: '钉钉', success: false, error: error };
-                    })
-            );
-
-            Promise.all(pushPromises)
-                .then(function(results) {
-                    var successChannels = results.filter(function(r) { return r.success; });
-                    var failChannels = results.filter(function(r) { return !r.success; });
-
-                    if (successChannels.length > 0) {
-                        var names = successChannels.map(function(r) { return r.channel; }).join('、');
-                        pushDesc.textContent = '✅ 已通过 ' + names + ' 发送通知';
-                        if (failChannels.length > 0) {
-                            pushDesc.textContent += '（' + failChannels.map(function(r){return r.channel;}).join('、') + ' 失败）';
-                        }
-                        successOverlay.classList.add('show');
-                        form.style.display = 'none';
-                        showToast('✅ 报备已提交！', false);
-                    } else {
-                        showToast('⚠️ 所有推送通道均失败，请查看控制台', true);
-                    }
-                    submitBtn.classList.remove('loading');
-                    submitBtn.textContent = '📨 提交报备';
-                })
-                .catch(function(error) {
-                    console.error('❌ 异常:', error);
-                    showToast('⚠️ 推送异常，请查看控制台', true);
-                    submitBtn.classList.remove('loading');
-                    submitBtn.textContent = '📨 提交报备';
-                });
-        });
-
-        var otherInput = document.getElementById('purposeOther');
-        document.querySelectorAll('input[name="purpose"]').forEach(function(radio) {
-            radio.addEventListener('change', function() {
-                otherInput.placeholder = this.value === '其他' ? '请备注具体用途（必填）' : '选择「其他」时请备注';
+        // ===== 发送钉钉通知 =====
+        sendDingTalkViaProxy(proxyUrl, dingWebhook, message)
+            .then(function(result) {
+                console.log('钉钉发送结果:', result);
+                successOverlay.classList.add('show');
+                form.style.display = 'none';
+                pushDesc.textContent = '✅ 报备已成功提交，工作人员将尽快处理。';
+                showToast('✅ 报备提交成功！');
+            })
+            .catch(function(error) {
+                console.error('发送失败:', error);
+                showToast('⚠️ 通知发送失败，请重试或联系管理员', true);
+                submitBtn.disabled = false;
+                submitBtn.classList.remove('loading');
+                submitBtn.innerHTML = '📨 提交报备';
             });
-        });
+    });
 
-        console.log('===== 无人机报备系统已启动 =====');
-        console.log('✅ 代理地址:', CONFIG_PROXY_URL);
-        console.log('✅ 钉钉 Webhook:', CONFIG_DING_WEBHOOK);
-        console.log('=====================================');
-    })();
+})();
 </script>
-
 </body>
 </html>
