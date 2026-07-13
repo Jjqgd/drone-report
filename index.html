@@ -22,40 +22,81 @@
         select:not([multiple]) { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239aabb8' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 40px; }
         input:focus, select:focus, textarea:focus { outline: none; border-color: #c0392b; box-shadow: 0 0 0 4px rgba(192,57,43,0.10); background: #ffffff; }
         input::placeholder, textarea::placeholder { color: #b0c0ce; font-size: 15px; }
+
+        /* ===== 定位按钮 ===== */
         .location-input-group { display: flex; gap: 8px; align-items: center; }
         .location-input-group input { flex: 1; }
-        .btn-locate { flex-shrink: 0; width: 50px; height: 50px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #fff; border: none; border-radius: 14px; font-size: 20px; cursor: pointer; touch-action: manipulation; -webkit-appearance: none; appearance: none; -webkit-user-select: none; user-select: none; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4); position: relative; overflow: hidden; }
-        .btn-locate::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent); transition: left 0.5s; }
-        .btn-locate:active { transform: scale(0.9); box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3); }
-        .btn-locate.locating { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); box-shadow: 0 4px 15px rgba(245, 87, 108, 0.4); animation: locatePulse 1.2s ease-in-out infinite; }
-        .btn-locate.success { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); box-shadow: 0 4px 15px rgba(67, 233, 123, 0.4); }
-        .btn-locate.error { background: linear-gradient(135deg, #f5576c 0%, #ff6b6b 100%); box-shadow: 0 4px 15px rgba(245, 87, 108, 0.4); }
-        .locate-icon { width: 24px; height: 24px; transition: transform 0.3s; }
-        @keyframes locatePulse { 0%, 100% { box-shadow: 0 4px 15px rgba(245, 87, 108, 0.4); } 50% { box-shadow: 0 4px 25px rgba(245, 87, 108, 0.7); } }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .btn-locate {
+            flex-shrink: 0;
+            width: 52px;
+            height: 52px;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: #fff;
+            border: none;
+            border-radius: 16px;
+            cursor: pointer;
+            touch-action: manipulation;
+            -webkit-appearance: none;
+            appearance: none;
+            -webkit-user-select: none;
+            user-select: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 6px 20px rgba(79, 172, 254, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-locate::after {
+            content: '';
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 50%;
+            transform: scale(0);
+            transition: transform 0.5s;
+        }
+        .btn-locate:active::after { transform: scale(3); opacity: 0; transition: 0s; }
+        .btn-locate:active { transform: scale(0.9); box-shadow: 0 3px 10px rgba(79, 172, 254, 0.3); }
+        .btn-locate.locating { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); box-shadow: 0 6px 20px rgba(250, 112, 154, 0.4); animation: btnPulse 1.5s ease-in-out infinite; }
+        .btn-locate.success { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); box-shadow: 0 6px 20px rgba(67, 233, 123, 0.4); }
+        .btn-locate.error { background: linear-gradient(135deg, #f5576c 0%, #ff6b6b 100%); box-shadow: 0 6px 20px rgba(245, 87, 108, 0.4); }
+        @keyframes btnPulse { 0%, 100% { box-shadow: 0 6px 20px rgba(250, 112, 154, 0.4); } 50% { box-shadow: 0 6px 30px rgba(250, 112, 154, 0.7); } }
+
         .location-status { display: none; margin-top: 8px; padding: 10px 14px; border-radius: 8px; font-size: 13px; line-height: 1.5; animation: fadeInUp 0.3s ease; }
         .location-status.show { display: block; }
         .location-status.success { background: #e8f8f0; color: #1a6e3a; border: 1px solid #a3d9b1; }
         .location-status.error { background: #fdf0ef; color: #8b2c2c; border: 1px solid #f5c6cb; }
         .location-status.info { background: #eaf4fe; color: #1a5276; border: 1px solid #aed6f1; }
+
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* ===== 地图弹窗 ===== */
         .map-modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 2000; background: #fff; flex-direction: column; }
         .map-modal.show { display: flex; animation: fadeIn 0.3s ease; }
         .map-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; background: #fff; border-bottom: 1px solid #eef2f7; z-index: 10; flex-shrink: 0; }
         .map-header .map-title { font-size: 16px; font-weight: 700; color: #1f3349; }
         .map-header .btn-close-map { padding: 8px 16px; background: #eef2f7; color: #7a8aa3; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; touch-action: manipulation; }
         .map-header .btn-close-map:active { background: #dce4ed; }
-        .map-container { flex: 1; position: relative; background: #f0f3f7; }
+        .map-container { flex: 1; position: relative; background: #f0f3f7; overflow: hidden; }
         .map-container iframe { width: 100%; height: 100%; border: none; }
         .map-footer { display: flex; gap: 10px; padding: 12px 16px; background: #fff; border-top: 1px solid #eef2f7; z-index: 10; flex-shrink: 0; }
         .map-footer .btn-confirm-location { flex: 1; padding: 14px; background: #c0392b; color: #fff; border: none; border-radius: 10px; font-size: 16px; font-weight: 700; cursor: pointer; touch-action: manipulation; }
         .map-footer .btn-confirm-location:active { background: #a03226; }
-        .map-footer .btn-auto-locate { flex: 1; padding: 14px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #fff; border: none; border-radius: 10px; font-size: 16px; font-weight: 700; cursor: pointer; touch-action: manipulation; transition: all 0.3s; }
+        .map-footer .btn-auto-locate { flex: 1; padding: 14px; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: #fff; border: none; border-radius: 10px; font-size: 16px; font-weight: 700; cursor: pointer; touch-action: manipulation; transition: all 0.3s; }
         .map-footer .btn-auto-locate:active { transform: scale(0.96); opacity: 0.9; }
-        .map-footer .btn-auto-locate.locating { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); pointer-events: none; animation: locatePulse 1.2s ease-in-out infinite; }
+        .map-footer .btn-auto-locate.locating { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); pointer-events: none; animation: btnPulse 1.5s ease-in-out infinite; }
         .map-hint { text-align: center; padding: 8px; font-size: 12px; color: #9aabb8; background: #f8f9fa; border-top: 1px solid #eef2f7; flex-shrink: 0; }
-        .map-marker-info { display: none; position: absolute; bottom: 80px; left: 50%; transform: translateX(-50%); background: #fff; padding: 10px 16px; border-radius: 20px; box-shadow: 0 4px 16px rgba(0,0,0,0.15); font-size: 14px; font-weight: 600; color: #1f3349; z-index: 5; white-space: nowrap; max-width: 90%; overflow: hidden; text-overflow: ellipsis; }
-        .map-marker-info.show { display: block; }
+        .map-address-bar { display: flex; gap: 8px; padding: 10px 16px; background: #fff; border-top: 1px solid #eef2f7; flex-shrink: 0; align-items: center; }
+        .map-address-bar input { flex: 1; padding: 12px; font-size: 14px; border: 1.5px solid #dce4ed; border-radius: 8px; background: #fafcff; color: #1a2b3e; }
+        .map-address-bar input:focus { outline: none; border-color: #c0392b; }
+        .map-address-bar .btn-use-address { flex-shrink: 0; padding: 12px 18px; background: #27ae60; color: #fff; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; touch-action: manipulation; white-space: nowrap; }
+        .map-address-bar .btn-use-address:active { background: #219a52; }
+
         .inline-group { display: flex; flex-wrap: wrap; gap: 10px; }
         .inline-group .form-group { flex: 1 1 160px; margin-bottom: 0; }
         .range-group { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
@@ -122,26 +163,32 @@
         <button class="btn-continue" onclick="location.reload()">继续报备</button>
     </div>
 
+    <!-- 地图全屏弹窗 -->
     <div class="map-modal" id="mapModal">
         <div class="map-header">
-            <span class="map-title">📍 选择飞行位置</span>
+            <span class="map-title">🗺️ 选择飞行位置（可拖动地图选点）</span>
             <button class="btn-close-map" id="btnCloseMap">✕ 关闭</button>
         </div>
         <div class="map-container">
             <iframe id="mapIframe" src="" allow="geolocation" style="width:100%;height:100%;border:none;"></iframe>
         </div>
-        <div class="map-marker-info" id="mapMarkerInfo">📍 拖动地图选择位置</div>
-        <div class="map-hint">💡 提示：可拖动地图选择精确位置，或点击下方"自动定位"</div>
+        <div class="map-address-bar">
+            <input type="text" id="mapAddressInput" placeholder="在地图上选点后，地址将显示在这里，也可手动修改" />
+            <button class="btn-use-address" id="btnUseAddress">✅ 使用此地址</button>
+        </div>
         <div class="map-footer">
-            <button class="btn-auto-locate" id="btnAutoLocate">📍 自动定位</button>
-            <button class="btn-confirm-location" id="btnConfirmLocation">✅ 确认此位置</button>
+            <button class="btn-auto-locate" id="btnAutoLocate">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px;vertical-align:middle;"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/></svg>
+                GPS自动定位
+            </button>
+            <button class="btn-confirm-location" id="btnConfirmLocation">📍 地图选点确认</button>
         </div>
     </div>
 
     <form id="reportForm" autocomplete="on">
         <div class="form-group"><label>申请单位 <span class="required">*</span></label><input type="text" id="unit" placeholder="请输入申请单位名称" required autocomplete="organization" /></div>
         <div class="form-group"><label>申请人 <span class="required">*</span></label><input type="text" id="fullName" placeholder="申请人姓名" required autocomplete="name" /></div>
-        <div class="form-group id-row"><label>身份证号码 <span class="required">*</span></label><input type="text" id="idNumber" placeholder="18 位身份证号" required autocomplete="off" inputmode="numeric" /></div>
+        <div class="form-group"><label>身份证号码 <span class="required">*</span></label><input type="text" id="idNumber" placeholder="18 位身份证号" required autocomplete="off" inputmode="numeric" /></div>
         <div class="inline-group">
             <div class="form-group"><label>联系电话 <span class="required">*</span></label><input type="tel" id="phone" placeholder="手机号" required autocomplete="tel" inputmode="numeric" /></div>
             <div class="form-group"><label>无人机品牌 <span class="required">*</span></label><input type="text" id="droneBrand" placeholder="如：大疆" required autocomplete="off" /></div>
@@ -160,12 +207,18 @@
         </div>
         <div class="form-group"><label>地点 / 里程 / 接触网支柱编号 <span class="optional-tag">选填</span></label><input type="text" id="locationDetail" placeholder="例：京九线 K1313+200" autocomplete="off" /></div>
         <div class="form-group">
-            <label>飞行行政区域（附近村庄） <span class="required">*</span><span class="hint">（点击定位按钮在地图上选择位置）</span></label>
+            <label>飞行行政区域（附近村庄） <span class="required">*</span><span class="hint">（点击右侧按钮打开地图选点）</span></label>
             <div class="location-input-group">
-                <input type="text" id="adminArea" placeholder="如：九江市柴桑区港口街镇" required autocomplete="off" />
+                <input type="text" id="adminArea" placeholder="如：江西省九江市濂溪区新港镇天一第一村" required autocomplete="off" />
                 <button type="button" class="btn-locate" id="btnLocate" title="打开地图选择位置">
-                    <svg class="locate-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="12" cy="10" r="3"/><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+                    <!-- 时尚定位图标 - 瞄准星 -->
+                    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"/>
+                        <circle cx="12" cy="12" r="3"/>
+                        <line x1="12" y1="2" x2="12" y2="6"/>
+                        <line x1="12" y1="18" x2="12" y2="22"/>
+                        <line x1="2" y1="12" x2="6" y2="12"/>
+                        <line x1="18" y1="12" x2="22" y2="12"/>
                     </svg>
                 </button>
             </div>
@@ -228,11 +281,9 @@
 </div>
 
 <script>
-// 使用 IIFE + ES5 语法确保兼容性
 (function() {
     'use strict';
 
-    // 配置
     var CONFIG = {
         dingWebhook: 'https://oapi.dingtalk.com/robot/send?access_token=b2ccb8e7bba75a6a234ac8343488dcd66b39da2dc23ae4307a2e0e2b567f13e5',
         pushplusGroupCode: '20260713',
@@ -257,7 +308,6 @@
         return targets;
     }
 
-    // DOM元素
     var form = document.getElementById('reportForm');
     var toast = document.getElementById('toastMessage');
     var fileInput = document.getElementById('certFile');
@@ -275,7 +325,8 @@
     var btnCloseMap = document.getElementById('btnCloseMap');
     var btnAutoLocate = document.getElementById('btnAutoLocate');
     var btnConfirmLocation = document.getElementById('btnConfirmLocation');
-    var mapMarkerInfo = document.getElementById('mapMarkerInfo');
+    var mapAddressInput = document.getElementById('mapAddressInput');
+    var btnUseAddress = document.getElementById('btnUseAddress');
 
     var locationData = { latitude: null, longitude: null, accuracy: null, address: null, timestamp: null };
     var mapSelectedLocation = { latitude: null, longitude: null, address: null };
@@ -291,19 +342,17 @@
             var sizeKB = (file.size / 1024).toFixed(1);
             var sizeMB = (file.size / (1024 * 1024)).toFixed(1);
             var sizeText = sizeKB > 1024 ? sizeMB + ' MB' : sizeKB + ' KB';
-            fileStatus.textContent = '\u2705 已选: ' + file.name + ' (' + sizeText + ')';
+            fileStatus.textContent = '✅ 已选: ' + file.name + ' (' + sizeText + ')';
             fileStatus.style.color = '#1a6e3a';
         } else {
             fileStatus.textContent = '未选择文件（选填）';
             fileStatus.style.color = '#9aabb8';
         }
     });
-
     uploadBox.addEventListener('click', function(e) {
         if (e.target.tagName !== 'INPUT') fileInput.click();
     });
 
-    // Toast
     var toastTimer = null;
     function showToast(msg, isError) {
         toast.textContent = msg;
@@ -318,10 +367,21 @@
         setTimeout(function() { locationStatus.className = 'location-status'; }, 5000);
     }
 
-    // 地图弹窗
+    // ===== 地图弹窗 =====
+    // 使用高德地图URI API - 支持拖动选点
     function buildMapUrl(lat, lng) {
+        // 高德地图URI - marker模式，用户可以拖动地图
         var url = 'https://uri.amap.com/marker?callnative=1';
-        if (lat && lng) url += '&position=' + lng + ',' + lat + '&name=当前位置';
+        if (lat && lng) {
+            url += '&position=' + lng + ',' + lat;
+            url += '&name=当前位置';
+        } else {
+            // 默认九江位置
+            url += '&position=115.97,29.71';
+            url += '&name=请选择位置';
+        }
+        // 添加src信息，方便后续识别
+        url += '&src=droneReport';
         return url;
     }
 
@@ -329,49 +389,38 @@
         var mapUrl;
         if (presetLat && presetLng) {
             mapUrl = buildMapUrl(presetLat, presetLng);
+            mapSelectedLocation.latitude = presetLat;
+            mapSelectedLocation.longitude = presetLng;
         } else {
-            mapUrl = 'https://uri.amap.com/marker?position=115.97,29.71&name=请选择位置&callnative=1';
+            mapUrl = buildMapUrl(null, null);
+            mapSelectedLocation.latitude = null;
+            mapSelectedLocation.longitude = null;
         }
+        mapSelectedLocation.address = null;
         mapIframe.src = mapUrl;
         mapModal.classList.add('show');
         document.body.style.overflow = 'hidden';
-        mapSelectedLocation.latitude = presetLat || null;
-        mapSelectedLocation.longitude = presetLng || null;
-        mapSelectedLocation.address = null;
-        if (presetLat && presetLng) {
-            mapMarkerInfo.textContent = '\uD83D\uDCCD GPS：' + presetLat.toFixed(6) + ', ' + presetLng.toFixed(6);
-        } else {
-            mapMarkerInfo.textContent = '\uD83D\uDCA1 拖动地图或点击自动定位';
-        }
-        mapMarkerInfo.classList.add('show');
+        mapAddressInput.value = '';
+        mapAddressInput.placeholder = '在地图上选点后点击"地图选点确认"，地址将自动填入此处';
         btnAutoLocate.className = 'btn-auto-locate';
-        btnAutoLocate.innerHTML = '\uD83D\uDCCD 自动定位';
+        btnAutoLocate.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px;vertical-align:middle;"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/></svg>GPS自动定位';
     }
 
     function closeMapModal() {
         mapModal.classList.remove('show');
         document.body.style.overflow = '';
         mapIframe.src = '';
-        mapMarkerInfo.classList.remove('show');
     }
 
-    function confirmMapLocation() {
-        if (mapSelectedLocation.latitude && mapSelectedLocation.longitude) {
-            reverseGeocodeAndFill(mapSelectedLocation.latitude, mapSelectedLocation.longitude);
-        } else {
-            showToast('\u26A0\uFE0F 请先点击"自动定位"或在地图上选择位置', true);
-        }
-    }
-
+    // GPS自动定位
     function autoLocateInMap() {
         if (!navigator.geolocation) {
-            showToast('\u26A0\uFE0F 浏览器不支持定位功能', true);
+            showToast('⚠️ 浏览器不支持定位功能', true);
             return;
         }
         btnAutoLocate.className = 'btn-auto-locate locating';
-        btnAutoLocate.innerHTML = '\u23F3 定位中...';
-        mapMarkerInfo.textContent = '\uD83D\uDD04 正在获取GPS位置...';
-        mapMarkerInfo.classList.add('show');
+        btnAutoLocate.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px;vertical-align:middle;animation:spin 1s linear infinite;"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>定位中...';
+        mapAddressInput.placeholder = '正在获取GPS位置...';
 
         var options = { enableHighAccuracy: CONFIG.enableHighAccuracy, timeout: CONFIG.locationTimeout, maximumAge: 60000 };
         navigator.geolocation.getCurrentPosition(
@@ -379,104 +428,204 @@
                 var lat = position.coords.latitude;
                 var lng = position.coords.longitude;
                 var accuracy = position.coords.accuracy;
+                
                 mapSelectedLocation.latitude = lat;
                 mapSelectedLocation.longitude = lng;
                 locationData.latitude = lat;
                 locationData.longitude = lng;
                 locationData.accuracy = accuracy;
                 locationData.timestamp = position.timestamp;
+                
+                // 刷新地图到GPS位置
                 mapIframe.src = buildMapUrl(lat, lng);
-                mapMarkerInfo.textContent = '\uD83D\uDCCD GPS：' + lat.toFixed(6) + ', ' + lng.toFixed(6) + ' (精度\u00B1' + accuracy.toFixed(1) + 'm)';
-                mapMarkerInfo.classList.add('show');
+                
+                // 显示坐标信息
+                mapAddressInput.value = '';
+                mapAddressInput.placeholder = 'GPS: ' + lat.toFixed(6) + ', ' + lng.toFixed(6) + ' (精度±' + accuracy.toFixed(1) + 'm) → 请点击"地图选点确认"获取地址';
+                
                 btnAutoLocate.className = 'btn-auto-locate';
-                btnAutoLocate.innerHTML = '\uD83D\uDCCD 重新定位';
-                reverseGeocodeInMap(lat, lng);
+                btnAutoLocate.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px;vertical-align:middle;"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/></svg>重新定位';
+                
+                showToast('✅ GPS定位成功！请点击"地图选点确认"获取地址', false);
             },
             function(error) {
                 var msg = '定位失败';
                 switch(error.code) {
-                    case error.PERMISSION_DENIED: msg = '定位权限被拒绝'; break;
-                    case error.POSITION_UNAVAILABLE: msg = '位置信息不可用'; break;
-                    case error.TIMEOUT: msg = '定位超时'; break;
+                    case error.PERMISSION_DENIED: msg = '定位权限被拒绝，请在手机设置中允许定位'; break;
+                    case error.POSITION_UNAVAILABLE: msg = '位置信息不可用，请检查GPS是否开启'; break;
+                    case error.TIMEOUT: msg = '定位超时，请到室外空旷处重试'; break;
                 }
-                mapMarkerInfo.textContent = '\u26A0\uFE0F ' + msg + '，请手动输入地址';
-                mapMarkerInfo.classList.add('show');
+                mapAddressInput.placeholder = msg + ' - 请手动输入地址';
                 btnAutoLocate.className = 'btn-auto-locate';
-                btnAutoLocate.innerHTML = '\uD83D\uDCCD 重试定位';
-                showToast('\u26A0\uFE0F ' + msg, true);
+                btnAutoLocate.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px;vertical-align:middle;"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/></svg>重试定位';
+                showToast('⚠️ ' + msg, true);
             },
             options
         );
     }
 
-    function reverseGeocodeInMap(lat, lng) {
-        var url = 'https://nominatim.openstreetmap.org/reverse?format=json&lat=' + lat + '&lon=' + lng + '&zoom=18&addressdetails=1';
-        fetch(url, { headers: { 'Accept-Language': 'zh-CN', 'User-Agent': 'DroneReportApp/1.0' } })
-        .then(function(r) { return r.json(); })
+    // 地图选点确认 - 使用高德地图JS API进行反向地理编码
+    function confirmMapLocation() {
+        if (!mapSelectedLocation.latitude || !mapSelectedLocation.longitude) {
+            showToast('⚠️ 请先点击"GPS自动定位"获取位置', true);
+            return;
+        }
+
+        var lat = mapSelectedLocation.latitude;
+        var lng = mapSelectedLocation.longitude;
+        
+        mapAddressInput.value = '正在解析地址...';
+        mapAddressInput.placeholder = '正在解析地址...';
+        btnConfirmLocation.textContent = '⏳ 解析中...';
+        btnConfirmLocation.disabled = true;
+
+        // 方案1：使用高德地图Web API（需要Key，但更稳定）
+        // 这里使用高德URI API返回的坐标，结合Nominatim作为备选
+        
+        // 先用Nominatim（OpenStreetMap）尝试
+        var url = 'https://nominatim.openstreetmap.org/reverse?format=json&lat=' + lat + '&lon=' + lng + '&zoom=18&addressdetails=1&accept-language=zh';
+        
+        fetch(url, {
+            headers: { 'User-Agent': 'DroneReportApp/1.0', 'Accept-Language': 'zh-CN,zh;q=0.9' }
+        })
+        .then(function(response) {
+            if (!response.ok) throw new Error('HTTP ' + response.status);
+            return response.json();
+        })
         .then(function(data) {
-            var address = extractAddress(data);
+            var address = extractFullAddress(data);
+            
             if (address) {
                 mapSelectedLocation.address = address;
-                mapMarkerInfo.textContent = '\uD83D\uDCCD ' + address;
-                mapMarkerInfo.classList.add('show');
-            }
-        }).catch(function() {});
-    }
-
-    function reverseGeocodeAndFill(lat, lng) {
-        mapMarkerInfo.textContent = '\uD83D\uDD04 正在解析地址...';
-        mapMarkerInfo.classList.add('show');
-        var url = 'https://nominatim.openstreetmap.org/reverse?format=json&lat=' + lat + '&lon=' + lng + '&zoom=18&addressdetails=1';
-        fetch(url, { headers: { 'Accept-Language': 'zh-CN', 'User-Agent': 'DroneReportApp/1.0' } })
-        .then(function(r) { return r.json(); })
-        .then(function(data) {
-            var address = extractAddress(data);
-            if (address) {
-                locationData.address = address;
-                locationData.latitude = lat;
-                locationData.longitude = lng;
-                adminAreaInput.value = address;
-                btnLocate.className = 'btn-locate success';
-                mapMarkerInfo.textContent = '\u2705 ' + address;
-                showLocationStatus('success', '\u2705 位置已确认：' + address);
-                setTimeout(function() { closeMapModal(); }, 800);
+                mapAddressInput.value = address;
+                mapAddressInput.style.color = '#1a6e3a';
+                mapAddressInput.style.fontWeight = 'bold';
+                
+                btnConfirmLocation.textContent = '✅ 地址已获取';
+                btnConfirmLocation.style.background = '#27ae60';
+                
+                showToast('✅ 地址解析成功！点击"使用此地址"确认', false);
             } else {
-                locationData.address = null;
-                locationData.latitude = lat;
-                locationData.longitude = lng;
-                adminAreaInput.value = '';
-                adminAreaInput.placeholder = '请手动输入附近村庄名称';
-                mapMarkerInfo.textContent = '\u26A0\uFE0F 无法解析地址，请手动输入';
-                showLocationStatus('info', '\u26A0\uFE0F GPS坐标已记录，请手动填写地名');
-                adminAreaInput.focus();
+                // 地址解析失败，使用坐标
+                var coordStr = lat.toFixed(6) + ', ' + lng.toFixed(6);
+                mapAddressInput.value = '';
+                mapAddressInput.placeholder = '无法自动解析地址，请手动输入（GPS: ' + coordStr + '）';
+                mapAddressInput.style.color = '';
+                mapAddressInput.style.fontWeight = '';
+                btnConfirmLocation.textContent = '⚠️ 请手动输入地址';
+                btnConfirmLocation.style.background = '#e67e22';
+                
+                showToast('⚠️ 无法自动解析地址，请在地图地址栏手动输入', true);
             }
-        }).catch(function() {
-            locationData.latitude = lat;
-            locationData.longitude = lng;
-            locationData.address = null;
-            adminAreaInput.value = '';
-            adminAreaInput.placeholder = '请手动输入附近村庄名称';
-            mapMarkerInfo.textContent = '\u26A0\uFE0F 网络异常，请手动输入地址';
-            showLocationStatus('info', '\u26A0\uFE0F GPS坐标已记录，请手动填写地名');
-            adminAreaInput.focus();
+        })
+        .catch(function(error) {
+            console.error('[地址解析错误]', error);
+            
+            // 网络错误，提示用户手动输入
+            var coordStr = lat.toFixed(6) + ', ' + lng.toFixed(6);
+            mapAddressInput.value = '';
+            mapAddressInput.placeholder = '网络异常，请手动输入地址（GPS: ' + coordStr + '）';
+            mapAddressInput.style.color = '';
+            mapAddressInput.style.fontWeight = '';
+            btnConfirmLocation.textContent = '📍 重试';
+            btnConfirmLocation.style.background = '#e74c3c';
+            
+            showToast('⚠️ 网络异常无法解析地址，请手动输入行政区域名称', true);
+        })
+        .finally(function() {
+            btnConfirmLocation.disabled = false;
+            // 3秒后恢复按钮
+            setTimeout(function() {
+                btnConfirmLocation.textContent = '📍 地图选点确认';
+                btnConfirmLocation.style.background = '#c0392b';
+            }, 3000);
         });
     }
 
-    function extractAddress(data) {
-        var address = '';
-        if (data && data.address) {
-            var addr = data.address, parts = [];
-            if (addr.province || addr.state) { var p = (addr.province || addr.state || '').replace(/省|市|自治区|特别行政区/g, ''); if (p) parts.push(p); }
-            if (addr.city || addr.prefecture) { var c = (addr.city || addr.prefecture || '').replace(/市|自治州|地区/g, ''); if (c) parts.push(c); }
-            if (addr.county || addr.district) { var co = (addr.county || addr.district || '').replace(/区|县|县级市/g, ''); if (co) parts.push(co); }
-            if (addr.town || addr.township) { var t = (addr.town || addr.township || '').replace(/镇|乡|街道/g, ''); if (t) parts.push(t); }
-            if (addr.village || addr.hamlet || addr.suburb || addr.neighbourhood) { var v = (addr.village || addr.hamlet || addr.suburb || addr.neighbourhood || ''); if (v) parts.push(v); }
-            address = parts.join('');
+    // 提取完整地址（省/市/区/镇/村）
+    function extractFullAddress(data) {
+        if (!data || !data.address) return '';
+        
+        var addr = data.address;
+        var parts = [];
+        
+        // 国家
+        if (addr.country) {
+            var country = addr.country;
+            if (country === '中国' || country === 'China') {
+                // 中国地址不显示国家
+            } else {
+                parts.push(country);
+            }
         }
-        if (!address && data && data.display_name) address = data.display_name;
-        if (address) { address = address.replace(/\s+/g, '').replace(/^\d+,?\s*/, ''); }
+        
+        // 省份
+        if (addr.province || addr.state) {
+            var province = addr.province || addr.state || '';
+            parts.push(province);
+        }
+        
+        // 城市
+        if (addr.city || addr.prefecture) {
+            var city = addr.city || addr.prefecture || '';
+            if (city && parts.indexOf(city) === -1) parts.push(city);
+        }
+        
+        // 区县
+        if (addr.county || addr.district) {
+            var county = addr.county || addr.district || '';
+            if (county && parts.indexOf(county) === -1) parts.push(county);
+        }
+        
+        // 乡镇
+        if (addr.town || addr.township || addr.municipality) {
+            var town = addr.town || addr.township || addr.municipality || '';
+            if (town && parts.indexOf(town) === -1) parts.push(town);
+        }
+        
+        // 村庄/街道
+        if (addr.village || addr.hamlet || addr.suburb || addr.neighbourhood || addr.road) {
+            var village = addr.village || addr.hamlet || addr.suburb || addr.neighbourhood || addr.road || '';
+            if (village && parts.indexOf(village) === -1) parts.push(village);
+        }
+        
+        // 如果以上都没有，使用display_name
+        var address = parts.join('');
+        if (!address && data.display_name) {
+            address = data.display_name.split(',')[0];  // 取第一部分
+        }
+        
+        // 清理
+        if (address) {
+            address = address.replace(/\s+/g, '');
+            address = address.replace(/^\d+,?\s*/, '');
+        }
+        
         return (address && address.length > 2) ? address : '';
     }
+
+    // 使用地址按钮
+    btnUseAddress.addEventListener('click', function() {
+        var address = mapAddressInput.value.trim();
+        if (!address) {
+            showToast('⚠️ 请先获取地址或手动输入地址', true);
+            return;
+        }
+        
+        // 填入表单
+        locationData.address = address;
+        if (mapSelectedLocation.latitude && mapSelectedLocation.longitude) {
+            locationData.latitude = mapSelectedLocation.latitude;
+            locationData.longitude = mapSelectedLocation.longitude;
+        }
+        
+        adminAreaInput.value = address;
+        btnLocate.className = 'btn-locate success';
+        
+        showLocationStatus('success', '✅ 位置已确认：' + address);
+        closeMapModal();
+        showToast('✅ 位置已确认！', false);
+    });
 
     // 按钮事件
     btnLocate.addEventListener('click', function() {
@@ -497,14 +646,9 @@
             var d = new Date(dtStr);
             if (isNaN(d.getTime())) return dtStr;
             return d.getFullYear() + '年' + String(d.getMonth() + 1).padStart(2, '0') + '月' + String(d.getDate()).padStart(2, '0') + '日 ' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
-        } catch(e) {
-            return dtStr;
-        }
+        } catch(e) { return dtStr; }
     }
-
-    function getCurrentFormattedTime() {
-        return formatDateTime(new Date().toISOString());
-    }
+    function getCurrentFormattedTime() { return formatDateTime(new Date().toISOString()); }
 
     // 推送函数
     function sendDingTalk(webhook, content) {
@@ -512,25 +656,19 @@
         var url = CONFIG.proxyUrl + '/dingtalk?webhook=' + encodeURIComponent(webhook);
         return fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
         .then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
-        .then(function(r) {
-            if (r && r.errcode === 0) return { success: true, channel: '钉钉' };
-            throw new Error(r && r.errmsg ? r.errmsg : '异常');
-        }).catch(function(e) { return { success: false, channel: '钉钉', error: e.message }; });
+        .then(function(r) { if (r && r.errcode === 0) return { success: true, channel: '钉钉' }; throw new Error(r && r.errmsg ? r.errmsg : '异常'); })
+        .catch(function(e) { return { success: false, channel: '钉钉', error: e.message }; });
     }
 
     function sendPushPlusToAll(title, content) {
         var targets = getPushPlusTargets();
-        if (targets.length === 0) {
-            return Promise.resolve({ success: true, skipped: true, channel: '微信', totalTargets: 0, successCount: 0, failCount: 0, details: [] });
-        }
+        if (targets.length === 0) return Promise.resolve({ success: true, skipped: true, channel: '微信', totalTargets: 0, successCount: 0, failCount: 0, details: [] });
         var proms = targets.map(function(t) {
             var p = { token: t.token, title: title, content: content, template: 'html' };
             return fetch(CONFIG.proxyUrl + '/pushplus', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(p) })
             .then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
-            .then(function(r) {
-                if (r && r.code === 200) return { success: true, target: t, response: r };
-                throw new Error(r && r.msg ? r.msg : '异常');
-            }).catch(function(e) { return { success: false, target: t, error: e.message }; });
+            .then(function(r) { if (r && r.code === 200) return { success: true, target: t, response: r }; throw new Error(r && r.msg ? r.msg : '异常'); })
+            .catch(function(e) { return { success: false, target: t, error: e.message }; });
         });
         return Promise.all(proms).then(function(results) {
             var sc = results.filter(function(r) { return r.success; }).length;
@@ -540,8 +678,7 @@
     }
 
     // 用途选择
-    var purposeRadios = document.querySelectorAll('input[name="purpose"]');
-    purposeRadios.forEach(function(r) {
+    document.querySelectorAll('input[name="purpose"]').forEach(function(r) {
         r.addEventListener('change', function() {
             if (this.value === '其他') { purposeOtherInput.style.display = 'block'; purposeOtherInput.focus(); }
             else { purposeOtherInput.style.display = 'none'; purposeOtherInput.value = ''; }
@@ -550,57 +687,35 @@
 
     // 默认时间
     function setDefaultTimes() {
-        var now = new Date();
-        var tomorrow = new Date(now.getTime() + 86400000);
-        function f(d) {
-            return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0') + 'T' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
-        }
-        var s = document.getElementById('workStart');
-        var e = document.getElementById('workEnd');
+        var now = new Date(), tomorrow = new Date(now.getTime() + 86400000);
+        function f(d) { return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0') + 'T' + String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0'); }
+        var s = document.getElementById('workStart'), e = document.getElementById('workEnd');
         if (!s.value) s.value = f(now);
         if (!e.value) e.value = f(tomorrow);
     }
     setDefaultTimes();
 
     // 输入限制
-    document.getElementById('idNumber').addEventListener('input', function() {
-        this.value = this.value.replace(/[^\dXx]/g, '').toUpperCase();
-        if (this.value.length > 18) this.value = this.value.slice(0, 18);
-    });
-    document.getElementById('phone').addEventListener('input', function() {
-        this.value = this.value.replace(/[^\d]/g, '');
-        if (this.value.length > 11) this.value = this.value.slice(0, 11);
-    });
-    ['flightHeightMin', 'flightHeightMax', 'railDistanceMin', 'railDistanceMax'].forEach(function(id) {
-        var inp = document.getElementById(id);
-        if (!inp) return;
-        inp.addEventListener('input', function() {
-            this.value = this.value.replace(/[^\d.]/g, '');
-            var parts = this.value.split('.');
-            if (parts.length > 2) this.value = parts[0] + '.' + parts.slice(1).join('');
-        });
+    document.getElementById('idNumber').addEventListener('input', function() { this.value = this.value.replace(/[^\dXx]/g, '').toUpperCase(); if (this.value.length > 18) this.value = this.value.slice(0, 18); });
+    document.getElementById('phone').addEventListener('input', function() { this.value = this.value.replace(/[^\d]/g, ''); if (this.value.length > 11) this.value = this.value.slice(0, 11); });
+    ['flightHeightMin','flightHeightMax','railDistanceMin','railDistanceMax'].forEach(function(id) {
+        var inp = document.getElementById(id); if (!inp) return;
+        inp.addEventListener('input', function() { this.value = this.value.replace(/[^\d.]/g, ''); var p = this.value.split('.'); if (p.length > 2) this.value = p[0] + '.' + p.slice(1).join(''); });
     });
 
     // 表单提交
     form.addEventListener('submit', function(e) {
         e.preventDefault();
-        var unit = document.getElementById('unit').value.trim();
-        var name = document.getElementById('fullName').value.trim();
-        var idNum = document.getElementById('idNumber').value.trim();
-        var phone = document.getElementById('phone').value.trim();
-        var brand = document.getElementById('droneBrand').value.trim();
-        var model = document.getElementById('droneModel').value.trim();
-        var area = document.getElementById('flightArea').value;
-        var locationDetail = document.getElementById('locationDetail').value.trim();
+        var unit = document.getElementById('unit').value.trim(), name = document.getElementById('fullName').value.trim();
+        var idNum = document.getElementById('idNumber').value.trim(), phone = document.getElementById('phone').value.trim();
+        var brand = document.getElementById('droneBrand').value.trim(), model = document.getElementById('droneModel').value.trim();
+        var area = document.getElementById('flightArea').value, locationDetail = document.getElementById('locationDetail').value.trim();
         var adminArea = document.getElementById('adminArea').value.trim();
         var purposeRadio = document.querySelector('input[name="purpose"]:checked');
         var purposeOther = document.getElementById('purposeOther').value.trim();
-        var workStart = document.getElementById('workStart').value;
-        var workEnd = document.getElementById('workEnd').value;
-        var fhMin = document.getElementById('flightHeightMin').value.trim();
-        var fhMax = document.getElementById('flightHeightMax').value.trim();
-        var rdMin = document.getElementById('railDistanceMin').value.trim();
-        var rdMax = document.getElementById('railDistanceMax').value.trim();
+        var workStart = document.getElementById('workStart').value, workEnd = document.getElementById('workEnd').value;
+        var fhMin = document.getElementById('flightHeightMin').value.trim(), fhMax = document.getElementById('flightHeightMax').value.trim();
+        var rdMin = document.getElementById('railDistanceMin').value.trim(), rdMax = document.getElementById('railDistanceMax').value.trim();
         var certCode = document.getElementById('certCode').value.trim();
 
         if (!unit || !name || !idNum || !phone || !brand || !model) { showToast('请完整填写所有带 * 号的必填项', true); return; }
@@ -620,33 +735,15 @@
         var purpose = purposeRadio.value;
         if (purpose === '其他' && purposeOther) purpose += '（' + purposeOther + '）';
 
-        var dc = '【无人机飞行报备通知】\n\n';
-        dc += '📋 申请单位：' + unit + '\n';
-        dc += '👤 申请人：' + name + '\n';
-        dc += '🆔 身份证号：' + idNum + '\n';
-        dc += '📱 联系电话：' + phone + '\n';
-        dc += '🚁 无人机品牌：' + brand + '\n';
-        dc += '🔧 型号/编号：' + model + '\n';
-        dc += '🛤️ 铁路线路：' + area + '\n';
+        var dc = '【无人机飞行报备通知】\n\n📋 申请单位：' + unit + '\n👤 申请人：' + name + '\n🆔 身份证号：' + idNum + '\n📱 联系电话：' + phone + '\n🚁 无人机品牌：' + brand + '\n🔧 型号/编号：' + model + '\n🛤️ 铁路线路：' + area + '\n';
         if (locationDetail) dc += '📍 地点里程：' + locationDetail + '\n';
         dc += '🏘️ 行政区域：' + adminArea + '\n';
-        if (locationData.latitude && locationData.longitude) {
-            dc += '🗺️ GPS：' + locationData.latitude.toFixed(6) + ', ' + locationData.longitude.toFixed(6);
-            if (locationData.accuracy) dc += ' (精度±' + locationData.accuracy.toFixed(1) + 'm)';
-            dc += '\n';
-        }
-        dc += '🎯 用途：' + purpose + '\n';
-        dc += '⏰ 时间：' + formatDateTime(workStart) + ' 至 ' + formatDateTime(workEnd) + '\n';
-        dc += '📏 高度：' + fhMin + 'm ~ ' + fhMax + 'm\n';
-        dc += '📐 距离：' + rdMin + 'm ~ ' + rdMax + 'm\n';
-        dc += '📝 证件：' + certCode + '\n';
-        dc += '\n⏰ 报备：' + getCurrentFormattedTime();
-        dc += '\n📱 环境：' + (isWechat ? '微信' : (isIOS ? 'iOS' : (isAndroid ? 'Android' : 'PC')));
+        if (locationData.latitude && locationData.longitude) { dc += '🗺️ GPS：' + locationData.latitude.toFixed(6) + ', ' + locationData.longitude.toFixed(6); if (locationData.accuracy) dc += ' (精度±' + locationData.accuracy.toFixed(1) + 'm)'; dc += '\n'; }
+        dc += '🎯 用途：' + purpose + '\n⏰ 时间：' + formatDateTime(workStart) + ' 至 ' + formatDateTime(workEnd) + '\n📏 高度：' + fhMin + 'm ~ ' + fhMax + 'm\n📐 距离：' + rdMin + 'm ~ ' + rdMax + 'm\n📝 证件：' + certCode + '\n\n⏰ 报备：' + getCurrentFormattedTime() + '\n📱 环境：' + (isWechat ? '微信' : (isIOS ? 'iOS' : (isAndroid ? 'Android' : 'PC')));
         if (fileInput.files && fileInput.files.length > 0) dc += '\n📎 照片：' + fileInput.files[0].name;
         dc += '\n\n⚠️ 请24小时内核实并联系确认。';
 
-        var pc = '<h2 style="color:#c0392b;">🚁 无人机飞行报备通知</h2>';
-        pc += '<table style="width:100%;border-collapse:collapse;font-size:14px;">';
+        var pc = '<h2 style="color:#c0392b;">🚁 无人机飞行报备通知</h2><table style="width:100%;border-collapse:collapse;font-size:14px;">';
         pc += '<tr><td style="padding:8px;border:1px solid #eee;background:#f5f5f5;"><strong>📋 单位</strong></td><td style="padding:8px;border:1px solid #eee;">' + unit + '</td></tr>';
         pc += '<tr><td style="padding:8px;border:1px solid #eee;background:#f5f5f5;"><strong>👤 申请人</strong></td><td style="padding:8px;border:1px solid #eee;">' + name + '</td></tr>';
         pc += '<tr><td style="padding:8px;border:1px solid #eee;background:#f5f5f5;"><strong>📱 电话</strong></td><td style="padding:8px;border:1px solid #eee;color:#c0392b;font-weight:bold;">' + phone + '</td></tr>';
@@ -655,82 +752,30 @@
         pc += '<tr><td style="padding:8px;border:1px solid #eee;background:#f5f5f5;"><strong>🛤️ 线路</strong></td><td style="padding:8px;border:1px solid #eee;color:#c0392b;">' + area + '</td></tr>';
         if (locationDetail) pc += '<tr><td style="padding:8px;border:1px solid #eee;background:#f5f5f5;"><strong>📍 里程</strong></td><td style="padding:8px;border:1px solid #eee;">' + locationDetail + '</td></tr>';
         pc += '<tr><td style="padding:8px;border:1px solid #eee;background:#f5f5f5;"><strong>🏘️ 区域</strong></td><td style="padding:8px;border:1px solid #eee;">' + adminArea + '</td></tr>';
-        if (locationData.latitude && locationData.longitude) {
-            pc += '<tr><td style="padding:8px;border:1px solid #eee;background:#f5f5f5;"><strong>🗺️ GPS</strong></td><td style="padding:8px;border:1px solid #eee;">' + locationData.latitude.toFixed(6) + ', ' + locationData.longitude.toFixed(6) + '</td></tr>';
-        }
+        if (locationData.latitude && locationData.longitude) pc += '<tr><td style="padding:8px;border:1px solid #eee;background:#f5f5f5;"><strong>🗺️ GPS</strong></td><td style="padding:8px;border:1px solid #eee;">' + locationData.latitude.toFixed(6) + ', ' + locationData.longitude.toFixed(6) + '</td></tr>';
         pc += '<tr><td style="padding:8px;border:1px solid #eee;background:#f5f5f5;"><strong>🎯 用途</strong></td><td style="padding:8px;border:1px solid #eee;">' + purpose + '</td></tr>';
         pc += '<tr><td style="padding:8px;border:1px solid #eee;background:#f5f5f5;"><strong>⏰ 时间</strong></td><td style="padding:8px;border:1px solid #eee;">' + formatDateTime(workStart) + '<br/>至 ' + formatDateTime(workEnd) + '</td></tr>';
         pc += '<tr><td style="padding:8px;border:1px solid #eee;background:#f5f5f5;"><strong>📏 高度</strong></td><td style="padding:8px;border:1px solid #eee;">' + fhMin + 'm ~ ' + fhMax + 'm</td></tr>';
         pc += '<tr><td style="padding:8px;border:1px solid #eee;background:#f5f5f5;"><strong>📐 距离</strong></td><td style="padding:8px;border:1px solid #eee;">' + rdMin + 'm ~ ' + rdMax + 'm</td></tr>';
-        pc += '<tr><td style="padding:8px;border:1px solid #eee;background:#f5f5f5;"><strong>📝 证件</strong></td><td style="padding:8px;border:1px solid #eee;">' + certCode + '</td></tr>';
-        pc += '</table>';
+        pc += '<tr><td style="padding:8px;border:1px solid #eee;background:#f5f5f5;"><strong>📝 证件</strong></td><td style="padding:8px;border:1px solid #eee;">' + certCode + '</td></tr></table>';
         pc += '<p style="color:#999;margin-top:10px;">⏰ ' + getCurrentFormattedTime() + ' | 📱 ' + (isWechat ? '微信' : (isIOS ? 'iOS' : (isAndroid ? 'Android' : 'PC'))) + '</p>';
         if (fileInput.files && fileInput.files.length > 0) pc += '<p style="color:#999;">📎 照片：' + fileInput.files[0].name + '</p>';
         pc += '<div style="background:#fff3cd;padding:12px;border-left:4px solid #ffc107;margin-top:10px;"><strong style="color:#c0392b;">⚠️ 请24小时内核实并联系确认。</strong></div>';
 
-        submitBtn.classList.add('loading');
-        submitBtn.textContent = '⏳ 提交中...';
-        submitBtn.disabled = true;
-
+        submitBtn.classList.add('loading'); submitBtn.textContent = '⏳ 提交中...'; submitBtn.disabled = true;
         var all = [sendDingTalk(CONFIG.dingWebhook, dc), sendPushPlusToAll('【无人机报备】' + name + ' - ' + unit + ' - ' + area, pc)];
-
         Promise.all(all).then(function(results) {
             var sc = 0, fc = 0, sch = [], fch = [];
-            results.forEach(function(r) {
-                if (r.success) {
-                    sc++;
-                    if (r.channel === '微信' && r.successTargets) sch.push('微信(' + r.successCount + '人)');
-                    else if (!r.skipped) sch.push(r.channel);
-                } else {
-                    fc++;
-                    if (r.channel) fch.push(r.channel);
-                }
-            });
-            if (sc > 0) {
-                form.style.display = 'none';
-                successOverlay.classList.add('show');
-                pushDesc.textContent = '已发送至：' + sch.join('、') + (fch.length > 0 ? '\n(部分失败：' + fch.join('、') + ')' : '');
-                showToast('✅ 报备成功！', false);
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-                form.reset();
-                fileStatus.textContent = '未选择文件';
-                fileStatus.style.color = '#9aabb8';
-                purposeOtherInput.style.display = 'none';
-                setDefaultTimes();
-                btnLocate.className = 'btn-locate';
-                locationData = { latitude: null, longitude: null, accuracy: null, address: null, timestamp: null };
-            } else {
-                showToast('推送失败，请重试', true);
-                submitBtn.classList.remove('loading');
-                submitBtn.textContent = '📨 重新提交';
-                submitBtn.disabled = false;
-            }
-        }).catch(function() {
-            showToast('提交异常，请重试', true);
-            submitBtn.classList.remove('loading');
-            submitBtn.textContent = '📨 重新提交';
-            submitBtn.disabled = false;
-        });
+            results.forEach(function(r) { if (r.success) { sc++; if (r.channel === '微信' && r.successTargets) sch.push('微信(' + r.successCount + '人)'); else if (!r.skipped) sch.push(r.channel); } else { fc++; if (r.channel) fch.push(r.channel); } });
+            if (sc > 0) { form.style.display = 'none'; successOverlay.classList.add('show'); pushDesc.textContent = '已发送至：' + sch.join('、') + (fch.length > 0 ? '\n(部分失败：' + fch.join('、') + ')' : ''); showToast('✅ 报备成功！', false); window.scrollTo({ top: 0, behavior: 'smooth' }); form.reset(); fileStatus.textContent = '未选择文件'; fileStatus.style.color = '#9aabb8'; purposeOtherInput.style.display = 'none'; setDefaultTimes(); btnLocate.className = 'btn-locate'; locationData = { latitude: null, longitude: null, accuracy: null, address: null, timestamp: null }; }
+            else { showToast('推送失败，请重试', true); submitBtn.classList.remove('loading'); submitBtn.textContent = '📨 重新提交'; submitBtn.disabled = false; }
+        }).catch(function() { showToast('提交异常，请重试', true); submitBtn.classList.remove('loading'); submitBtn.textContent = '📨 重新提交'; submitBtn.disabled = false; });
     });
 
-    // iOS/微信兼容
-    if (isIOS) {
-        document.addEventListener('focusin', function(e) {
-            if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT' || e.target.tagName === 'TEXTAREA') {
-                setTimeout(function() { e.target.scrollIntoViewIfNeeded(true); }, 300);
-            }
-        });
-    }
-    if (isWechat) {
-        document.addEventListener('WeixinJSBridgeReady', function() {
-            if (typeof WeixinJSBridge !== 'undefined') WeixinJSBridge.call('hideOptionMenu');
-        });
-        document.addEventListener('touchmove', function(e) {
-            if (e.target === document.documentElement || e.target === document.body) e.preventDefault();
-        }, { passive: false });
-    }
+    if (isIOS) { document.addEventListener('focusin', function(e) { if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT' || e.target.tagName === 'TEXTAREA') { setTimeout(function() { e.target.scrollIntoViewIfNeeded(true); }, 300); } }); }
+    if (isWechat) { document.addEventListener('WeixinJSBridgeReady', function() { if (typeof WeixinJSBridge !== 'undefined') WeixinJSBridge.call('hideOptionMenu'); }); document.addEventListener('touchmove', function(e) { if (e.target === document.documentElement || e.target === document.body) e.preventDefault(); }, { passive: false }); }
 
-    console.log('无人机报备系统 v3.0 初始化完成');
+    console.log('无人机报备系统 v4.0 初始化完成 - 地图选点版');
 })();
 </script>
 </body>
