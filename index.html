@@ -6,7 +6,6 @@
     <title>九江桥工段 · 无人机报备</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚁</text></svg>" />
     <style>
-        /* ===== 完整样式 ===== */
         *{box-sizing:border-box;margin:0;padding:0}
         body{font-family:-apple-system,"PingFang SC","Helvetica Neue",Arial,sans-serif;background:#eef2f7;min-height:100vh;padding:12px;display:flex;justify-content:center;align-items:flex-start}
         .container{max-width:480px;width:100%;background:#ffffff;border-radius:16px;box-shadow:0 8px 30px rgba(0,0,0,0.08);padding:20px 18px 24px}
@@ -74,16 +73,14 @@
 
     <form id="reportForm" autocomplete="on">
 
+        <!-- 配置区（隐藏） -->
         <div class="hidden-config">
-            <input type="text" id="pushToken" />
-            <input type="text" id="pushTopic" />
-        </div>
-        <div class="hidden-config">
-            <input type="text" id="dingWebhook" />
-            <input type="text" id="dingSecret" />
+            <!-- PushPlus -->
+            <input type="text" id="pushToken" value="17a791bc78be42e1a9968d676fca0d01" />
+            <input type="text" id="pushTopic" value="20260713" />
         </div>
 
-        <!-- ===== 表单字段 ===== -->
+        <!-- 表单字段 -->
         <div class="form-group">
             <label>单位 <span class="required">*</span></label>
             <input type="text" id="unit" placeholder="请输入单位名称" required />
@@ -217,98 +214,27 @@
         // ---------- PushPlus 配置 ----------
         var CONFIG_TOKEN = '17a791bc78be42e1a9968d676fca0d01';
         var CONFIG_TOPIC = '20260713';
-        var CONFIG_TOKENS = [];
 
-        // ---------- 钉钉配置 ----------
-        var CONFIG_DING_WEBHOOK = 'https://oapi.dingtalk.com/robot/send?access_token=b2b57f4416df67ef292ca72be20e4e82769abaaf2f8502a3a41831bcd03cb7d9';
-        var CONFIG_DING_SECRET = 'SECa3e90a83519a3fc73adb757664a96f24a90f1cf7e82f35f8e3dc31ca22f9a193';
+        // ---------- 钉钉配置（关键词方式，无需加密） ----------
+        // 在钉钉机器人安全设置中选择「关键词」，输入「报备」
+        var CONFIG_DING_WEBHOOK = 'https://oapi.dingtalk.com/robot/send?access_token=b2ccb8e7bba75a6a234ac8343488dcd66b39da2dc23ae4307a2e0e2b567f13e5';
 
         // ================================================================
-        // 🔑 Cloudflare Worker 地址（重要！）
-        // ================================================================
-        // 部署 Worker 后，把下面的地址改成你的 Worker 域名
-        var DINGTALK_WORKER_URL = 'https://dingtalk-proxy.15929976537.workers.dev/';
-        // ================================================================
 
-        // DOM 引用
         var form = document.getElementById('reportForm');
         var toast = document.getElementById('toastMessage');
         var fileInput = document.getElementById('certFile');
         var fileStatus = document.getElementById('fileStatus');
         var uploadBox = document.getElementById('uploadBox');
         var submitBtn = document.getElementById('submitBtn');
-        var pushTokenInput = document.getElementById('pushToken');
-        var pushTopicInput = document.getElementById('pushTopic');
-        var dingWebhookInput = document.getElementById('dingWebhook');
-        var dingSecretInput = document.getElementById('dingSecret');
         var successOverlay = document.getElementById('successOverlay');
         var pushDesc = document.getElementById('pushDesc');
 
-        pushTokenInput.value = CONFIG_TOKEN;
-        pushTopicInput.value = CONFIG_TOPIC;
-        dingWebhookInput.value = CONFIG_DING_WEBHOOK;
-        dingSecretInput.value = CONFIG_DING_SECRET;
-
-        // ---------- 钉钉签名 ----------
-        function generateDingSign(secret) {
-            var timestamp = Date.now();
-            var stringToSign = timestamp + '\n' + secret;
-            var encoder = new TextEncoder();
-            var keyData = encoder.encode(secret);
-            var messageData = encoder.encode(stringToSign);
-
-            return crypto.subtle.importKey(
-                'raw',
-                keyData,
-                { name: 'HMAC', hash: 'SHA-256' },
-                false,
-                ['sign']
-            ).then(function(key) {
-                return crypto.subtle.sign('HMAC', key, messageData);
-            }).then(function(signature) {
-                var hash = Array.from(new Uint8Array(signature))
-                    .map(function(b) { return b.toString(16).padStart(2, '0'); })
-                    .join('');
-                return { timestamp: timestamp, sign: hash };
-            });
-        }
-
-        // ---------- 钉钉推送（通过 Cloudflare Worker 代理） ----------
-        function sendDingTalk(webhook, secret, content) {
-            var payload = {
-                msgtype: 'text',
-                text: { content: content }
-            };
-
-            if (secret && secret.trim() !== '') {
-                return generateDingSign(secret).then(function(signData) {
-                    var signedWebhook = webhook + '&timestamp=' + signData.timestamp + '&sign=' + signData.sign;
-                    // 通过 Worker 代理发送
-                    var proxyUrl = DINGTALK_WORKER_URL + '?webhook=' + encodeURIComponent(signedWebhook);
-                    console.log('📤 通过 Worker 转发钉钉请求...');
-                    return fetch(proxyUrl, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
-                    });
-                });
-            } else {
-                var proxyUrl = DINGTALK_WORKER_URL + '?webhook=' + encodeURIComponent(webhook);
-                console.log('📤 通过 Worker 转发钉钉请求...');
-                return fetch(proxyUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-            }
-        }
-
-        // ---------- 文件选择 ----------
-        fileInput.addEventListener('change', function(e) {
+        // 文件选择
+        fileInput.addEventListener('change', function() {
             if (this.files && this.files.length > 0) {
                 var file = this.files[0];
-                var size = (file.size / 1024).toFixed(1);
-                fileStatus.textContent = '✅ 已选: ' + file.name + ' (' + size + ' KB)';
+                fileStatus.textContent = '✅ 已选: ' + file.name + ' (' + (file.size/1024).toFixed(1) + ' KB)';
                 fileStatus.style.color = '#1a6e3a';
             } else {
                 fileStatus.textContent = '未选择文件（选填）';
@@ -317,42 +243,53 @@
         });
 
         uploadBox.addEventListener('click', function(e) {
-            if (e.target.tagName !== 'INPUT') {
-                fileInput.click();
-            }
+            if (e.target.tagName !== 'INPUT') fileInput.click();
         });
 
-        // ---------- Toast ----------
         function showToast(msg, isError) {
             toast.textContent = msg;
             toast.className = 'toast show' + (isError ? ' error' : '');
             clearTimeout(toast._timer);
-            toast._timer = setTimeout(function() {
-                toast.classList.remove('show');
-            }, 5000);
+            toast._timer = setTimeout(function() { toast.classList.remove('show'); }, 5000);
         }
 
-        // ---------- PushPlus ----------
+        // PushPlus 推送
         function sendPushPlus(token, topic, title, content) {
             var data = { token: token, title: title, content: content, channel: 'wechat' };
-            if (topic && topic !== 'topic_xxxxx' && topic !== '') {
-                data.topic = topic;
-            }
+            if (topic && topic !== 'topic_xxxxx' && topic !== '') data.topic = topic;
             return fetch('https://www.pushplus.plus/api/send', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
-            })
-            .then(function(response) {
+            }).then(function(response) {
                 if (!response.ok) throw new Error('HTTP ' + response.status);
                 return response.json();
             });
         }
 
-        // ---------- 提交 ----------
+        // 钉钉推送（关键词方式，直接调用）
+        function sendDingTalk(webhook, content) {
+            var payload = {
+                msgtype: 'text',
+                text: { content: content }
+            };
+            // 注意：由于浏览器跨域限制，直接 fetch 钉钉 API 会被阻止
+            // 需要部署到线上环境（如 Vercel、Netlify）或使用后端代理
+            return fetch(webhook, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            }).then(function(response) {
+                if (!response.ok) throw new Error('HTTP ' + response.status);
+                return response.json();
+            });
+        }
+
+        // 提交
         form.addEventListener('submit', function(e) {
             e.preventDefault();
 
+            // 获取表单值
             var unit = document.getElementById('unit').value.trim();
             var name = document.getElementById('fullName').value.trim();
             var idNum = document.getElementById('idNumber').value.trim();
@@ -370,30 +307,15 @@
             var railDistanceMax = document.getElementById('railDistanceMax').value.trim();
             var certCode = document.getElementById('certCode').value.trim();
 
-            var pushToken = pushTokenInput.value.trim();
-            var pushTopic = pushTopicInput.value.trim();
-            var dingWebhook = dingWebhookInput.value.trim();
-            var dingSecret = dingSecretInput.value.trim();
-
-            // 校验（省略，与之前相同）
+            // 校验
             if (!unit || !name || !idNum || !phone || !brand || !model) {
                 showToast('⚠️ 请完整填写所有带 * 号的必填项', true); return;
             }
-            if (idNum.length < 15) {
-                showToast('⚠️ 请填写有效的身份证号码', true); return;
-            }
-            if (!/^\d{11}$/.test(phone)) {
-                showToast('⚠️ 请填写正确的11位手机号', true); return;
-            }
-            if (!area) {
-                showToast('⚠️ 请选择飞行区域铁路线路', true); return;
-            }
-            if (!adminArea) {
-                showToast('⚠️ 请填写飞行行政区域（附近村庄）', true); return;
-            }
-            if (!purposeRadio) {
-                showToast('⚠️ 请选择飞行用途', true); return;
-            }
+            if (idNum.length < 15) { showToast('⚠️ 请填写有效的身份证号码', true); return; }
+            if (!/^\d{11}$/.test(phone)) { showToast('⚠️ 请填写正确的11位手机号', true); return; }
+            if (!area) { showToast('⚠️ 请选择飞行区域铁路线路', true); return; }
+            if (!adminArea) { showToast('⚠️ 请填写飞行行政区域（附近村庄）', true); return; }
+            if (!purposeRadio) { showToast('⚠️ 请选择飞行用途', true); return; }
             if (purposeRadio.value === '其他' && !purposeOther) {
                 showToast('⚠️ 请备注「其他」的具体用途', true); return;
             }
@@ -415,24 +337,19 @@
             if (parseFloat(railDistanceMin) > parseFloat(railDistanceMax)) {
                 showToast('⚠️ 距离铁路最近值不能大于最远值', true); return;
             }
-            if (!certCode) {
-                showToast('⚠️ 请填写操作证件编码', true); return;
-            }
+            if (!certCode) { showToast('⚠️ 请填写操作证件编码', true); return; }
 
-            // 构造消息
+            // 构造消息（必须包含关键词「报备」）
             var purposeValue = purposeRadio.value;
-            if (purposeValue === '其他' && purposeOther) {
-                purposeValue = '其他: ' + purposeOther;
-            }
+            if (purposeValue === '其他' && purposeOther) purposeValue = '其他: ' + purposeOther;
 
             var now = new Date();
-            var timeStr = now.getFullYear() + '-' + 
-                String(now.getMonth()+1).padStart(2,'0') + '-' + 
-                String(now.getDate()).padStart(2,'0') + ' ' +
-                String(now.getHours()).padStart(2,'0') + ':' +
+            var timeStr = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-' + 
+                String(now.getDate()).padStart(2,'0') + ' ' + String(now.getHours()).padStart(2,'0') + ':' +
                 String(now.getMinutes()).padStart(2,'0');
 
-            var msgContent = '📋 无人机飞行报备通知\n\n' +
+            // ⚠️ 消息开头必须包含关键词「报备」
+            var msgContent = '📋 报备通知\n\n' +
                 '🕐 时间：' + timeStr + '\n' +
                 '🏢 单位：' + unit + '\n' +
                 '👤 姓名：' + name + '\n' +
@@ -451,47 +368,51 @@
 
             var title = '🚁 无人机飞行报备通知';
 
-            // ---------- 执行推送 ----------
+            // 执行推送
             submitBtn.classList.add('loading');
             submitBtn.textContent = '⏳ 提交中...';
             showToast('⏳ 正在提交报备...', false);
 
             var pushPromises = [];
 
-            // PushPlus
-            var hasPushPlus = pushToken && pushToken !== '你的Token';
-            var hasTopic = pushTopic && pushTopic !== 'topic_xxxxx' && pushTopic !== '';
-            if (hasPushPlus && hasTopic) {
+            // 1. PushPlus
+            var pushToken = document.getElementById('pushToken').value.trim();
+            var pushTopic = document.getElementById('pushTopic').value.trim();
+            if (pushToken && pushToken !== '你的Token' && pushToken !== '') {
                 pushPromises.push(
                     sendPushPlus(pushToken, pushTopic, title, msgContent)
                         .then(function(result) {
                             console.log('✅ PushPlus:', result);
-                            return { channel: 'PushPlus', success: result.code === 200, result: result };
+                            return { channel: 'PushPlus', success: result.code === 200 };
                         })
                         .catch(function(error) {
-                            return { channel: 'PushPlus', success: false, error: error };
+                            console.error('❌ PushPlus:', error);
+                            return { channel: 'PushPlus', success: false };
                         })
                 );
             }
 
-            // 钉钉（通过 Worker 代理）
-            var hasDingTalk = dingWebhook && dingWebhook.indexOf('oapi.dingtalk.com') > -1;
-            if (hasDingTalk) {
+            // 2. 钉钉（关键词方式）
+            var dingWebhook = CONFIG_DING_WEBHOOK;
+            if (dingWebhook && dingWebhook.indexOf('oapi.dingtalk.com') > -1) {
                 pushPromises.push(
-                    sendDingTalk(dingWebhook, dingSecret, msgContent)
-                        .then(function(response) {
-                            if (!response.ok) throw new Error('HTTP ' + response.status);
-                            return response.json();
-                        })
+                    sendDingTalk(dingWebhook, msgContent)
                         .then(function(result) {
                             console.log('✅ 钉钉响应:', result);
-                            return { channel: '钉钉', success: result.errcode === 0, result: result };
+                            return { channel: '钉钉', success: result.errcode === 0 };
                         })
                         .catch(function(error) {
                             console.error('❌ 钉钉失败:', error);
-                            return { channel: '钉钉', success: false, error: error };
+                            return { channel: '钉钉', success: false };
                         })
                 );
+            }
+
+            if (pushPromises.length === 0) {
+                showToast('⚠️ 没有可用的推送通道，请检查配置', true);
+                submitBtn.classList.remove('loading');
+                submitBtn.textContent = '📨 提交报备';
+                return;
             }
 
             Promise.all(pushPromises)
@@ -522,23 +443,18 @@
                 });
         });
 
-        // ---------- 「其他」提示 ----------
+        // 「其他」提示
         var otherInput = document.getElementById('purposeOther');
-        var purposeRadios = document.querySelectorAll('input[name="purpose"]');
-        purposeRadios.forEach(function(radio) {
+        document.querySelectorAll('input[name="purpose"]').forEach(function(radio) {
             radio.addEventListener('change', function() {
                 otherInput.placeholder = this.value === '其他' ? '请备注具体用途（必填）' : '选择「其他」时请备注';
             });
         });
 
-        // ---------- 配置检查 ----------
         console.log('===== 无人机报备系统配置检查 =====');
-        console.log('✅ PushPlus Token: 已配置');
-        console.log('✅ PushPlus 主题:', CONFIG_TOPIC);
-        console.log('✅ 钉钉 Webhook: 已配置');
-        console.log('✅ 钉钉加签: 已启用');
-        console.log('✅ Cloudflare Worker:', DINGTALK_WORKER_URL);
-        console.log('💡 提示: 请确保 Worker 已正确部署');
+        console.log('✅ PushPlus: 已配置');
+        console.log('✅ 钉钉（关键词方式）: 已配置');
+        console.log('💡 消息必须包含关键词「报备」');
         console.log('=====================================');
     })();
 </script>
