@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>九江桥工段 - 无人机报备</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: -apple-system, "PingFang SC", "Helvetica Neue", Arial, sans-serif;
+            background: #eef2f7;
+            min-height: 100vh;
+            padding: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+        .container {
+            max-width: 480px;
+            width: 100%;
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+            padding: 20px 18px 24px;
+        }
+
+        /* ===== 标题：红字居中 ===== */
+        .main-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #c0392b;
+            text-align: center;
+            line-height: 1.4;
+            margin-bottom: 4px;
+            letter-spacing: 0.5px;
+        }
+        .subhead {
+            font-size: 13px;
+            color: #7a8aa3;
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid #eef2f7;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+        label {
+            display: block;
+            font-weight: 600;
+            font-size: 15px;
+            color: #1f3349;
+            margin-bottom: 5px;
+        }
+        label .required {
+            color: #c0392b;
+            margin-left: 2px;
+        }
+        label .hint {
+            font-weight: 400;
+            font-size: 12px;
+            color: #9aabb8;
+            margin-left: 4px;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 14px 14px;
+            font-size: 16px;
+            border: 1.5px solid #dce4ed;
+            border-radius: 10px;
+            background: #fafcff;
+            transition: 0.2s;
+            color: #1a2b3e;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+        /* 下拉箭头自定义 */
+        select:not([multiple]) {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239aabb8' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+            padding-right: 40px;
+        }
+        select[multiple] {
+            background-image: none;
+            height: auto;
+            min-height: 120px;
+            padding: 8px 6px;
+            font-size: 15px;
+        }
+        select[multiple] option {
+            padding: 10px 12px;
+            border-radius: 6px;
+            margin-bottom: 2px;
+        }
+        select[multiple] option:checked {
+            background: #2d6a9f;
+            color: #fff;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #c0392b;
+            box-shadow: 0 0 0 4px rgba(192, 57, 43, 0.10);
+            background: #ffffff;
+        }
+        input::placeholder,
+        textarea::placeholder {
+            color: #b0c0ce;
+            font-size: 15px;
+        }
+
+        .inline-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .inline-group .form-group {
+            flex: 1 1 160px;
+            margin-bottom: 0;
+        }
+
+        .radio-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px 14px;
+            background: #f7faff;
+            padding: 12px 14px;
+            border-radius: 12px;
+            border: 1.5px solid #e8eff6;
+        }
+        .radio-group label {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 400;
+            font-size: 15px;
+            color: #1f3349;
+            cursor: pointer;
+            padding: 2px 0;
+        }
+        .radio-group input[type="radio"] {
+            width: 20px;
+            height: 20px;
+            accent-color: #c0392b;
+            margin: 0;
+            flex-shrink: 0;
+        }
+
+        .upload-box {
+            border: 2px dashed #d0dceb;
+            border-radius: 12px;
+            padding: 20px 12px;
+            background: #f8fbfe;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.2s;
+            touch-action: manipulation;
+        }
+        .upload-box:active {
+            background: #eef4fa;
+            border-color: #c0392b;
+        }
+        .upload-box input[type="file"] {
+            display: none;
+        }
+        .upload-label {
+            display: inline-block;
+            background: #e6eef7;
+            padding: 10px 24px;
+            border-radius: 40px;
+            font-size: 16px;
+            font-weight: 500;
+            color: #1f3b5c;
+            cursor: pointer;
+            touch-action: manipulation;
+        }
+        .upload-label:active {
+            background: #d0dceb;
+        }
+        .file-status {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #2a5f3a;
+            word-break: break-all;
+        }
+
+        /* ===== 宣传提醒区域 ===== */
+        .warning-box {
+            background: #fef6f5;
+            border-left: 4px solid #c0392b;
+            border-radius: 8px;
+            padding: 12px 14px;
+            margin: 6px 0 18px 0;
+        }
+        .warning-box .warn-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #c0392b;
+        }
+        .warning-box .warn-desc {
+            font-size: 14px;
+            color: #5a4a47;
+            margin-top: 4px;
+            line-height: 1.6;
+        }
+        .warning-box .warn-desc strong {
+            color: #c0392b;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 16px;
+            background: #c0392b;
+            color: white;
+            font-size: 20px;
+            font-weight: 700;
+            border: none;
+            border-radius: 40px;
+            cursor: pointer;
+            transition: 0.15s;
+            letter-spacing: 2px;
+            margin-top: 4px;
+            box-shadow: 0 6px 20px rgba(192, 57, 43, 0.30);
+            touch-action: manipulation;
+        }
+        .btn-submit:active {
+            transform: scale(0.97);
+            background: #a03226;
+            box-shadow: 0 3px 12px rgba(192, 57, 43, 0.25);
+        }
+
+        .footer-note {
+            margin-top: 20px;
+            font-size: 15px;
+            font-weight: 600;
+            color: #c0392b;
+            text-align: center;
+            border-top: 1px solid #eef2f7;
+            padding-top: 16px;
+            letter-spacing: 0.3px;
+        }
+
+        .toast {
+            display: none;
+            background: #1d3b2f;
+            color: white;
+            padding: 14px 18px;
+            border-radius: 40px;
+            text-align: center;
+            margin-top: 14px;
+            font-weight: 500;
+            font-size: 15px;
+        }
+        .toast.show {
+            display: block;
+        }
+        .toast.error {
+            background: #8b2c2c;
+        }
+
+        .optional-tag {
+            font-size: 12px;
+            color: #9aabb8;
+            background: #f0f3f7;
+            padding: 0 10px;
+            border-radius: 20px;
+            font-weight: 400;
+            margin-left: 6px;
+        }
+        .multi-hint {
+            font-size: 12px;
+            color: #9aabb8;
+            margin-top: 4px;
+            padding-left: 2px;
+        }
+        /* 点击多选提示可聚焦 */
+        .multi-hint-click {
+            cursor: pointer;
+            text-decoration: underline dotted #9aabb8;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- ===== 标题：红字居中 ===== -->
+    <div class="main-title">九江桥工段铁路沿线无人机飞行报备</div>
+    <div class="subhead">铁路沿线安全报备 · 请如实填写</div>
+
+    <form id="reportForm" autocomplete="on">
+
+        <!-- 单位 -->
+        <div class="form-group">
+            <label>单位 <span class="required">*</span></label>
+            <input type="text" id="unit" placeholder="请输入单位名称" required />
+        </div>
+
+        <!-- 姓名 + 身份证 -->
+        <div class="inline-group">
+            <div class="form-group">
+                <label>姓名 <span class="required">*</span></label>
+                <input type="text" id="fullName" placeholder="姓名" required />
+            </div>
+            <div class="form-group">
+                <label>身份证号码 <span class="required">*</span></label>
+                <input type="text" id="idNumber" placeholder="18 位身份证号" required />
+            </div>
+        </div>
+
+        <!-- 联系电话 + 无人机品牌 -->
+        <div class="inline-group">
+            <div class="form-group">
+                <label>联系电话 <span class="required">*</span></label>
+                <input type="tel" id="phone" placeholder="手机号" required />
+            </div>
+            <div class="form-group">
+                <label>无人机品牌 <span class="required">*</span></label>
+                <input type="text" id="droneBrand" placeholder="如：大疆" required />
+            </div>
+        </div>
+
+        <!-- 无人机型号/编号 -->
+        <div class="form-group">
+            <label>无人机型号 / 编号 <span class="required">*</span></label>
+            <input type="text" id="droneModel" placeholder="型号及机身编号" required />
+        </div>
+
+        <!-- 飞行区域：改为普通下拉（单选） -->
+        <div class="form-group">
+            <label>飞行区域 <span class="required">*</span></label>
+            <select id="flightArea" required>
+                <option value="">-- 请选择飞行区域 --</option>
+                <option value="衢九线">衢九线</option>
+                <option value="铜九线">铜九线</option>
+                <option value="湖口疏解线">湖口疏解线</option>
+                <option value="京九线">京九线</option>
+                <option value="昌九城际">昌九城际</option>
+                <option value="京港高铁">京港高铁</option>
+                <option value="武九线">武九线</option>
+                <option value="武九客专">武九客专</option>
+                <option value="西到线">西到线</option>
+                <option value="发西线">发西线</option>
+                <option value="沙浔线">沙浔线</option>
+                <option value="九江上行疏解线">九江上行疏解线</option>
+                <option value="武九西南联络线">武九西南联络线</option>
+                <option value="武九客专九江联络线">武九客专九江联络线</option>
+            </select>
+        </div>
+
+        <!-- 地点/里程 (选填) -->
+        <div class="form-group">
+            <label>地点 / 里程 / 接触网支柱编号 <span class="optional-tag">选填</span></label>
+            <input type="text" id="locationDetail" placeholder="例：京九线 K1313+200" />
+        </div>
+
+        <!-- 飞行用途 -->
+        <div class="form-group">
+            <label>飞行用途 <span class="required">*</span></label>
+            <div class="radio-group">
+                <label><input type="radio" name="purpose" value="无人机农业打药" /> 农业打药</label>
+                <label><input type="radio" name="purpose" value="无人机航拍" /> 航拍</label>
+                <label><input type="radio" name="purpose" value="无人机勘察测量" /> 勘察测量</label>
+                <label><input type="radio" name="purpose" value="应急救援" /> 应急救援</label>
+                <label><input type="radio" name="purpose" value="其他" /> 其他</label>
+            </div>
+            <input type="text" id="purposeOther" placeholder="选择「其他」时请备注" style="margin-top:8px;" />
+        </div>
+
+        <!-- 资质上传 -->
+        <div class="form-group">
+            <label>操作人员资质 <span class="required">*</span> <span class="hint">（拍照上传）</span></label>
+            <div class="upload-box" id="uploadBox">
+                <input type="file" id="certFile" accept="image/*" capture="environment" />
+                <span class="upload-label">📸 拍照 / 选择图片</span>
+                <div id="fileStatus" class="file-status">未选择文件</div>
+            </div>
+        </div>
+
+        <!-- ===== 宣传提醒：黑飞违法 + 数据真实 ===== -->
+        <div class="warning-box">
+            <div class="warn-title">⚠️ 依法飞行，安全第一</div>
+            <div class="warn-desc">
+                铁路沿线无人机 <strong>黑飞属于违法行为</strong>，可能危及铁路运行安全。<br />
+                请确保填写数据 <strong>真实、完整</strong>，如有虚假将承担相应责任。
+            </div>
+        </div>
+
+        <button type="submit" class="btn-submit">📨 提交报备</button>
+    </form>
+
+    <div id="toastMessage" class="toast">✅ 报备已提交</div>
+
+    <!-- ===== 底部 ===== -->
+    <div class="footer-note">中国铁路南昌局集团公司九江桥工段</div>
+</div>
+
+<script>
+    (function() {
+        var form = document.getElementById('reportForm');
+        var toast = document.getElementById('toastMessage');
+        var fileInput = document.getElementById('certFile');
+        var fileStatus = document.getElementById('fileStatus');
+        var uploadBox = document.getElementById('uploadBox');
+
+        fileInput.addEventListener('change', function(e) {
+            if (this.files && this.files.length > 0) {
+                var file = this.files[0];
+                var size = (file.size / 1024).toFixed(1);
+                fileStatus.textContent = '✅ 已选: ' + file.name + ' (' + size + ' KB)';
+                fileStatus.style.color = '#1a6e3a';
+            } else {
+                fileStatus.textContent = '未选择文件';
+                fileStatus.style.color = '#2a5f3a';
+            }
+        });
+
+        uploadBox.addEventListener('click', function(e) {
+            if (e.target.tagName !== 'INPUT') {
+                fileInput.click();
+            }
+        });
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            var unit = document.getElementById('unit').value.trim();
+            var name = document.getElementById('fullName').value.trim();
+            var idNum = document.getElementById('idNumber').value.trim();
+            var phone = document.getElementById('phone').value.trim();
+            var brand = document.getElementById('droneBrand').value.trim();
+            var model = document.getElementById('droneModel').value.trim();
+            var area = document.getElementById('flightArea').value;
+            var purposeRadio = document.querySelector('input[name="purpose"]:checked');
+            var certFile = fileInput.files && fileInput.files.length > 0;
+
+            function showError(msg) {
+                toast.textContent = '⚠️ ' + msg;
+                toast.className = 'toast show error';
+                setTimeout(function() { toast.classList.remove('show'); }, 3500);
+            }
+
+            if (!unit || !name || !idNum || !phone || !brand || !model) {
+                showError('请完整填写所有带 * 号的必填项');
+                return;
+            }
+            if (idNum.length < 15) {
+                showError('请填写有效的身份证号码');
+                return;
+            }
+            if (!area) {
+                showError('请选择飞行区域');
+                return;
+            }
+            if (!purposeRadio) {
+                showError('请选择飞行用途');
+                return;
+            }
+            if (!certFile) {
+                showError('请拍照上传操作人员资质证书');
+                return;
+            }
+
+            var otherText = document.getElementById('purposeOther').value.trim();
+            var purposeValue = purposeRadio.value;
+            if (purposeValue === '其他' && otherText) {
+                purposeValue = '其他: ' + otherText;
+            } else if (purposeValue === '其他' && !otherText) {
+                showError('请备注「其他」的具体用途');
+                return;
+            }
+
+            var formData = {
+                单位: unit,
+                姓名: name,
+                身份证: idNum,
+                联系电话: phone,
+                无人机品牌: brand,
+                型号编号: model,
+                飞行区域: area,
+                地点里程: document.getElementById('locationDetail').value.trim() || '未填写',
+                飞行用途: purposeValue,
+                资质文件: fileInput.files[0] ? fileInput.files[0].name : '未上传'
+            };
+
+            console.log('📋 报备数据:', formData);
+
+            toast.textContent = '✅ 报备已提交（演示模式）';
+            toast.className = 'toast show';
+            setTimeout(function() { toast.classList.remove('show'); }, 4000);
+        });
+    })();
+</script>
+
+</body>
+</html>
