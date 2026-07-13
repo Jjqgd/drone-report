@@ -58,12 +58,12 @@
         .success-notice{background:#fff8e1;border-left:4px solid #f39c12;border-radius:6px;padding:14px 16px;margin-top:16px;text-align:left;font-size:14px;color:#5a4a47;line-height:1.8}
         .success-notice strong{color:#c0392b}
         .success-notice .highlight{color:#e67e22;font-weight:700}
-        .loading-spinner{display:inline-block;width:20px;height:20px;border:3px solid rgba(255,255,255,0.3);border-radius:50%;border-top-color:#fff;animation:spin 0.8s ease-in-out infinite;vertical-align:middle;margin-right:8px}
-        @keyframes spin{to{transform:rotate(360deg)}}
         .datetime-group{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
         .datetime-group .form-group{flex:1 1 160px;margin-bottom:0}
         .datetime-group .range-sep{font-size:16px;color:#7a8aa3;font-weight:600;padding:0 2px;flex-shrink:0}
         .datetime-group input[type="datetime-local"]{padding:12px 14px}
+        .debug-info{background:#f8f9fa;border-radius:8px;padding:10px 14px;margin-top:12px;font-size:12px;color:#666;border:1px solid #e9ecef;word-break:break-all;display:none}
+        .debug-info.show{display:block}
     </style>
 </head>
 <body>
@@ -89,7 +89,7 @@
 
     <form id="reportForm" autocomplete="on">
 
-        <!-- ===== 隐藏配置区（保持您原有的配置不变） ===== -->
+        <!-- ===== 隐藏配置区 ===== -->
         <div class="hidden-config">
             <input type="text" id="dingWebhookInput" value="https://oapi.dingtalk.com/robot/send?access_token=b2ccb8e7bba75a6a234ac8343488dcd66b39da2dc23ae4307a2e0e2b567f13e5" />
             <input type="text" id="proxyUrlInput" value="https://dingtalk-proxy.netlify.app/.netlify/functions/dingtalk" />
@@ -170,7 +170,6 @@
             <input type="text" id="purposeOther" placeholder="选择「其他」时请备注" style="margin-top:8px;" />
         </div>
 
-        <!-- ===== 新增：作业起止时间 ===== -->
         <div class="form-group">
             <label>作业起止时间 <span class="required">*</span></label>
             <div class="datetime-group">
@@ -231,13 +230,18 @@
 
     <div id="toastMessage" class="toast">✅ 报备已提交</div>
 
+    <!-- 调试信息 -->
+    <div class="debug-info" id="debugInfo"></div>
+
     <div class="footer-note">中国铁路南昌局集团公司九江桥工段</div>
 </div>
 
 <script>
 (function() {
+    'use strict';
+
     // ================================================================
-    // 配置区 - 完全保留您原有的配置，未做任何修改
+    // 配置区
     // ================================================================
 
     var CONFIG_DING_WEBHOOK = 'https://oapi.dingtalk.com/robot/send?access_token=b2ccb8e7bba75a6a234ac8343488dcd66b39da2dc23ae4307a2e0e2b567f13e5';
@@ -255,11 +259,19 @@
     var pushDesc = document.getElementById('pushDesc');
     var dingWebhookInput = document.getElementById('dingWebhookInput');
     var proxyUrlInput = document.getElementById('proxyUrlInput');
+    var debugInfo = document.getElementById('debugInfo');
 
     dingWebhookInput.value = CONFIG_DING_WEBHOOK;
     proxyUrlInput.value = CONFIG_PROXY_URL;
 
-    // ===== 文件上传交互 =====
+    // 调试日志
+    function debugLog(msg) {
+        console.log('[DEBUG]', msg);
+        debugInfo.textContent += msg + '\n';
+        debugInfo.classList.add('show');
+    }
+
+    // ===== 文件上传 =====
     fileInput.addEventListener('change', function() {
         if (this.files && this.files.length > 0) {
             var file = this.files[0];
@@ -275,7 +287,7 @@
         if (e.target.tagName !== 'INPUT') fileInput.click();
     });
 
-    // ===== Toast 提示 =====
+    // ===== Toast =====
     function showToast(msg, isError) {
         toast.textContent = msg;
         toast.className = 'toast show' + (isError ? ' error' : '');
@@ -283,54 +295,26 @@
         toast._timer = setTimeout(function() { toast.classList.remove('show'); }, 5000);
     }
 
-    // ===== 发送钉钉消息（通过代理） =====
+    // ===== 发送钉钉（通过代理） =====
     function sendDingTalkViaProxy(proxyUrl, webhook, content) {
         var payload = {
             msgtype: 'text',
             text: { content: content }
         };
         var url = proxyUrl + '?webhook=' + encodeURIComponent(webhook);
+        debugLog('请求URL: ' + url);
+        debugLog('消息内容: ' + content.substring(0, 100) + '...');
         return fetch(url, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
         }).then(function(response) {
-            if (!response.ok) throw new Error('HTTP ' + response.status);
+            if (!response.ok) throw new Error('HTTP ' + response.status + ' ' + response.statusText);
             return response.json();
         });
     }
 
-    // ===== 构建报备消息 =====
-    function buildReportMessage(data) {
-        var lines = [
-            '🚁 **无人机飞行报备通知**',
-            '',
-            '📋 **报备信息**',
-            '-------------------',
-            '🏢 申请单位：' + data.unit,
-            '👤 申请人：' + data.name,
-            '🆔 身份证：' + data.idNum,
-            '📱 电话：' + data.phone,
-            '',
-            '✈️ 无人机品牌：' + data.brand,
-            '📦 型号/编号：' + data.model,
-            '',
-            '🛤️ 铁路线路：' + data.area,
-            '📍 地点里程：' + (data.locationDetail || '未填写'),
-            '🏘️ 行政区域：' + data.adminArea,
-            '',
-            '🎯 飞行用途：' + data.purpose,
-            '⏰ 作业起止时间：' + data.workTime,
-            '📏 飞行高度：' + data.heightMin + ' ~ ' + data.heightMax + ' 米',
-            '📏 距铁路距离：' + data.railMin + ' ~ ' + data.railMax + ' 米',
-            '📄 证件编码：' + data.certCode,
-            '',
-            '⏰ 提交时间：' + new Date().toLocaleString('zh-CN', {timeZone: 'Asia/Shanghai'})
-        ];
-        return lines.join('\n');
-    }
-
-    // ===== 格式化时间为可读字符串 =====
+    // ===== 格式化时间 =====
     function formatDateTime(dtStr) {
         if (!dtStr) return '未填写';
         try {
@@ -345,14 +329,15 @@
         }
     }
 
-    // ===== 表单提交 =====
+    // ===== 提交处理 =====
     form.addEventListener('submit', function(e) {
         e.preventDefault();
+        debugLog('===== 表单提交开始 =====');
 
         var dingWebhook = dingWebhookInput.value.trim();
         var proxyUrl = proxyUrlInput.value.trim();
 
-        // 获取表单数据
+        // 获取数据
         var unit = document.getElementById('unit').value.trim();
         var name = document.getElementById('fullName').value.trim();
         var idNum = document.getElementById('idNumber').value.trim();
@@ -374,7 +359,188 @@
 
         // ===== 表单验证 =====
         if (!unit || !name || !idNum || !phone || !brand || !model) {
-            showToast('⚠️ 请完整填写所有带 * 号的必填项', true); return;
+            showToast('⚠️ 请完整填写所有带 * 号的必填项', true);
+            debugLog('验证失败: 必填项不完整');
+            return;
         }
         if (idNum.length < 15 || idNum.length > 18) {
-            showToast('⚠️ 请填写有效的身份证号码（15-18位）', true); re
+            showToast('⚠️ 请填写有效的身份证号码（15-18位）', true);
+            debugLog('验证失败: 身份证长度不正确');
+            return;
+        }
+        if (!/^\d{11}$/.test(phone)) {
+            showToast('⚠️ 请填写正确的11位手机号', true);
+            debugLog('验证失败: 手机号格式不正确');
+            return;
+        }
+        if (!area) {
+            showToast('⚠️ 请选择飞行区域铁路线路', true);
+            debugLog('验证失败: 未选择铁路线路');
+            return;
+        }
+        if (!adminArea) {
+            showToast('⚠️ 请填写飞行行政区域（附近村庄）', true);
+            debugLog('验证失败: 未填写行政区域');
+            return;
+        }
+        if (!purposeRadio) {
+            showToast('⚠️ 请选择飞行用途', true);
+            debugLog('验证失败: 未选择用途');
+            return;
+        }
+        if (purposeRadio.value === '其他' && !purposeOther) {
+            showToast('⚠️ 请备注「其他」的具体用途', true);
+            debugLog('验证失败: 未填写其他用途备注');
+            return;
+        }
+        if (!workStart || !workEnd) {
+            showToast('⚠️ 请填写作业起止时间', true);
+            debugLog('验证失败: 未填写作业时间');
+            return;
+        }
+        if (new Date(workStart) >= new Date(workEnd)) {
+            showToast('⚠️ 作业结束时间必须晚于开始时间', true);
+            debugLog('验证失败: 时间逻辑错误');
+            return;
+        }
+        if (!flightHeightMin || isNaN(flightHeightMin) || parseFloat(flightHeightMin) < 0) {
+            showToast('⚠️ 请填写有效的飞行高度最低值', true);
+            debugLog('验证失败: 飞行高度最低值无效');
+            return;
+        }
+        if (!flightHeightMax || isNaN(flightHeightMax) || parseFloat(flightHeightMax) < 0) {
+            showToast('⚠️ 请填写有效的飞行高度最高值', true);
+            debugLog('验证失败: 飞行高度最高值无效');
+            return;
+        }
+        if (parseFloat(flightHeightMin) > parseFloat(flightHeightMax)) {
+            showToast('⚠️ 飞行高度最低值不能大于最高值', true);
+            debugLog('验证失败: 飞行高度区间错误');
+            return;
+        }
+        if (!railDistanceMin || isNaN(railDistanceMin) || parseFloat(railDistanceMin) < 0) {
+            showToast('⚠️ 请填写有效的距离铁路最近值', true);
+            debugLog('验证失败: 距离最近值无效');
+            return;
+        }
+        if (!railDistanceMax || isNaN(railDistanceMax) || parseFloat(railDistanceMax) < 0) {
+            showToast('⚠️ 请填写有效的距离铁路最远值', true);
+            debugLog('验证失败: 距离最远值无效');
+            return;
+        }
+        if (parseFloat(railDistanceMin) > parseFloat(railDistanceMax)) {
+            showToast('⚠️ 距离铁路最近值不能大于最远值', true);
+            debugLog('验证失败: 距离区间错误');
+            return;
+        }
+        if (!certCode) {
+            showToast('⚠️ 请填写操作证件编码', true);
+            debugLog('验证失败: 未填写证件编码');
+            return;
+        }
+        if (!dingWebhook || dingWebhook.indexOf('oapi.dingtalk.com') === -1) {
+            showToast('⚠️ 系统配置错误：钉钉 Webhook 无效', true);
+            debugLog('验证失败: Webhook无效');
+            return;
+        }
+        if (!proxyUrl || proxyUrl.indexOf('netlify.app') === -1) {
+            showToast('⚠️ 系统配置错误：代理地址无效', true);
+            debugLog('验证失败: 代理地址无效');
+            return;
+        }
+
+        debugLog('✅ 表单验证通过');
+
+        // ===== 构建消息 =====
+        var purposeValue = purposeRadio.value;
+        if (purposeValue === '其他' && purposeOther) purposeValue = '其他: ' + purposeOther;
+
+        var workTimeStr = formatDateTime(workStart) + ' ~ ' + formatDateTime(workEnd);
+        var now = new Date();
+        var timeStr = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-' + 
+            String(now.getDate()).padStart(2,'0') + ' ' + String(now.getHours()).padStart(2,'0') + ':' +
+            String(now.getMinutes()).padStart(2,'0');
+
+        var msgContent = '📋 无人机飞行报备通知\n\n' +
+            '🕐 提交时间：' + timeStr + '\n' +
+            '🏢 申请单位：' + unit + '\n' +
+            '👤 申请人：' + name + '\n' +
+            '🆔 身份证：' + idNum + '\n' +
+            '📞 电话：' + phone + '\n' +
+            '✈️ 品牌：' + brand + '\n' +
+            '🔢 型号/编号：' + model + '\n' +
+            '🚉 铁路线路：' + area + '\n' +
+            '📍 地点/里程：' + (locationDetail || '未填写') + '\n' +
+            '🏘️ 行政区域：' + adminArea + '\n' +
+            '🎯 用途：' + purposeValue + '\n' +
+            '⏰ 作业时间：' + workTimeStr + '\n' +
+            '📏 飞行高度：' + flightHeightMin + ' ~ ' + flightHeightMax + ' 米\n' +
+            '📏 距铁路距离：' + railDistanceMin + ' ~ ' + railDistanceMax + ' 米\n' +
+            '📄 证件编码：' + certCode;
+
+        debugLog('消息构建完成，长度: ' + msgContent.length);
+
+        // ===== 发送 =====
+        submitBtn.classList.add('loading');
+        submitBtn.textContent = '⏳ 提交中...';
+        showToast('⏳ 正在提交报备...', false);
+
+        debugLog('开始发送钉钉消息...');
+
+        sendDingTalkViaProxy(proxyUrl, dingWebhook, msgContent)
+            .then(function(result) {
+                debugLog('钉钉响应: ' + JSON.stringify(result));
+                console.log('✅ 钉钉响应:', result);
+                if (result.errcode === 0) {
+                    pushDesc.textContent = '✅ 已通过钉钉发送通知';
+                    successOverlay.classList.add('show');
+                    form.style.display = 'none';
+                    showToast('✅ 报备已提交！', false);
+                    debugLog('✅ 发送成功！');
+                } else {
+                    showToast('⚠️ 钉钉返回错误: ' + (result.errmsg || '未知错误'), true);
+                    debugLog('❌ 钉钉错误: errcode=' + result.errcode + ', errmsg=' + result.errmsg);
+                }
+            })
+            .catch(function(error) {
+                console.error('❌ 请求失败:', error);
+                showToast('⚠️ 发送失败: ' + error.message, true);
+                debugLog('❌ 请求异常: ' + error.message);
+                debugLog('请检查: 1.代理服务是否运行 2.网络是否正常');
+            })
+            .finally(function() {
+                submitBtn.classList.remove('loading');
+                submitBtn.textContent = '📨 提交报备';
+            });
+    });
+
+    // ===== 其他交互 =====
+    var otherInput = document.getElementById('purposeOther');
+    document.querySelectorAll('input[name="purpose"]').forEach(function(radio) {
+        radio.addEventListener('change', function() {
+            otherInput.placeholder = this.value === '其他' ? '请备注具体用途（必填）' : '选择「其他」时请备注';
+        });
+    });
+
+    // 设置默认时间
+    (function setDefaultTime() {
+        var now = new Date();
+        var localStr = now.toISOString().slice(0, 16);
+        document.getElementById('workStart').value = localStr;
+        var end = new Date(now.getTime() + 60 * 60 * 1000);
+        document.getElementById('workEnd').value = end.toISOString().slice(0, 16);
+    })();
+
+    console.log('===== 无人机报备系统已启动 =====');
+    console.log('✅ 代理地址:', CONFIG_PROXY_URL);
+    console.log('✅ 钉钉 Webhook:', CONFIG_DING_WEBHOOK);
+    console.log('✅ 调试信息已开启，请查看页面底部');
+    console.log('=====================================');
+    debugLog('系统启动成功！');
+    debugLog('代理地址: ' + CONFIG_PROXY_URL);
+    debugLog('Webhook: ' + CONFIG_DING_WEBHOOK.substring(0, 60) + '...');
+})();
+</script>
+
+</body>
+</html>
