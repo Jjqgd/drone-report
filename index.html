@@ -112,6 +112,30 @@
             margin-bottom: 0;
         }
 
+        /* 区间输入：两个输入框并列 */
+        .range-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+        }
+        .range-group .range-input {
+            flex: 1 1 80px;
+            min-width: 60px;
+        }
+        .range-group .range-sep {
+            font-size: 16px;
+            color: #7a8aa3;
+            font-weight: 600;
+            padding: 0 2px;
+            flex-shrink: 0;
+        }
+        .range-group .range-unit {
+            font-size: 13px;
+            color: #9aabb8;
+            flex-shrink: 0;
+        }
+
         .radio-group {
             display: flex;
             flex-wrap: wrap;
@@ -400,10 +424,10 @@
             </select>
         </div>
 
-        <!-- 地点/里程 -->
+        <!-- 地点/里程 —— 改为非必填 -->
         <div class="form-group">
-            <label>地点 / 里程 / 接触网支柱编号 <span class="required">*</span></label>
-            <input type="text" id="locationDetail" placeholder="例：京九线 K1313+200" required />
+            <label>地点 / 里程 / 接触网支柱编号 <span class="optional-tag">选填</span></label>
+            <input type="text" id="locationDetail" placeholder="例：京九线 K1313+200" />
         </div>
 
         <!-- 飞行行政区域（附近村庄） -->
@@ -425,15 +449,25 @@
             <input type="text" id="purposeOther" placeholder="选择「其他」时请备注" style="margin-top:8px;" />
         </div>
 
-        <!-- 飞行高度 + 距离铁路距离 -->
-        <div class="inline-group">
-            <div class="form-group">
-                <label>飞行高度（米） <span class="required">*</span></label>
-                <input type="number" id="flightHeight" placeholder="如：120" min="0" step="1" required />
+        <!-- ===== 飞行高度区间（最低~最高） ===== -->
+        <div class="form-group">
+            <label>飞行高度区间（米） <span class="required">*</span></label>
+            <div class="range-group">
+                <input type="number" id="flightHeightMin" class="range-input" placeholder="最低" min="0" step="1" required />
+                <span class="range-sep">~</span>
+                <input type="number" id="flightHeightMax" class="range-input" placeholder="最高" min="0" step="1" required />
+                <span class="range-unit">米</span>
             </div>
-            <div class="form-group">
-                <label>距离铁路距离（米） <span class="required">*</span></label>
-                <input type="number" id="railDistance" placeholder="如：50" min="0" step="1" required />
+        </div>
+
+        <!-- ===== 距离铁路距离区间（最低~最高） ===== -->
+        <div class="form-group">
+            <label>距离铁路距离区间（米） <span class="required">*</span></label>
+            <div class="range-group">
+                <input type="number" id="railDistanceMin" class="range-input" placeholder="最近" min="0" step="1" required />
+                <span class="range-sep">~</span>
+                <input type="number" id="railDistanceMax" class="range-input" placeholder="最远" min="0" step="1" required />
+                <span class="range-unit">米</span>
             </div>
         </div>
 
@@ -476,22 +510,18 @@
         // ================================================================
 
         // ---------- PushPlus 配置（多人接收） ----------
-        // 方式1：主题群发（推荐）—— 一人配置，主题内所有成员接收
         var CONFIG_TOKEN = '17a791bc78be42e1a9968d676fca0d01';           // PushPlus Token
-        var CONFIG_TOPIC = '20260713';         // PushPlus 主题ID（填写后推送给主题内所有人）
+        var CONFIG_TOPIC = '20260713';         // PushPlus 主题ID
 
-        // 方式2：多个独立Token推送（备选）
-        // 如果 CONFIG_TOPIC 有值，则优先使用主题群发
-        // 如需推送给多个独立账号，在这里添加多个 Token
+        // 多Token推送（备选）
         var CONFIG_TOKENS = [
             // 'token_账号1',
             // 'token_账号2',
-            // 'token_账号3'
         ];
 
         // ---------- 钉钉配置 ----------
-        var CONFIG_DING_WEBHOOK = 'https://oapi.dingtalk.com/robot/send?access_token=8f5124de9a509a213fa0fef3efa3876cb4c533618f97d0ddc317dcb575c2f34e';
-        var CONFIG_DING_SECRET = '';              // 加签密钥（如有）
+        var CONFIG_DING_WEBHOOK = 'https://oapi.dingtalk.com/robot/send?access_token=b2b57f4416df67ef292ca72be20e4e82769abaaf2f8502a3a41831bcd03cb7d9';
+        var CONFIG_DING_SECRET = 'SECa3e90a83519a3fc73adb757664a96f24a90f1cf7e82f35f8e3dc31ca22f9a193';              // 加签密钥（如有）
 
         // ================================================================
         // 以下代码无需修改
@@ -602,7 +632,7 @@
             }, 5000);
         }
 
-        // ---------- PushPlus 推送（支持主题和多Token） ----------
+        // ---------- PushPlus 推送 ----------
         function sendPushPlus(token, topic, title, content) {
             var data = {
                 token: token,
@@ -624,7 +654,7 @@
             });
         }
 
-        // ---------- 多Token推送（PushPlus 多人） ----------
+        // ---------- 多Token推送 ----------
         function sendPushPlusMultipleTokens(tokens, title, content) {
             var validTokens = tokens.filter(function(t) { return t && t.trim() !== ''; });
             if (validTokens.length === 0) {
@@ -658,8 +688,13 @@
             var adminArea = document.getElementById('adminArea').value.trim();
             var purposeRadio = document.querySelector('input[name="purpose"]:checked');
             var purposeOther = document.getElementById('purposeOther').value.trim();
-            var flightHeight = document.getElementById('flightHeight').value.trim();
-            var railDistance = document.getElementById('railDistance').value.trim();
+
+            // 区间字段
+            var flightHeightMin = document.getElementById('flightHeightMin').value.trim();
+            var flightHeightMax = document.getElementById('flightHeightMax').value.trim();
+            var railDistanceMin = document.getElementById('railDistanceMin').value.trim();
+            var railDistanceMax = document.getElementById('railDistanceMax').value.trim();
+
             var certCode = document.getElementById('certCode').value.trim();
             var certFile = fileInput.files && fileInput.files.length > 0;
 
@@ -686,10 +721,6 @@
                 showToast('⚠️ 请选择飞行区域铁路线路', true);
                 return;
             }
-            if (!locationDetail) {
-                showToast('⚠️ 请填写地点/里程', true);
-                return;
-            }
             if (!adminArea) {
                 showToast('⚠️ 请填写飞行行政区域（附近村庄）', true);
                 return;
@@ -702,14 +733,35 @@
                 showToast('⚠️ 请备注「其他」的具体用途', true);
                 return;
             }
-            if (!flightHeight || isNaN(flightHeight) || parseFloat(flightHeight) < 0) {
-                showToast('⚠️ 请填写有效的飞行高度（米）', true);
+
+            // 校验飞行高度区间
+            if (!flightHeightMin || isNaN(flightHeightMin) || parseFloat(flightHeightMin) < 0) {
+                showToast('⚠️ 请填写有效的飞行高度最低值（米）', true);
                 return;
             }
-            if (!railDistance || isNaN(railDistance) || parseFloat(railDistance) < 0) {
-                showToast('⚠️ 请填写有效的距离铁路距离（米）', true);
+            if (!flightHeightMax || isNaN(flightHeightMax) || parseFloat(flightHeightMax) < 0) {
+                showToast('⚠️ 请填写有效的飞行高度最高值（米）', true);
                 return;
             }
+            if (parseFloat(flightHeightMin) > parseFloat(flightHeightMax)) {
+                showToast('⚠️ 飞行高度最低值不能大于最高值', true);
+                return;
+            }
+
+            // 校验距离铁路区间
+            if (!railDistanceMin || isNaN(railDistanceMin) || parseFloat(railDistanceMin) < 0) {
+                showToast('⚠️ 请填写有效的距离铁路最近值（米）', true);
+                return;
+            }
+            if (!railDistanceMax || isNaN(railDistanceMax) || parseFloat(railDistanceMax) < 0) {
+                showToast('⚠️ 请填写有效的距离铁路最远值（米）', true);
+                return;
+            }
+            if (parseFloat(railDistanceMin) > parseFloat(railDistanceMax)) {
+                showToast('⚠️ 距离铁路最近值不能大于最远值', true);
+                return;
+            }
+
             if (!certCode) {
                 showToast('⚠️ 请填写操作证件编码', true);
                 return;
@@ -741,11 +793,11 @@
                 无人机品牌: brand,
                 型号编号: model,
                 飞行区域铁路线路: area,
-                地点里程: locationDetail,
+                地点里程: locationDetail || '未填写',
                 飞行行政区域: adminArea,
                 飞行用途: purposeValue,
-                飞行高度_米: flightHeight,
-                距离铁路距离_米: railDistance,
+                飞行高度区间: flightHeightMin + ' ~ ' + flightHeightMax + ' 米',
+                距离铁路距离区间: railDistanceMin + ' ~ ' + railDistanceMax + ' 米',
                 操作证件编码: certCode,
                 资质文件: fileInput.files[0] ? fileInput.files[0].name : '未上传（选填）'
             };
@@ -770,8 +822,8 @@
                 '📍 地点/里程：' + formData.地点里程 + '\n' +
                 '🏘️ 行政区域：' + formData.飞行行政区域 + '\n' +
                 '🎯 用途：' + formData.飞行用途 + '\n' +
-                '📏 飞行高度：' + formData.飞行高度_米 + ' 米\n' +
-                '📏 距铁路距离：' + formData.距离铁路距离_米 + ' 米\n' +
+                '📏 飞行高度：' + formData.飞行高度区间 + '\n' +
+                '📏 距铁路距离：' + formData.距离铁路距离区间 + '\n' +
                 '🪪 证件编码：' + formData.操作证件编码 + '\n' +
                 '📎 资质照片：' + formData.资质文件;
 
@@ -783,7 +835,6 @@
             showToast('⏳ 正在提交报备，请稍候...', false);
 
             var pushPromises = [];
-            var pushChannelNames = [];
 
             // 1. PushPlus 主题群发（多人）
             if (hasPushPlus && hasTopic) {
@@ -798,10 +849,9 @@
                             return { channel: 'PushPlus主题', success: false, error: error };
                         })
                 );
-                pushChannelNames.push('PushPlus主题');
             }
 
-            // 2. PushPlus 多Token推送（多人独立账号）
+            // 2. PushPlus 多Token推送
             if (hasMultipleTokens) {
                 var validTokens = CONFIG_TOKENS.filter(function(t) { return t && t.trim() !== ''; });
                 pushPromises.push(
@@ -822,10 +872,9 @@
                             return { channel: 'PushPlus多Token', success: false, error: error };
                         })
                 );
-                pushChannelNames.push('PushPlus多Token');
             }
 
-            // 3. 钉钉推送（群聊）
+            // 3. 钉钉推送
             if (hasDingTalk) {
                 pushPromises.push(
                     sendDingTalk(dingWebhook, dingSecret, msgContent)
@@ -842,10 +891,8 @@
                             return { channel: '钉钉', success: false, error: error };
                         })
                 );
-                pushChannelNames.push('钉钉');
             }
 
-            // 等待所有推送完成
             Promise.all(pushPromises)
                 .then(function(results) {
                     var successChannels = results.filter(function(r) { return r.success; });
@@ -901,14 +948,8 @@
         if (CONFIG_DING_WEBHOOK === 'https://oapi.dingtalk.com/robot/send?access_token=你的access_token') {
             console.warn('⚠️ 钉钉 Webhook 未配置！');
         }
-        if (CONFIG_TOKEN === '你的Token' && CONFIG_DING_WEBHOOK === 'https://oapi.dingtalk.com/robot/send?access_token=你的access_token') {
-            console.warn('⚠️ 请至少配置一个推送通道（PushPlus 或 钉钉）');
-        }
-        if (CONFIG_DING_SECRET && CONFIG_DING_SECRET !== '') {
-            console.info('✅ 钉钉加签已启用');
-        }
         if (CONFIG_TOPIC && CONFIG_TOPIC !== 'topic_xxxxx' && CONFIG_TOPIC !== '') {
-            console.info('✅ PushPlus 主题已配置: ' + CONFIG_TOPIC + '，将推送给主题内所有成员');
+            console.info('✅ PushPlus 主题已配置: ' + CONFIG_TOPIC);
         }
         if (CONFIG_TOKENS && CONFIG_TOKENS.length > 0) {
             console.info('✅ PushPlus 多Token已配置: ' + CONFIG_TOKENS.length + ' 个账号');
@@ -917,5 +958,4 @@
 </script>
 
 </body>
-</html>
 </html>
