@@ -227,7 +227,7 @@
             display: none;
             margin-top: 8px;
             width: 100%;
-            height: 120px;
+            height: 200px;
             border-radius: 8px;
             border: 1.5px solid #dce4ed;
             overflow: hidden;
@@ -242,6 +242,12 @@
             width: 100%;
             height: 100%;
             border: none;
+        }
+        
+        @media screen and (min-width: 768px) {
+            .map-preview {
+                height: 280px;
+            }
         }
         
         .inline-group {
@@ -856,37 +862,30 @@
     'use strict';
 
     // ================================================================
-    // 🔧 配置区 - 多通道推送
+    // 配置区 - 多通道推送
     // ================================================================
     var CONFIG = {
-        // ========== 钉钉机器人 ==========
+        // 钉钉机器人
         dingWebhook: 'https://oapi.dingtalk.com/robot/send?access_token=b2ccb8e7bba75a6a234ac8343488dcd66b39da2dc23ae4307a2e0e2b567f13e5',
         
-        // ========== PushPlus 群组推送 ==========
-        // 方式1：群组编码（推荐，群组内所有成员都会收到）
-        pushplusGroupCode: '20260713',  // 填入群组编码，如：group_abc123def456
+        // PushPlus 群组推送
+        pushplusGroupCode: '20260713',
         
-        // 方式2：多Token推送（独立用户，不使用群组时启用）
-        pushplusTokens: [
-            // 'token_管理员A',
-            // 'token_管理员B',
-            // 'token_值班领导',
-        ],
+        // 多Token推送（备用）
+        pushplusTokens: [],
         
-        // ========== 代理服务器 ==========
+        // 代理服务器
         proxyUrl: 'https://dingtalk-proxy.netlify.app/.netlify/functions',
         
-        // ========== 定位配置 ==========
+        // 定位配置
         locationTimeout: 15000,
         enableHighAccuracy: true
     };
-    // ================================================================
 
     // 合并所有PushPlus目标
     function getPushPlusTargets() {
         var targets = [];
         
-        // 添加群组编码
         if (CONFIG.pushplusGroupCode && CONFIG.pushplusGroupCode.trim()) {
             targets.push({
                 token: CONFIG.pushplusGroupCode.trim(),
@@ -895,7 +894,6 @@
             });
         }
         
-        // 添加独立Token
         if (CONFIG.pushplusTokens && CONFIG.pushplusTokens.length > 0) {
             CONFIG.pushplusTokens.forEach(function(token, index) {
                 if (token && token.trim()) {
@@ -1048,7 +1046,10 @@
         );
     }
 
+    // ===== 反向地理编码（优化版 - 只填地名，不填经纬度） =====
     function reverseGeocode(lat, lng) {
+        showLocationStatus('locating', '🔄 正在解析地址...');
+        
         var nominatimUrl = 'https://nominatim.openstreetmap.org/reverse?' +
                           'format=json&lat=' + lat + '&lon=' + lng +
                           '&zoom=18&addressdetails=1';
@@ -1065,48 +1066,94 @@
         })
         .then(function(data) {
             var address = '';
-            if (data && data.display_name) {
-                address = data.display_name;
-            } else if (data && data.address) {
+            
+            if (data && data.address) {
                 var addr = data.address;
                 var parts = [];
-                if (addr.province) parts.push(addr.province);
-                if (addr.city) parts.push(addr.city);
-                if (addr.county) parts.push(addr.county);
-                if (addr.town) parts.push(addr.town);
-                if (addr.village) parts.push(addr.village);
+                
+                // 省份
+                if (addr.province || addr.state) {
+                    var province = (addr.province || addr.state || '').replace(/省|市|自治区|特别行政区/g, '');
+                    if (province) parts.push(province);
+                }
+                
+                // 城市
+                if (addr.city || addr.prefecture) {
+                    var city = (addr.city || addr.prefecture || '').replace(/市|自治州|地区/g, '');
+                    if (city) parts.push(city);
+                }
+                
+                // 区县
+                if (addr.county || addr.district) {
+                    var county = (addr.county || addr.district || '').replace(/区|县|县级市/g, '');
+                    if (county) parts.push(county);
+                }
+                
+                // 乡镇/街道
+                if (addr.town || addr.township) {
+                    var town = (addr.town || addr.township || '').replace(/镇|乡|街道/g, '');
+                    if (town) parts.push(town);
+                }
+                
+                // 村庄/社区
+                if (addr.village || addr.hamlet || addr.suburb || addr.neighbourhood) {
+                    var village = (addr.village || addr.hamlet || addr.suburb || addr.neighbourhood || '');
+                    if (village) parts.push(village);
+                }
+                
                 address = parts.join('');
             }
             
-            if (address) {
+            // 如果 Nominatim 没有解析到中文地址
+            if (!address && data && data.display_name) {
+                address = data.display_name;
+            }
+            
+            // 最终处理
+            if (address && address.length > 2) {
+                address = address.replace(/\s+/g, '');
+                address = address.replace(/^\d+,?\s*/, '');
+                
                 locationData.address = address;
                 adminAreaInput.value = address;
-                showLocationStatus('success', '✅ 定位成功！地址已自动填充');
+                
+                showLocationStatus('success', '✅ 定位成功！已自动填写地址');
                 btnLocate.className = 'btn-locate success';
                 btnLocate.innerHTML = '✅ 已定位';
+                
                 setTimeout(function() {
                     if (btnLocate.innerHTML === '✅ 已定位') {
                         btnLocate.className = 'btn-locate';
                         btnLocate.innerHTML = '📍 定位';
                     }
                 }, 3000);
+                
             } else {
-                var coordAddress = lat.toFixed(6) + ', ' + lng.toFixed(6);
-                locationData.address = coordAddress;
-                adminAreaInput.value = '坐标：' + coordAddress + '（请手动修改为具体地址）';
-                showLocationStatus('success', '✅ 已获取坐标，请手动修改为具体地址');
+                // 无法解析地址，留空让用户手动填写
+                locationData.address = null;
+                adminAreaInput.value = '';
+                adminAreaInput.placeholder = '请手动输入附近村庄名称';
+                
+                showLocationStatus('success', '✅ 已获取位置（坐标已记录），请手动填写附近村庄名称');
                 btnLocate.className = 'btn-locate success';
-                btnLocate.innerHTML = '✅ 坐标已获取';
+                btnLocate.innerHTML = '✅ 已定位';
+                
+                adminAreaInput.focus();
             }
-            adminAreaInput.focus();
+            
         })
         .catch(function(error) {
-            var coordAddress = lat.toFixed(4) + ', ' + lng.toFixed(4);
-            locationData.address = coordAddress;
-            adminAreaInput.value = '坐标：' + coordAddress + '（请手动修改为具体地址）';
-            showLocationStatus('success', '✅ 已获取坐标，请手动填写具体地址');
+            console.warn('[地址解析失败]', error.message);
+            
+            locationData.address = null;
+            adminAreaInput.value = '';
+            adminAreaInput.placeholder = '请手动输入附近村庄名称';
+            
+            showLocationStatus('success', '✅ 已获取GPS坐标，请手动输入附近村庄名称');
             btnLocate.className = 'btn-locate success';
-            btnLocate.innerHTML = '✅ 坐标已获取';
+            btnLocate.innerHTML = '✅ 坐标已记录';
+            
+            adminAreaInput.focus();
         });
     }
 
@@ -1201,11 +1248,7 @@
         return formatDateTime(new Date().toISOString());
     }
 
-    // ================================================================
-    // 🔥 核心推送函数
-    // ================================================================
-
-    // 发送钉钉消息
+    // ===== 发送钉钉消息 =====
     function sendDingTalk(webhook, content) {
         var payload = {
             msgtype: 'text',
@@ -1233,7 +1276,7 @@
         });
     }
 
-    // 发送PushPlus（群组+多人）
+    // ===== 发送PushPlus（群组+多人） =====
     function sendPushPlusToAll(title, content) {
         var targets = getPushPlusTargets();
         
@@ -1253,7 +1296,6 @@
         console.log('[PushPlus] 📤 准备向 ' + targets.length + ' 个目标推送');
         console.log('[PushPlus] 目标列表:', targets.map(function(t) { return t.type + ':' + t.name; }).join(', '));
 
-        // 为每个目标创建推送请求
         var sendPromises = targets.map(function(target) {
             var payload = {
                 token: target.token,
@@ -1292,14 +1334,12 @@
             });
         });
 
-        // 等待所有推送完成
         return Promise.all(sendPromises).then(function(results) {
             var successCount = results.filter(function(r) { return r.success; }).length;
             var failCount = results.filter(function(r) { return !r.success; }).length;
             
             console.log('[PushPlus] 📊 推送统计: 成功' + successCount + '/' + targets.length + ', 失败' + failCount);
             
-            // 构建详细的推送结果
             var successTargets = results.filter(function(r) { return r.success; }).map(function(r) {
                 return r.target.type + '[' + r.target.name + ']';
             });
@@ -1379,13 +1419,10 @@
         });
     });
 
-    // ================================================================
-    // 📨 表单提交 - 多通道推送
-    // ================================================================
+    // ===== 表单提交 =====
     form.addEventListener('submit', function(e) {
         e.preventDefault();
         
-        // 收集数据
         var unit = document.getElementById('unit').value.trim();
         var name = document.getElementById('fullName').value.trim();
         var idNum = document.getElementById('idNumber').value.trim();
@@ -1459,13 +1496,12 @@
             return;
         }
 
-        // ===== 构建消息 =====
         var purpose = purposeRadio.value;
         if (purpose === '其他' && purposeOther) {
             purpose += '（' + purposeOther + '）';
         }
 
-        // 钉钉消息（纯文本）
+        // 钉钉消息
         var dingContent = '【无人机飞行报备通知】\n\n';
         dingContent += '📋 申请单位：' + unit + '\n';
         dingContent += '👤 申请人：' + name + '\n';
@@ -1499,7 +1535,7 @@
         
         dingContent += '\n\n⚠️ 请工作人员在24小时内核实并联系申请人确认飞行事宜。';
 
-        // PushPlus消息（HTML格式）
+        // PushPlus消息
         var pushplusContent = '<h2 style="color:#c0392b;margin-bottom:12px;">🚁 无人机飞行报备通知</h2>';
         pushplusContent += '<table style="width:100%;border-collapse:collapse;margin-top:10px;font-size:14px;">';
         pushplusContent += '<tr><td style="padding:8px 10px;border:1px solid #e8e8e8;background:#f5f5f5;width:30%;"><strong>📋 申请单位</strong></td><td style="padding:8px 10px;border:1px solid #e8e8e8;">' + unit + '</td></tr>';
@@ -1533,33 +1569,26 @@
         pushplusContent += '<strong style="color:#c0392b;">⚠️ 请工作人员在24小时内核实并联系申请人确认飞行事宜。</strong>';
         pushplusContent += '</div>';
         
-        // 微信推送标题
         var pushplusTitle = '【无人机报备】' + name + ' - ' + unit + ' - ' + area;
 
-        // ===== 禁用按钮 =====
         submitBtn.classList.add('loading');
         submitBtn.textContent = '⏳ 提交中...';
         submitBtn.disabled = true;
 
-        // ===== 并发推送所有通道 =====
         var allPushPromises = [];
 
-        // 1. 钉钉推送
         allPushPromises.push(
             sendDingTalk(CONFIG.dingWebhook, dingContent)
         );
 
-        // 2. PushPlus群组+多人推送
         allPushPromises.push(
             sendPushPlusToAll(pushplusTitle, pushplusContent)
         );
 
-        // ===== 处理推送结果 =====
         Promise.all(allPushPromises).then(function(results) {
             console.log('[推送] 📊 全部推送完成');
             console.log('[推送] 结果:', results);
 
-            // 统计结果
             var totalSuccess = 0;
             var totalFail = 0;
             var successChannels = [];
@@ -1570,7 +1599,6 @@
                     totalSuccess++;
                     
                     if (result.channel === '微信' && result.successTargets) {
-                        // PushPlus详细结果
                         successChannels.push('微信(' + result.successCount + '人)');
                         if (result.failCount > 0) {
                             failChannels.push('微信部分失败(' + result.failCount + '人)');
@@ -1587,7 +1615,6 @@
             });
 
             if (totalSuccess > 0) {
-                // ✅ 至少一个通道成功
                 form.style.display = 'none';
                 successOverlay.classList.add('show');
                 
@@ -1600,7 +1627,6 @@
                 showToast('✅ 报备提交成功！已通知' + successChannels.join('、'), false);
                 window.scrollTo({ top: 0, behavior: 'smooth' });
                 
-                // 重置表单
                 form.reset();
                 fileStatus.textContent = '未选择文件（选填）';
                 fileStatus.style.color = '#9aabb8';
@@ -1617,7 +1643,6 @@
                     timestamp: null
                 };
             } else {
-                // ❌ 全部失败
                 showToast('⚠️ 所有推送渠道均失败，请检查网络后重试', true);
                 submitBtn.classList.remove('loading');
                 submitBtn.textContent = '📨 重新提交';
@@ -1660,7 +1685,7 @@
 
     // ===== 初始化日志 =====
     console.log('╔══════════════════════════════════════╗');
-    console.log('║  🚁 无人机报备系统 v2.0              ║');
+    console.log('║  🚁 无人机报备系统 v2.1              ║');
     console.log('║  九江桥工段 · 多通道推送              ║');
     console.log('╠══════════════════════════════════════╣');
     console.log('║  📡 推送通道:                        ║');
@@ -1676,7 +1701,8 @@
         console.log('║  ├─ PushPlus微信: ⚠️ 未配置');
     }
     
-    console.log('║  ├─ 定位功能: 已启用                 ║');
+    console.log('║  ├─ 定位功能: 已启用（自动填地名）    ║');
+    console.log('║  ├─ 地图预览: 200px                  ║');
     console.log('║  └─ 环境: ' + (isWechat ? '微信' : (isIOS ? 'iOS' : (isAndroid ? 'Android' : 'PC'))) + '                      ║');
     console.log('╚══════════════════════════════════════╝');
 
