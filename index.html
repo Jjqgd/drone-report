@@ -4,59 +4,56 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
     <meta name="format-detection" content="telephone=no" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <title>九江桥工段 · 无人机报备</title>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; -webkit-text-size-adjust: 100%; }
-        html { font-size: 16px; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", "Microsoft YaHei", Arial, sans-serif; background: #eef2f7; min-height: 100vh; padding: 8px; display: flex; justify-content: center; align-items: flex-start; -webkit-overflow-scrolling: touch; }
-        .container { max-width: 520px; width: 100%; background: #fff; border-radius: 14px; box-shadow: 0 4px 20px rgba(0,0,0,0.06); padding: 16px 14px 20px; }
-        .main-title { font-size: 20px; font-weight: 700; color: #c0392b; text-align: center; line-height: 1.4; margin-bottom: 2px; }
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        html { font-size: 16px; -webkit-text-size-adjust: 100%; }
+        body { font-family: "PingFang SC", "Helvetica Neue", "Microsoft YaHei", Arial, sans-serif; background: #eef2f7; min-height: 100vh; padding: 8px; display: block; }
+        .container { max-width: 520px; margin: 0 auto; background: #fff; border-radius: 14px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); padding: 16px 14px 20px; }
+        .main-title { font-size: 20px; font-weight: 700; color: #c0392b; text-align: center; line-height: 1.3; margin-bottom: 4px; }
         .subhead { font-size: 12px; color: #7a8aa3; text-align: center; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid #eef2f7; }
         .form-group { margin-bottom: 14px; }
         label { display: block; font-weight: 600; font-size: 14px; color: #1f3349; margin-bottom: 4px; }
-        label .required { color: #c0392b; margin-left: 2px; }
+        label .required { color: #c0392b; }
         label .hint { font-weight: 400; font-size: 11px; color: #9aabb8; margin-left: 4px; }
-        input, select, textarea { width: 100%; padding: 12px 14px; font-size: 15px; border: 1.5px solid #dce4ed; border-radius: 8px; background: #fafcff; transition: .2s; color: #1a2b3e; -webkit-appearance: none; appearance: none; font-family: inherit; line-height: 1.4; }
-        select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239aabb8' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 36px; }
-        input:focus, select:focus, textarea:focus { outline: none; border-color: #c0392b; box-shadow: 0 0 0 3px rgba(192,57,43,0.08); background: #fff; }
-        input::placeholder, textarea::placeholder { color: #b0c0ce; font-size: 14px; }
+        input, select, textarea { width: 100%; padding: 12px 14px; font-size: 15px; border: 1.5px solid #dce4ed; border-radius: 8px; background: #fafcff; color: #1a2b3e; font-family: inherit; line-height: 1.4; }
+        select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239aabb8' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 36px; -webkit-appearance: none; appearance: none; }
+        input:focus, select:focus, textarea:focus { outline: none; border-color: #c0392b; background: #fff; }
+        input::-webkit-input-placeholder, textarea::-webkit-input-placeholder { color: #b0c0ce; font-size: 14px; }
+        input::-moz-placeholder, textarea::-moz-placeholder { color: #b0c0ce; font-size: 14px; }
+        input:-ms-input-placeholder, textarea:-ms-input-placeholder { color: #b0c0ce; font-size: 14px; }
         .location-input-group { display: flex; gap: 8px; align-items: center; }
         .location-input-group input { flex: 1; min-width: 0; }
-        .btn-locate { flex-shrink: 0; width: 48px; height: 48px; min-width: 48px; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: #fff; border: none; border-radius: 12px; cursor: pointer; touch-action: manipulation; -webkit-appearance: none; appearance: none; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 14px rgba(79,172,254,0.35); transition: all 0.3s; }
-        .btn-locate:active { transform: scale(0.92); }
-        .btn-locate.success { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
+        .btn-locate { flex-shrink: 0; width: 48px; height: 48px; min-width: 48px; background: #4facfe; color: #fff; border: none; border-radius: 12px; cursor: pointer; font-size: 24px; line-height: 48px; text-align: center; padding: 0; box-shadow: 0 4px 12px rgba(79,172,254,0.3); }
+        .btn-locate:active { background: #3d8fd9; }
+        .btn-locate.success { background: #43e97b; }
         .inline-group { display: flex; flex-wrap: wrap; gap: 10px; }
         .inline-group .form-group { flex: 1 1 150px; margin-bottom: 0; }
         .range-group { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
-        .range-group .range-input { flex: 1 1 60px; min-width: 50px; max-width: 80px; }
-        .range-group .range-sep { font-size: 14px; color: #7a8aa3; font-weight: 600; padding: 0 2px; flex-shrink: 0; }
-        .range-group .range-unit { font-size: 12px; color: #9aabb8; flex-shrink: 0; }
+        .range-group input { flex: 1 1 60px; min-width: 50px; max-width: 80px; }
+        .range-group span { font-size: 14px; color: #7a8aa3; flex-shrink: 0; }
         .radio-group { display: flex; flex-wrap: wrap; gap: 8px 12px; background: #f7faff; padding: 10px 12px; border-radius: 10px; border: 1.5px solid #e8eff6; }
         .radio-group label { display: inline-flex; align-items: center; gap: 5px; font-weight: 400; font-size: 14px; color: #1f3349; cursor: pointer; padding: 2px 0; margin-bottom: 0; }
         .radio-group input[type="radio"] { width: 18px; height: 18px; accent-color: #c0392b; margin: 0; flex-shrink: 0; }
         .purpose-other-input { margin-top: 8px; display: none; }
         .purpose-other-input.show { display: block; }
-        .upload-box { border: 2px dashed #d0dceb; border-radius: 10px; padding: 16px 10px; background: #f8fbfe; text-align: center; cursor: pointer; transition: .2s; touch-action: manipulation; -webkit-user-select: none; user-select: none; }
-        .upload-box:active { background: #eef4fa; border-color: #c0392b; }
+        .upload-box { border: 2px dashed #d0dceb; border-radius: 10px; padding: 16px 10px; background: #f8fbfe; text-align: center; cursor: pointer; }
         .upload-box input[type="file"] { display: none; }
-        .upload-label { display: inline-block; background: #e6eef7; padding: 8px 20px; border-radius: 30px; font-size: 15px; font-weight: 500; color: #1f3b5c; cursor: pointer; pointer-events: none; }
+        .upload-label { display: inline-block; background: #e6eef7; padding: 8px 20px; border-radius: 30px; font-size: 15px; font-weight: 500; color: #1f3b5c; }
         .file-status { margin-top: 8px; font-size: 13px; color: #2a5f3a; word-break: break-all; }
         .warning-box { background: #fef6f5; border-left: 4px solid #c0392b; border-radius: 6px; padding: 10px 12px; margin: 6px 0 14px 0; }
         .warning-box .warn-title { font-size: 14px; font-weight: 700; color: #c0392b; }
         .warning-box .warn-desc { font-size: 13px; color: #5a4a47; margin-top: 3px; line-height: 1.5; }
-        .btn-submit { width: 100%; padding: 14px; background: #c0392b; color: #fff; font-size: 18px; font-weight: 700; border: none; border-radius: 30px; cursor: pointer; letter-spacing: 1px; margin-top: 2px; box-shadow: 0 4px 16px rgba(192,57,43,0.25); touch-action: manipulation; -webkit-appearance: none; appearance: none; }
-        .btn-submit:active { transform: scale(0.97); background: #a03226; }
+        .btn-submit { display: block; width: 100%; padding: 14px; background: #c0392b; color: #fff; font-size: 18px; font-weight: 700; border: none; border-radius: 30px; cursor: pointer; text-align: center; letter-spacing: 1px; box-shadow: 0 4px 16px rgba(192,57,43,0.25); }
+        .btn-submit:active { background: #a03226; }
         .btn-submit.loading { opacity: .7; pointer-events: none; }
         .toast { display: none; background: #1d3b2f; color: #fff; padding: 12px 16px; border-radius: 30px; text-align: center; margin-top: 12px; font-weight: 500; font-size: 14px; word-break: break-all; }
-        .toast.show { display: block; animation: fadeInUp 0.3s ease; }
+        .toast.show { display: block; }
         .toast.error { background: #8b2c2c; }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-        .optional-tag { font-size: 11px; color: #9aabb8; background: #f0f3f7; padding: 1px 8px; border-radius: 14px; font-weight: 400; margin-left: 4px; }
+        .optional-tag { font-size: 11px; color: #9aabb8; background: #f0f3f7; padding: 1px 8px; border-radius: 14px; margin-left: 4px; }
         .success-overlay { display: none; text-align: center; padding: 24px 16px; background: #f0faf5; border-radius: 10px; border: 2px solid #2d7a4f; margin-bottom: 14px; }
-        .success-overlay.show { display: block; animation: fadeInUp 0.4s ease; }
+        .success-overlay.show { display: block; }
         .success-overlay .icon { font-size: 40px; margin-bottom: 8px; }
         .success-overlay .title { font-size: 18px; font-weight: 700; color: #2d7a4f; }
         .success-overlay .desc { font-size: 13px; color: #5a6a7a; margin-top: 4px; line-height: 1.6; white-space: pre-line; }
@@ -65,17 +62,15 @@
         .success-notice strong { color: #c0392b; }
         .datetime-row { display: flex; gap: 6px; align-items: center; }
         .datetime-row input { flex: 1; min-width: 0; padding: 12px 8px; font-size: 14px; }
-        .datetime-row .range-sep { font-size: 13px; color: #7a8aa3; font-weight: 600; flex-shrink: 0; padding: 0 3px; }
+        .datetime-row span { font-size: 13px; color: #7a8aa3; flex-shrink: 0; padding: 0 3px; }
         .footer-note { margin-top: 16px; font-size: 14px; font-weight: 600; color: #c0392b; text-align: center; border-top: 1px solid #eef2f7; padding-top: 12px; }
         .location-tip { display: none; margin-top: 6px; padding: 10px 12px; background: #f0f8ff; border-radius: 6px; border-left: 3px solid #4facfe; font-size: 12px; color: #1a5276; line-height: 1.5; }
         .location-tip.show { display: block; }
-        .location-tip .coord-text { font-family: monospace; font-weight: 600; color: #1f3349; }
-        @supports (-webkit-touch-callout: none) { input, select, textarea { font-size: 16px !important; } }
-        @media screen and (max-width: 360px) { .container { padding: 12px 10px 16px; } .main-title { font-size: 18px; } input, select, textarea { padding: 10px 12px; font-size: 14px; } .btn-locate { width: 42px; height: 42px; min-width: 42px; } }
-        @media screen and (min-width: 500px) { .container { padding: 20px 22px 24px; } .main-title { font-size: 22px; } input, select, textarea { padding: 14px 16px; } }
+        @media screen and (max-width: 360px) { .container { padding: 12px 10px 16px; } .main-title { font-size: 18px; } input, select, textarea { padding: 10px 12px; font-size: 14px; } .btn-locate { width: 42px; height: 42px; min-width: 42px; line-height: 42px; font-size: 20px; } }
     </style>
 </head>
 <body>
+
 <div class="container">
     <div class="main-title">九江桥工段铁路沿线无人机飞行报备</div>
     <div class="subhead">铁路沿线安全报备 · 请如实填写</div>
@@ -85,21 +80,21 @@
         <div class="title">报备提交成功！</div>
         <div class="desc" id="pushDesc">通知已发送至管理部门</div>
         <div class="success-notice">
-            <strong>📢 温馨提示：</strong><br />感谢您的配合！<br />工作人员将在 <span class="highlight">24小时内</span> 与您取得联系，<br />
+            <strong>📢 温馨提示：</strong><br />感谢您的配合！<br />工作人员将在 <span style="color:#e67e22;font-weight:700;">24小时内</span> 与您取得联系，<br />
             <strong style="color:#c0392b;">在未接到工作人员电话确认前，严禁擅自飞行！</strong><br />如有疑问，请联系：九江桥工段 安设办 ☎️ 0792-7022335
         </div>
         <button class="btn-continue" onclick="location.reload()">继续报备</button>
     </div>
 
     <form id="reportForm" autocomplete="on">
-        <div class="form-group"><label>申请单位 <span class="required">*</span></label><input type="text" id="unit" placeholder="请输入申请单位名称" required autocomplete="organization" /></div>
-        <div class="form-group"><label>申请人 <span class="required">*</span></label><input type="text" id="fullName" placeholder="申请人姓名" required autocomplete="name" /></div>
-        <div class="form-group"><label>身份证号码 <span class="required">*</span></label><input type="text" id="idNumber" placeholder="18位身份证号" required autocomplete="off" inputmode="numeric" maxlength="18" /></div>
+        <div class="form-group"><label>申请单位 <span class="required">*</span></label><input type="text" id="unit" placeholder="请输入申请单位名称" required /></div>
+        <div class="form-group"><label>申请人 <span class="required">*</span></label><input type="text" id="fullName" placeholder="申请人姓名" required /></div>
+        <div class="form-group"><label>身份证号码 <span class="required">*</span></label><input type="text" id="idNumber" placeholder="18位身份证号" required maxlength="18" /></div>
         <div class="inline-group">
-            <div class="form-group"><label>联系电话 <span class="required">*</span></label><input type="tel" id="phone" placeholder="手机号" required autocomplete="tel" inputmode="numeric" maxlength="11" /></div>
-            <div class="form-group"><label>无人机品牌 <span class="required">*</span></label><input type="text" id="droneBrand" placeholder="如：大疆" required autocomplete="off" /></div>
+            <div class="form-group"><label>联系电话 <span class="required">*</span></label><input type="tel" id="phone" placeholder="手机号" required maxlength="11" /></div>
+            <div class="form-group"><label>无人机品牌 <span class="required">*</span></label><input type="text" id="droneBrand" placeholder="如：大疆" required /></div>
         </div>
-        <div class="form-group"><label>无人机型号 / 编号 <span class="required">*</span></label><input type="text" id="droneModel" placeholder="型号及机身编号" required autocomplete="off" /></div>
+        <div class="form-group"><label>无人机型号 / 编号 <span class="required">*</span></label><input type="text" id="droneModel" placeholder="型号及机身编号" required /></div>
         <div class="form-group">
             <label>飞行区域铁路线路 <span class="required">*</span></label>
             <select id="flightArea" required>
@@ -111,18 +106,12 @@
                 <option value="武九西南联络线">武九西南联络线</option><option value="武九客专九江联络线">武九客专九江联络线</option>
             </select>
         </div>
-        <div class="form-group"><label>地点 / 里程 / 接触网支柱编号 <span class="optional-tag">选填</span></label><input type="text" id="locationDetail" placeholder="例：京九线 K1313+200" autocomplete="off" /></div>
+        <div class="form-group"><label>地点 / 里程 / 接触网支柱编号 <span class="optional-tag">选填</span></label><input type="text" id="locationDetail" placeholder="例：京九线 K1313+200" /></div>
         <div class="form-group">
             <label>飞行行政区域（附近村庄） <span class="required">*</span></label>
             <div class="location-input-group">
-                <input type="text" id="adminArea" placeholder="点击右侧按钮GPS定位，或手动输入地址" required autocomplete="off" />
-                <button type="button" class="btn-locate" id="btnLocate" title="GPS定位获取地址">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/>
-                        <line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/>
-                        <line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/>
-                    </svg>
-                </button>
+                <input type="text" id="adminArea" placeholder="点击右侧按钮GPS定位，或手动输入地址" required />
+                <button type="button" class="btn-locate" id="btnLocate" title="GPS定位获取地址">⊕</button>
             </div>
             <div class="location-tip" id="locationTip"><span id="locationTipText"></span></div>
         </div>
@@ -135,38 +124,38 @@
                 <label><input type="radio" name="purpose" value="应急救援" /> 应急救援</label>
                 <label><input type="radio" name="purpose" value="其他" /> 其他</label>
             </div>
-            <div class="purpose-other-input" id="purposeOtherBox"><input type="text" id="purposeOther" placeholder="请备注具体用途" autocomplete="off" /></div>
+            <div class="purpose-other-input" id="purposeOtherBox"><input type="text" id="purposeOther" placeholder="请备注具体用途" /></div>
         </div>
         <div class="form-group">
             <label>作业起止时间 <span class="required">*</span></label>
             <div class="datetime-row">
                 <input type="datetime-local" id="workStart" required />
-                <span class="range-sep">至</span>
+                <span>至</span>
                 <input type="datetime-local" id="workEnd" required />
             </div>
         </div>
         <div class="form-group">
             <label>飞行高度区间（米） <span class="required">*</span></label>
             <div class="range-group">
-                <input type="number" id="flightHeightMin" class="range-input" placeholder="最低" min="0" required inputmode="numeric" />
-                <span class="range-sep">~</span>
-                <input type="number" id="flightHeightMax" class="range-input" placeholder="最高" min="0" required inputmode="numeric" />
-                <span class="range-unit">米</span>
+                <input type="number" id="flightHeightMin" placeholder="最低" min="0" required />
+                <span>~</span>
+                <input type="number" id="flightHeightMax" placeholder="最高" min="0" required />
+                <span>米</span>
             </div>
         </div>
         <div class="form-group">
             <label>距离铁路距离区间（米） <span class="required">*</span></label>
             <div class="range-group">
-                <input type="number" id="railDistanceMin" class="range-input" placeholder="最近" min="0" required inputmode="numeric" />
-                <span class="range-sep">~</span>
-                <input type="number" id="railDistanceMax" class="range-input" placeholder="最远" min="0" required inputmode="numeric" />
-                <span class="range-unit">米</span>
+                <input type="number" id="railDistanceMin" placeholder="最近" min="0" required />
+                <span>~</span>
+                <input type="number" id="railDistanceMax" placeholder="最远" min="0" required />
+                <span>米</span>
             </div>
         </div>
-        <div class="form-group"><label>操作证件编码 <span class="required">*</span></label><input type="text" id="certCode" placeholder="如：CAAC-2024-001" required autocomplete="off" /></div>
+        <div class="form-group"><label>操作证件编码 <span class="required">*</span></label><input type="text" id="certCode" placeholder="如：CAAC-2024-001" required /></div>
         <div class="form-group">
             <label>操作人员资质拍照 <span class="optional-tag">选填</span></label>
-            <div class="upload-box" id="uploadBox"><input type="file" id="certFile" accept="image/*" capture="environment" /><span class="upload-label">📸 拍照 / 选择图片</span><div id="fileStatus" class="file-status">未选择文件（选填）</div></div>
+            <div class="upload-box" id="uploadBox"><input type="file" id="certFile" accept="image/*" /><span class="upload-label">📸 拍照 / 选择图片</span><div id="fileStatus" class="file-status">未选择文件（选填）</div></div>
         </div>
         <div class="warning-box"><div class="warn-title">⚠️ 依法飞行，安全第一</div><div class="warn-desc">铁路沿线无人机 <strong>黑飞属于违法行为</strong>，请确保填写数据 <strong>真实、完整</strong>。</div></div>
         <button type="submit" class="btn-submit" id="submitBtn">📨 提交报备</button>
@@ -177,66 +166,67 @@
 
 <script>
 (function() {
-    'use strict';
+    // 配置
+    var DING_WEBHOOK = 'https://oapi.dingtalk.com/robot/send?access_token=b2ccb8e7bba75a6a234ac8343488dcd66b39da2dc23ae4307a2e0e2b567f13e5';
+    var PUSHPLUS_CODE = '20260713';
+    var PROXY_URL = 'https://dingtalk-proxy.netlify.app/.netlify/functions';
+    var AMAP_KEY = '944cb277c68d71409d48d100bb305244';
 
-    var CONFIG = {
-        dingWebhook: 'https://oapi.dingtalk.com/robot/send?access_token=b2ccb8e7bba75a6a234ac8343488dcd66b39da2dc23ae4307a2e0e2b567f13e5',
-        pushplusGroupCode: '20260713',
-        pushplusTokens: [],
-        proxyUrl: 'https://dingtalk-proxy.netlify.app/.netlify/functions',
-        amapKey: '944cb277c68d71409d48d100bb305244'
-    };
-
+    // DOM
     var form = document.getElementById('reportForm');
-    var toast = document.getElementById('toastMessage');
+    var toastEl = document.getElementById('toastMessage');
     var submitBtn = document.getElementById('submitBtn');
     var successOverlay = document.getElementById('successOverlay');
     var pushDesc = document.getElementById('pushDesc');
-    var adminAreaInput = document.getElementById('adminArea');
+    var adminInput = document.getElementById('adminArea');
     var btnLocate = document.getElementById('btnLocate');
     var purposeOtherBox = document.getElementById('purposeOtherBox');
     var locationTip = document.getElementById('locationTip');
     var locationTipText = document.getElementById('locationTipText');
+    var fileStatus = document.getElementById('fileStatus');
 
-    var locationData = { latitude: null, longitude: null, accuracy: null, address: null, timestamp: null };
+    var locationData = { lat: null, lng: null, acc: null, addr: null };
     var isLocating = false;
 
+    // Toast
     var toastTimer = null;
     function showToast(msg, isError) {
-        toast.textContent = msg;
-        toast.className = 'toast show' + (isError ? ' error' : '');
+        toastEl.textContent = msg;
+        toastEl.className = 'toast show' + (isError ? ' error' : '');
         if (toastTimer) clearTimeout(toastTimer);
-        toastTimer = setTimeout(function() { toast.classList.remove('show'); }, 4000);
+        toastTimer = setTimeout(function() { toastEl.className = 'toast'; }, 4000);
     }
 
-    function getGPSLocation() {
+    // GPS定位
+    function gpsLocate() {
         if (isLocating) return;
-        if (!navigator.geolocation) {
-            showToast('浏览器不支持GPS定位，请手动输入地址', true);
-            return;
-        }
+        if (!navigator.geolocation) { showToast('浏览器不支持GPS，请手动输入地址', true); return; }
+
         isLocating = true;
+        btnLocate.textContent = '⋯';
         btnLocate.style.opacity = '0.6';
-        locationTip.classList.add('show');
+        locationTip.className = 'location-tip show';
         locationTipText.textContent = '正在获取GPS位置...';
 
         navigator.geolocation.getCurrentPosition(
-            function(position) {
-                var lat = position.coords.latitude;
-                var lng = position.coords.longitude;
-                var accuracy = position.coords.accuracy;
-                locationData.latitude = lat;
-                locationData.longitude = lng;
-                locationData.accuracy = accuracy;
-                locationData.timestamp = position.timestamp;
-                locationTipText.innerHTML = 'GPS定位成功！坐标：' + lat.toFixed(6) + ', ' + lng.toFixed(6) + ' (精度±' + accuracy.toFixed(1) + 'm)<br>正在解析地址...';
-                reverseGeocodeAMap(lat, lng);
+            function(pos) {
+                var lat = pos.coords.latitude;
+                var lng = pos.coords.longitude;
+                var acc = pos.coords.accuracy;
+                locationData.lat = lat;
+                locationData.lng = lng;
+                locationData.acc = acc;
+                locationTipText.innerHTML = 'GPS定位成功！坐标：' + lat.toFixed(6) + ', ' + lng.toFixed(6) + '<br>正在解析地址...';
+                reverseGeocode(lat, lng);
             },
-            function(error) {
+            function(err) {
                 isLocating = false;
+                btnLocate.textContent = '⊕';
                 btnLocate.style.opacity = '1';
                 var msg = 'GPS定位失败';
-                switch(error.code) { case 1: msg = '请允许定位权限后重试'; break; case 2: msg = '请开启手机GPS后重试'; break; case 3: msg = '定位超时，请到室外重试'; break; }
+                if (err.code === 1) msg = '请允许定位权限后重试';
+                else if (err.code === 2) msg = '请开启手机GPS后重试';
+                else if (err.code === 3) msg = '定位超时，请到室外重试';
                 locationTipText.textContent = msg + '，请手动输入地址';
                 showToast(msg, true);
             },
@@ -244,24 +234,27 @@
         );
     }
 
-    function reverseGeocodeAMap(lat, lng) {
-        var url = 'https://restapi.amap.com/v3/geocode/regeo?key=' + CONFIG.amapKey + '&location=' + lng + ',' + lat + '&output=JSON';
-        
-        // 使用 XHR 兼容钉钉内核
+    // 高德反向地理编码（XMLHttpRequest，兼容鸿蒙/钉钉）
+    function reverseGeocode(lat, lng) {
+        var url = 'https://restapi.amap.com/v3/geocode/regeo?key=' + AMAP_KEY + '&location=' + lng + ',' + lat + '&output=JSON';
         var xhr = new XMLHttpRequest();
         xhr.open('GET', url, true);
         xhr.timeout = 15000;
-        xhr.onload = function() {
-            isLocating = false;
-            btnLocate.style.opacity = '1';
+
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState !== 4) return;
             
+            isLocating = false;
+            btnLocate.textContent = '⊕';
+            btnLocate.style.opacity = '1';
+
             if (xhr.status >= 200 && xhr.status < 300) {
                 try {
                     var data = JSON.parse(xhr.responseText);
                     if (data && data.status === '1' && data.regeocode) {
                         var address = '';
-                        if (data.regeocode.addressComponent) {
-                            var ac = data.regeocode.addressComponent;
+                        var ac = data.regeocode.addressComponent;
+                        if (ac) {
                             var parts = [];
                             if (ac.province && ac.province !== '[]') parts.push(ac.province);
                             if (ac.city && ac.city !== '[]') parts.push(ac.city);
@@ -278,206 +271,305 @@
                         if (!address) address = data.regeocode.formatted_address || '';
                         
                         if (address) {
-                            locationData.address = address;
-                            adminAreaInput.value = address;
-                            btnLocate.classList.add('success');
-                            locationTipText.innerHTML = '定位成功！地址已自动填充<br><span class="coord-text">' + address + '</span>';
+                            locationData.addr = address;
+                            adminInput.value = address;
+                            btnLocate.className = 'btn-locate success';
+                            btnLocate.textContent = '✓';
+                            locationTipText.innerHTML = '定位成功！地址已自动填充<br><strong>' + address + '</strong>';
                             showToast('定位成功：' + address, false);
-                            setTimeout(function() { locationTip.classList.remove('show'); }, 5000);
+                            setTimeout(function() { locationTip.className = 'location-tip'; }, 5000);
                         } else {
                             locationTipText.innerHTML = '地址解析失败，GPS坐标已记录<br>请手动输入附近村庄名称';
-                            showToast('请手动输入地址，GPS已记录', true);
-                            adminAreaInput.focus();
+                            showToast('请手动输入地址', true);
+                            adminInput.focus();
                         }
                     } else {
                         locationTipText.innerHTML = '地址解析失败，GPS坐标已记录<br>请手动输入附近村庄名称';
-                        showToast('地址解析失败，请手动输入', true);
-                        adminAreaInput.focus();
+                        showToast('请手动输入地址', true);
+                        adminInput.focus();
                     }
                 } catch(e) {
                     locationTipText.innerHTML = '数据解析异常，GPS坐标已记录<br>请手动输入附近村庄名称';
                     showToast('请手动输入地址', true);
-                    adminAreaInput.focus();
+                    adminInput.focus();
                 }
             } else {
                 locationTipText.innerHTML = '网络异常，GPS坐标已记录<br>请手动输入附近村庄名称';
-                showToast('网络异常，请手动输入地址', true);
-                adminAreaInput.focus();
+                showToast('网络异常，请手动输入', true);
+                adminInput.focus();
             }
         };
+
         xhr.onerror = function() {
             isLocating = false;
+            btnLocate.textContent = '⊕';
             btnLocate.style.opacity = '1';
             locationTipText.innerHTML = '网络异常，GPS坐标已记录<br>请手动输入附近村庄名称';
-            showToast('网络异常，请手动输入地址', true);
-            adminAreaInput.focus();
+            showToast('网络异常，请手动输入', true);
+            adminInput.focus();
         };
+
         xhr.ontimeout = function() {
             isLocating = false;
+            btnLocate.textContent = '⊕';
             btnLocate.style.opacity = '1';
             locationTipText.innerHTML = '请求超时，GPS坐标已记录<br>请手动输入附近村庄名称';
-            showToast('请求超时，请手动输入地址', true);
-            adminAreaInput.focus();
+            showToast('请求超时，请手动输入', true);
+            adminInput.focus();
         };
+
         xhr.send();
     }
 
-    btnLocate.addEventListener('click', function(e) {
+    btnLocate.onclick = function(e) {
         e.preventDefault();
-        getGPSLocation();
-    });
+        gpsLocate();
+    };
 
     // 用途选择
-    var purposeRadios = document.querySelectorAll('input[name="purpose"]');
-    for (var i = 0; i < purposeRadios.length; i++) {
-        purposeRadios[i].addEventListener('change', function() {
+    var radios = document.getElementsByName('purpose');
+    for (var i = 0; i < radios.length; i++) {
+        radios[i].onchange = function() {
             if (this.value === '其他') {
-                purposeOtherBox.classList.add('show');
+                purposeOtherBox.className = 'purpose-other-input show';
                 document.getElementById('purposeOther').focus();
             } else {
-                purposeOtherBox.classList.remove('show');
+                purposeOtherBox.className = 'purpose-other-input';
                 document.getElementById('purposeOther').value = '';
             }
-        });
+        };
     }
 
     // 默认时间
     function setDefaultTimes() {
-        var now = new Date(), tomorrow = new Date(now.getTime() + 86400000);
-        function f(d) { return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0') + 'T' + String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0'); }
-        if (!document.getElementById('workStart').value) document.getElementById('workStart').value = f(now);
-        if (!document.getElementById('workEnd').value) document.getElementById('workEnd').value = f(tomorrow);
+        var now = new Date();
+        var tomorrow = new Date(now.getTime() + 86400000);
+        function fmt(d) {
+            return d.getFullYear() + '-' + 
+                   (d.getMonth() + 1 < 10 ? '0' : '') + (d.getMonth() + 1) + '-' + 
+                   (d.getDate() < 10 ? '0' : '') + d.getDate() + 'T' + 
+                   (d.getHours() < 10 ? '0' : '') + d.getHours() + ':' + 
+                   (d.getMinutes() < 10 ? '0' : '') + d.getMinutes();
+        }
+        var ws = document.getElementById('workStart');
+        var we = document.getElementById('workEnd');
+        if (!ws.value) ws.value = fmt(now);
+        if (!we.value) we.value = fmt(tomorrow);
     }
     setDefaultTimes();
 
     // 输入限制
-    document.getElementById('idNumber').addEventListener('input', function() { this.value = this.value.replace(/[^\dXx]/g, '').toUpperCase(); if (this.value.length > 18) this.value = this.value.slice(0, 18); });
-    document.getElementById('phone').addEventListener('input', function() { this.value = this.value.replace(/[^\d]/g, ''); if (this.value.length > 11) this.value = this.value.slice(0, 11); });
-    var numInputs = ['flightHeightMin','flightHeightMax','railDistanceMin','railDistanceMax'];
-    for (var j = 0; j < numInputs.length; j++) {
-        var inp = document.getElementById(numInputs[j]);
-        if (inp) {
-            inp.addEventListener('input', function() { this.value = this.value.replace(/[^\d.]/g, ''); var p = this.value.split('.'); if (p.length > 2) this.value = p[0] + '.' + p.slice(1).join(''); });
+    document.getElementById('idNumber').oninput = function() {
+        this.value = this.value.replace(/[^\dXx]/g, '').toUpperCase();
+        if (this.value.length > 18) this.value = this.value.slice(0, 18);
+    };
+    document.getElementById('phone').oninput = function() {
+        this.value = this.value.replace(/[^\d]/g, '');
+        if (this.value.length > 11) this.value = this.value.slice(0, 11);
+    };
+
+    // 文件上传
+    document.getElementById('certFile').onchange = function() {
+        if (this.files && this.files.length > 0) {
+            var f = this.files[0];
+            var size = (f.size / 1024).toFixed(1);
+            var sizeText = size > 1024 ? (f.size / (1024 * 1024)).toFixed(1) + ' MB' : size + ' KB';
+            fileStatus.textContent = '已选: ' + f.name + ' (' + sizeText + ')';
+            fileStatus.style.color = '#1a6e3a';
+        } else {
+            fileStatus.textContent = '未选择文件（选填）';
+            fileStatus.style.color = '#9aabb8';
         }
-    }
+    };
+    document.getElementById('uploadBox').onclick = function(e) {
+        if (e.target.tagName !== 'INPUT') document.getElementById('certFile').click();
+    };
 
-    var fileInput = document.getElementById('certFile'), fileStatus = document.getElementById('fileStatus');
-    fileInput.addEventListener('change', function() { if (this.files && this.files.length > 0) { var f = this.files[0], s = (f.size/1024).toFixed(1); fileStatus.textContent = '已选: ' + f.name + ' (' + (s>1024?(f.size/(1024*1024)).toFixed(1)+' MB':s+' KB') + ')'; fileStatus.style.color='#1a6e3a'; } else { fileStatus.textContent='未选择文件（选填）'; fileStatus.style.color='#9aabb8'; } });
-    document.getElementById('uploadBox').addEventListener('click', function(e) { if (e.target.tagName !== 'INPUT') fileInput.click(); });
-
+    // 时间格式化
     function formatDateTime(dtStr) {
         if (!dtStr) return '未填写';
-        try { var d = new Date(dtStr); if (isNaN(d.getTime())) return dtStr;
-            return d.getFullYear()+'年'+String(d.getMonth()+1).padStart(2,'0')+'月'+String(d.getDate()).padStart(2,'0')+'日 '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+        try {
+            var d = new Date(dtStr);
+            if (isNaN(d.getTime())) return dtStr;
+            return d.getFullYear() + '年' + 
+                   (d.getMonth() + 1 < 10 ? '0' : '') + (d.getMonth() + 1) + '月' + 
+                   (d.getDate() < 10 ? '0' : '') + d.getDate() + '日 ' + 
+                   (d.getHours() < 10 ? '0' : '') + d.getHours() + ':' + 
+                   (d.getMinutes() < 10 ? '0' : '') + d.getMinutes();
         } catch(e) { return dtStr; }
     }
-    function getCurrentFormattedTime() { return formatDateTime(new Date().toISOString()); }
 
-    function getPushPlusTargets() {
-        var targets = [];
-        if (CONFIG.pushplusGroupCode && CONFIG.pushplusGroupCode.trim()) targets.push({ token: CONFIG.pushplusGroupCode.trim(), type: '群组', name: '九江桥工段通知群' });
-        if (CONFIG.pushplusTokens && CONFIG.pushplusTokens.length > 0) {
-            for (var k = 0; k < CONFIG.pushplusTokens.length; k++) {
-                if (CONFIG.pushplusTokens[k] && CONFIG.pushplusTokens[k].trim()) targets.push({ token: CONFIG.pushplusTokens[k].trim(), type: '个人', name: '管理员'+(k+1) });
-            }
-        }
-        return targets;
-    }
-    function sendDingTalk(webhook, content) {
-        var payload = JSON.stringify({msgtype:'text',text:{content:content}});
-        var url = CONFIG.proxyUrl+'/dingtalk?webhook='+encodeURIComponent(webhook);
+    // 发送请求（XMLHttpRequest）
+    function httpPost(url, body, callback) {
         var xhr = new XMLHttpRequest();
-        return new Promise(function(resolve) {
-            xhr.open('POST', url, true);
-            xhr.setRequestHeader('Content-Type', 'application/json');
-            xhr.timeout = 15000;
-            xhr.onload = function() {
+        xhr.open('POST', url, true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.timeout = 15000;
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4) {
                 if (xhr.status >= 200 && xhr.status < 300) {
-                    try { var r = JSON.parse(xhr.responseText); if (r&&r.errcode===0) resolve({success:true,channel:'钉钉'}); else resolve({success:false,channel:'钉钉',error:r&&r.errmsg?r.errmsg:'异常'}); }
-                    catch(e) { resolve({success:false,channel:'钉钉',error:'解析异常'}); }
-                } else { resolve({success:false,channel:'钉钉',error:'HTTP '+xhr.status}); }
-            };
-            xhr.onerror = function() { resolve({success:false,channel:'钉钉',error:'网络异常'}); };
-            xhr.ontimeout = function() { resolve({success:false,channel:'钉钉',error:'请求超时'}); };
-            xhr.send(payload);
-        });
-    }
-    function sendPushPlusToAll(title, content) {
-        var targets = getPushPlusTargets();
-        if (targets.length===0) return Promise.resolve({success:true,skipped:true,channel:'微信',totalTargets:0,successCount:0,failCount:0,details:[]});
-        var proms = [];
-        for (var m = 0; m < targets.length; m++) {
-            (function(t) {
-                var p = new Promise(function(resolve) {
-                    var payload = JSON.stringify({token:t.token,title:title,content:content,template:'html'});
-                    var xhr = new XMLHttpRequest();
-                    xhr.open('POST', CONFIG.proxyUrl+'/pushplus', true);
-                    xhr.setRequestHeader('Content-Type', 'application/json');
-                    xhr.timeout = 15000;
-                    xhr.onload = function() {
-                        if (xhr.status >= 200 && xhr.status < 300) {
-                            try { var r = JSON.parse(xhr.responseText); if (r&&r.code===200) resolve({success:true,target:t}); else resolve({success:false,target:t,error:r&&r.msg?r.msg:'异常'}); }
-                            catch(e) { resolve({success:false,target:t,error:'解析异常'}); }
-                        } else { resolve({success:false,target:t,error:'HTTP '+xhr.status}); }
-                    };
-                    xhr.onerror = function() { resolve({success:false,target:t,error:'网络异常'}); };
-                    xhr.ontimeout = function() { resolve({success:false,target:t,error:'请求超时'}); };
-                    xhr.send(payload);
-                });
-                proms.push(p);
-            })(targets[m]);
-        }
-        return Promise.all(proms).then(function(results) {
-            var sc = 0, fc = 0;
-            for (var n = 0; n < results.length; n++) { if (results[n].success) sc++; else fc++; }
-            return {success:sc>0,skipped:false,channel:'微信',totalTargets:targets.length,successCount:sc,failCount:fc,details:results};
-        });
+                    try { callback(null, JSON.parse(xhr.responseText)); }
+                    catch(e) { callback(e, null); }
+                } else {
+                    callback(new Error('HTTP ' + xhr.status), null);
+                }
+            }
+        };
+        xhr.onerror = function() { callback(new Error('网络异常'), null); };
+        xhr.ontimeout = function() { callback(new Error('请求超时'), null); };
+        xhr.send(body);
     }
 
-    form.addEventListener('submit', function(e) {
+    // 推送
+    function pushAll(dingContent, wxTitle, wxContent, finalCallback) {
+        var done = 0;
+        var total = 2;
+        var results = [];
+
+        // 钉钉
+        var dingUrl = PROXY_URL + '/dingtalk?webhook=' + encodeURIComponent(DING_WEBHOOK);
+        httpPost(dingUrl, JSON.stringify({msgtype:'text',text:{content:dingContent}}), function(err, res) {
+            if (!err && res && res.errcode === 0) results.push({ok:true,ch:'钉钉'});
+            else results.push({ok:false,ch:'钉钉'});
+            done++;
+            if (done >= total) finish();
+        });
+
+        // 微信
+        if (PUSHPLUS_CODE) {
+            httpPost(PROXY_URL + '/pushplus', JSON.stringify({token:PUSHPLUS_CODE,title:wxTitle,content:wxContent,template:'html'}), function(err, res) {
+                if (!err && res && res.code === 200) results.push({ok:true,ch:'微信'});
+                else results.push({ok:false,ch:'微信'});
+                done++;
+                if (done >= total) finish();
+            });
+        } else {
+            results.push({ok:true,ch:'微信',skip:true});
+            done++;
+            if (done >= total) finish();
+        }
+
+        function finish() {
+            var okChs = [];
+            for (var i = 0; i < results.length; i++) {
+                if (results[i].ok && !results[i].skip) okChs.push(results[i].ch);
+            }
+            finalCallback(okChs.length > 0, okChs);
+        }
+    }
+
+    // 检测环境
+    function getEnv() {
+        var ua = navigator.userAgent;
+        if (/DingTalk/i.test(ua)) return '钉钉';
+        if (/MicroMessenger/i.test(ua)) return '微信';
+        if (/HarmonyOS|OpenHarmony/i.test(ua)) return '鸿蒙';
+        if (/iPhone|iPad/i.test(ua)) return 'iOS';
+        if (/Android/i.test(ua)) return 'Android';
+        return 'PC';
+    }
+
+    // 表单提交
+    form.onsubmit = function(e) {
         e.preventDefault();
-        var unit=document.getElementById('unit').value.trim(),name=document.getElementById('fullName').value.trim(),idNum=document.getElementById('idNumber').value.trim(),phone=document.getElementById('phone').value.trim(),brand=document.getElementById('droneBrand').value.trim(),model=document.getElementById('droneModel').value.trim(),area=document.getElementById('flightArea').value,locationDetail=document.getElementById('locationDetail').value.trim(),adminArea=document.getElementById('adminArea').value.trim(),purposeRadio=document.querySelector('input[name="purpose"]:checked'),purposeOther=document.getElementById('purposeOther').value.trim(),workStart=document.getElementById('workStart').value,workEnd=document.getElementById('workEnd').value,fhMin=document.getElementById('flightHeightMin').value.trim(),fhMax=document.getElementById('flightHeightMax').value.trim(),rdMin=document.getElementById('railDistanceMin').value.trim(),rdMax=document.getElementById('railDistanceMax').value.trim(),certCode=document.getElementById('certCode').value.trim();
-        if (!unit||!name||!idNum||!phone||!brand||!model) { showToast('请完整填写必填项', true); return; }
-        if (idNum.length<15||idNum.length>18) { showToast('请填写有效身份证号', true); return; }
+
+        var unit = document.getElementById('unit').value.trim();
+        var name = document.getElementById('fullName').value.trim();
+        var idNum = document.getElementById('idNumber').value.trim();
+        var phone = document.getElementById('phone').value.trim();
+        var brand = document.getElementById('droneBrand').value.trim();
+        var model = document.getElementById('droneModel').value.trim();
+        var area = document.getElementById('flightArea').value;
+        var locDetail = document.getElementById('locationDetail').value.trim();
+        var admin = document.getElementById('adminArea').value.trim();
+        var purpRadio = document.querySelector('input[name="purpose"]:checked');
+        var purpOther = document.getElementById('purposeOther').value.trim();
+        var ws = document.getElementById('workStart').value;
+        var we = document.getElementById('workEnd').value;
+        var fhMin = document.getElementById('flightHeightMin').value.trim();
+        var fhMax = document.getElementById('flightHeightMax').value.trim();
+        var rdMin = document.getElementById('railDistanceMin').value.trim();
+        var rdMax = document.getElementById('railDistanceMax').value.trim();
+        var cert = document.getElementById('certCode').value.trim();
+
+        // 验证
+        if (!unit || !name || !idNum || !phone || !brand || !model) { showToast('请完整填写必填项', true); return; }
+        if (idNum.length < 15 || idNum.length > 18) { showToast('请填写有效身份证号', true); return; }
         if (!/^\d{11}$/.test(phone)) { showToast('请填写11位手机号', true); return; }
         if (!area) { showToast('请选择铁路线路', true); return; }
-        if (!adminArea) { showToast('请填写行政区域', true); return; }
-        if (!purposeRadio) { showToast('请选择飞行用途', true); return; }
-        if (!workStart||!workEnd) { showToast('请设置作业时间', true); return; }
-        if (new Date(workStart)>=new Date(workEnd)) { showToast('结束时间必须晚于开始时间', true); return; }
-        if (!fhMin||!fhMax) { showToast('请填写高度区间', true); return; }
-        if (parseFloat(fhMin)>parseFloat(fhMax)) { showToast('最高应大于最低', true); return; }
-        if (!rdMin||!rdMax) { showToast('请填写距离区间', true); return; }
-        if (parseFloat(rdMin)>parseFloat(rdMax)) { showToast('最远应大于最近', true); return; }
-        if (!certCode) { showToast('请填写证件编码', true); return; }
-        var purpose=purposeRadio.value; if (purpose==='其他'&&purposeOther) purpose+='（'+purposeOther+'）';
-        var isWx=/MicroMessenger/i.test(navigator.userAgent), isDingTalk=/DingTalk/i.test(navigator.userAgent), isIOS=/iPhone|iPad/i.test(navigator.userAgent), isAndroid=/Android/i.test(navigator.userAgent);
-        var env = isDingTalk ? '钉钉' : (isWx ? '微信' : (isIOS ? 'iOS' : (isAndroid ? 'Android' : 'PC')));
-        var dc='【无人机飞行报备通知】\n\n📋 单位：'+unit+'\n👤 申请人：'+name+'\n🆔 身份证：'+idNum+'\n📱 电话：'+phone+'\n🚁 品牌：'+brand+'\n🔧 型号：'+model+'\n🛤️ 线路：'+area+'\n';
-        if (locationDetail) dc+='📍 里程：'+locationDetail+'\n';
-        dc+='🏘️ 区域：'+adminArea+'\n';
-        if (locationData.latitude) dc+='🗺️ GPS：'+locationData.latitude.toFixed(6)+', '+locationData.longitude.toFixed(6)+(locationData.accuracy?' (精度±'+locationData.accuracy.toFixed(1)+'m)':'')+'\n';
-        dc+='🎯 用途：'+purpose+'\n⏰ 时间：'+formatDateTime(workStart)+' 至 '+formatDateTime(workEnd)+'\n📏 高度：'+fhMin+'m~'+fhMax+'m\n📐 距离：'+rdMin+'m~'+rdMax+'m\n📝 证件：'+certCode+'\n\n⏰ 报备：'+getCurrentFormattedTime()+'\n📱 环境：'+env+'\n\n⚠️ 请24小时内核实确认。';
-        var pc='<h2 style="color:#c0392b;">🚁 无人机飞行报备通知</h2><table style="width:100%;border-collapse:collapse;font-size:14px;">';
-        pc+='<tr><td style="padding:8px;border:1px solid #eee;background:#f5f5f5;"><strong>📋 单位</strong></td><td style="padding:8px;border:1px solid #eee;">'+unit+'</td></tr>';
-        pc+='<tr><td style="padding:8px;border:1px solid #eee;background:#f5f5f5;"><strong>👤 申请人</strong></td><td style="padding:8px;border:1px solid #eee;">'+name+'</td></tr>';
-        pc+='<tr><td style="padding:8px;border:1px solid #eee;background:#f5f5f5;"><strong>📱 电话</strong></td><td style="padding:8px;border:1px solid #eee;color:#c0392b;font-weight:bold;">'+phone+'</td></tr>';
-        pc+='<tr><td style="padding:8px;border:1px solid #eee;background:#f5f5f5;"><strong>🛤️ 线路</strong></td><td style="padding:8px;border:1px solid #eee;color:#c0392b;">'+area+'</td></tr>';
-        pc+='<tr><td style="padding:8px;border:1px solid #eee;background:#f5f5f5;"><strong>🏘️ 区域</strong></td><td style="padding:8px;border:1px solid #eee;">'+adminArea+'</td></tr>';
-        if (locationData.latitude) pc+='<tr><td style="padding:8px;border:1px solid #eee;background:#f5f5f5;"><strong>🗺️ GPS</strong></td><td style="padding:8px;border:1px solid #eee;">'+locationData.latitude.toFixed(6)+', '+locationData.longitude.toFixed(6)+'</td></tr>';
-        pc+='<tr><td style="padding:8px;border:1px solid #eee;background:#f5f5f5;"><strong>⏰ 时间</strong></td><td style="padding:8px;border:1px solid #eee;">'+formatDateTime(workStart)+'<br/>至 '+formatDateTime(workEnd)+'</td></tr>';
-        pc+='</table><div style="background:#fff3cd;padding:12px;border-left:4px solid #ffc107;margin-top:10px;"><strong style="color:#c0392b;">⚠️ 请24小时内核实确认。</strong></div>';
-        submitBtn.classList.add('loading'); submitBtn.textContent='提交中...'; submitBtn.disabled=true;
-        Promise.all([sendDingTalk(CONFIG.dingWebhook, dc), sendPushPlusToAll('【无人机报备】'+name+' - '+unit+' - '+area, pc)])
-        .then(function(results) {
-            var sc=0, sch=[];
-            for (var i = 0; i < results.length; i++) {
-                if (results[i].success) { sc++; if (!results[i].skipped) sch.push(results[i].channel==='微信'?'微信('+results[i].successCount+'人)':results[i].channel); }
+        if (!admin) { showToast('请填写行政区域', true); return; }
+        if (!purpRadio) { showToast('请选择飞行用途', true); return; }
+        if (!ws || !we) { showToast('请设置作业时间', true); return; }
+        if (new Date(ws) >= new Date(we)) { showToast('结束时间必须晚于开始时间', true); return; }
+        if (!fhMin || !fhMax) { showToast('请填写高度区间', true); return; }
+        if (parseFloat(fhMin) > parseFloat(fhMax)) { showToast('最高应大于最低', true); return; }
+        if (!rdMin || !rdMax) { showToast('请填写距离区间', true); return; }
+        if (parseFloat(rdMin) > parseFloat(rdMax)) { showToast('最远应大于最近', true); return; }
+        if (!cert) { showToast('请填写证件编码', true); return; }
+
+        var purpose = purpRadio.value;
+        if (purpose === '其他' && purpOther) purpose += '（' + purpOther + '）';
+        var env = getEnv();
+
+        // 钉钉消息
+        var dc = '【无人机飞行报备通知】\n\n';
+        dc += '📋 单位：' + unit + '\n';
+        dc += '👤 申请人：' + name + '\n';
+        dc += '🆔 身份证：' + idNum + '\n';
+        dc += '📱 电话：' + phone + '\n';
+        dc += '🚁 品牌：' + brand + '\n';
+        dc += '🔧 型号：' + model + '\n';
+        dc += '🛤️ 线路：' + area + '\n';
+        if (locDetail) dc += '📍 里程：' + locDetail + '\n';
+        dc += '🏘️ 区域：' + admin + '\n';
+        if (locationData.lat) {
+            dc += '🗺️ GPS：' + locationData.lat.toFixed(6) + ', ' + locationData.lng.toFixed(6);
+            if (locationData.acc) dc += ' (精度±' + locationData.acc.toFixed(1) + 'm)';
+            dc += '\n';
+        }
+        dc += '🎯 用途：' + purpose + '\n';
+        dc += '⏰ 时间：' + formatDateTime(ws) + ' 至 ' + formatDateTime(we) + '\n';
+        dc += '📏 高度：' + fhMin + 'm~' + fhMax + 'm\n';
+        dc += '📐 距离：' + rdMin + 'm~' + rdMax + 'm\n';
+        dc += '📝 证件：' + cert + '\n';
+        dc += '\n⏰ 报备：' + formatDateTime(new Date().toISOString()) + '\n';
+        dc += '📱 环境：' + env + '\n\n';
+        dc += '⚠️ 请24小时内核实确认。';
+
+        // 微信消息
+        var pc = '<h2 style="color:#c0392b;">🚁 无人机飞行报备通知</h2>';
+        pc += '<table style="width:100%;border-collapse:collapse;font-size:14px;">';
+        pc += '<tr><td style="padding:8px;border:1px solid #eee;background:#f5f5f5;"><strong>📋 单位</strong></td><td style="padding:8px;border:1px solid #eee;">' + unit + '</td></tr>';
+        pc += '<tr><td style="padding:8px;border:1px solid #eee;background:#f5f5f5;"><strong>👤 申请人</strong></td><td style="padding:8px;border:1px solid #eee;">' + name + '</td></tr>';
+        pc += '<tr><td style="padding:8px;border:1px solid #eee;background:#f5f5f5;"><strong>📱 电话</strong></td><td style="padding:8px;border:1px solid #eee;color:#c0392b;font-weight:bold;">' + phone + '</td></tr>';
+        pc += '<tr><td style="padding:8px;border:1px solid #eee;background:#f5f5f5;"><strong>🛤️ 线路</strong></td><td style="padding:8px;border:1px solid #eee;color:#c0392b;">' + area + '</td></tr>';
+        pc += '<tr><td style="padding:8px;border:1px solid #eee;background:#f5f5f5;"><strong>🏘️ 区域</strong></td><td style="padding:8px;border:1px solid #eee;">' + admin + '</td></tr>';
+        if (locationData.lat) pc += '<tr><td style="padding:8px;border:1px solid #eee;background:#f5f5f5;"><strong>🗺️ GPS</strong></td><td style="padding:8px;border:1px solid #eee;">' + locationData.lat.toFixed(6) + ', ' + locationData.lng.toFixed(6) + '</td></tr>';
+        pc += '<tr><td style="padding:8px;border:1px solid #eee;background:#f5f5f5;"><strong>⏰ 时间</strong></td><td style="padding:8px;border:1px solid #eee;">' + formatDateTime(ws) + '<br/>至 ' + formatDateTime(we) + '</td></tr>';
+        pc += '</table>';
+        pc += '<div style="background:#fff3cd;padding:12px;border-left:4px solid #ffc107;margin-top:10px;"><strong style="color:#c0392b;">⚠️ 请24小时内核实确认。</strong></div>';
+
+        var wxTitle = '【无人机报备】' + name + ' - ' + unit + ' - ' + area;
+
+        submitBtn.className = 'btn-submit loading';
+        submitBtn.textContent = '提交中...';
+        submitBtn.disabled = true;
+
+        pushAll(dc, wxTitle, pc, function(success, channels) {
+            if (success) {
+                form.style.display = 'none';
+                successOverlay.className = 'success-overlay show';
+                pushDesc.textContent = '已发送至：' + channels.join('、');
+                showToast('报备成功！', false);
+                window.scrollTo(0, 0);
+            } else {
+                showToast('推送失败，请重试', true);
+                submitBtn.className = 'btn-submit';
+                submitBtn.textContent = '📨 重新提交';
+                submitBtn.disabled = false;
             }
-            if (sc>0) { form.style.display='none'; successOverlay.classList.add('show'); pushDesc.textContent='已发送至：'+sch.join('、'); showToast('报备成功！', false); window.scrollTo({top:0,behavior:'smooth'}); }
-            else { showToast('推送失败，请重试', true); submitBtn.classList.remove('loading'); submitBtn.textContent='📨 重新提交'; submitBtn.disabled=false; }
-        }).catch(function() { showToast('提交异常，请重试', true); submitBtn.classList.remove('loading'); submitBtn.textContent='📨 重新提交'; submitBtn.disabled=false; });
-    });
+        });
+    };
 
 })();
 </script>
