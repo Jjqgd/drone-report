@@ -52,9 +52,12 @@
         .success-overlay.show{display:block}
         .success-overlay .icon{font-size:48px;margin-bottom:10px}
         .success-overlay .title{font-size:20px;font-weight:700;color:#2d7a4f}
-        .success-overlay .desc{font-size:14px;color:#5a6a7a;margin-top:6px}
+        .success-overlay .desc{font-size:14px;color:#5a6a7a;margin-top:6px;line-height:1.6}
         .success-overlay .btn-continue{margin-top:14px;padding:10px 30px;background:#c0392b;color:#fff;border:none;border-radius:30px;font-size:16px;cursor:pointer}
         .success-overlay .btn-continue:active{transform:scale(.95)}
+        .success-notice{background:#fff8e1;border-left:4px solid #f39c12;border-radius:6px;padding:14px 16px;margin-top:16px;text-align:left;font-size:14px;color:#5a4a47;line-height:1.8}
+        .success-notice strong{color:#c0392b}
+        .success-notice .highlight{color:#e67e22;font-weight:700}
     </style>
 </head>
 <body>
@@ -68,6 +71,13 @@
         <div class="icon">✅</div>
         <div class="title">报备提交成功！</div>
         <div class="desc" id="pushDesc">通知已发送</div>
+        <div class="success-notice">
+            <strong>📢 温馨提示：</strong><br />
+            感谢您的配合！<br />
+            工作人员将在 <span class="highlight">24小时内</span> 与您取得联系，<br />
+            <strong style="color:#c0392b;">在未接到工作人员电话确认前，严禁擅自飞行！</strong><br />
+            如有疑问，请联系：九江桥工段 安全科 ☎️ 0792-123456
+        </div>
         <button class="btn-continue" onclick="location.reload()">继续报备</button>
     </div>
 
@@ -75,10 +85,8 @@
 
         <!-- ===== 隐藏配置区（用户看不到） ===== -->
         <div class="hidden-config">
-            <!-- 钉钉 Webhook -->
             <input type="text" id="dingWebhookInput" value="https://oapi.dingtalk.com/robot/send?access_token=你的钉钉access_token" />
-            <!-- Netlify 代理地址 -->
-            <input type="text" id="proxyUrlInput" value="https://magenta-unicorn-fbb00c.netlify.app/api/dingtalk" />
+            <input type="text" id="proxyUrlInput" value="https://dingtalk-proxy.netlify.app/api/dingtalk" />
         </div>
 
         <!-- ===== 表单字段 ===== -->
@@ -213,10 +221,10 @@
         // ================================================================
 
         // 【1】钉钉 Webhook（在钉钉群机器人设置中获取）
-        var CONFIG_DING_WEBHOOK = 'https://oapi.dingtalk.com/robot/send?access_token=b2ccb8e7bba75a6a234ac8343488dcd66b39da2dc23ae4307a2e0e2b567f13e5;
+        var CONFIG_DING_WEBHOOK = 'https://oapi.dingtalk.com/robot/send?access_token=你的钉钉access_token';
         
-        // 【2】Netlify 代理地址（你的 Netlify 地址 + /api/dingtalk）
-        var CONFIG_PROXY_URL = 'https://dingtalk-proxy.netlify.app/api/dingtalk;
+        // 【2】Netlify 代理地址
+        var CONFIG_PROXY_URL = 'https://dingtalk-proxy.netlify.app/api/dingtalk';
 
         // ================================================================
 
@@ -231,11 +239,9 @@
         var dingWebhookInput = document.getElementById('dingWebhookInput');
         var proxyUrlInput = document.getElementById('proxyUrlInput');
 
-        // 将配置值写入隐藏 input
         dingWebhookInput.value = CONFIG_DING_WEBHOOK;
         proxyUrlInput.value = CONFIG_PROXY_URL;
 
-        // 文件选择
         fileInput.addEventListener('change', function() {
             if (this.files && this.files.length > 0) {
                 var file = this.files[0];
@@ -258,15 +264,12 @@
             toast._timer = setTimeout(function() { toast.classList.remove('show'); }, 5000);
         }
 
-        // 通过 Netlify 代理发送钉钉消息
         function sendDingTalkViaProxy(proxyUrl, webhook, content) {
             var payload = {
                 msgtype: 'text',
                 text: { content: content }
             };
-            
             var url = proxyUrl + '?webhook=' + encodeURIComponent(webhook);
-            
             return fetch(url, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -277,7 +280,6 @@
             });
         }
 
-        // PushPlus 推送
         function sendPushPlus(token, topic, title, content) {
             var data = { token: token, title: title, content: content, channel: 'wechat' };
             if (topic && topic !== 'topic_xxxxx' && topic !== '') data.topic = topic;
@@ -291,15 +293,12 @@
             });
         }
 
-        // 提交
         form.addEventListener('submit', function(e) {
             e.preventDefault();
 
-            // 从隐藏 input 读取配置
             var dingWebhook = dingWebhookInput.value.trim();
             var proxyUrl = proxyUrlInput.value.trim();
 
-            // 获取表单值
             var unit = document.getElementById('unit').value.trim();
             var name = document.getElementById('fullName').value.trim();
             var idNum = document.getElementById('idNumber').value.trim();
@@ -317,7 +316,6 @@
             var railDistanceMax = document.getElementById('railDistanceMax').value.trim();
             var certCode = document.getElementById('certCode').value.trim();
 
-            // 校验
             if (!unit || !name || !idNum || !phone || !brand || !model) {
                 showToast('⚠️ 请完整填写所有带 * 号的必填项', true); return;
             }
@@ -349,7 +347,6 @@
             }
             if (!certCode) { showToast('⚠️ 请填写操作证件编码', true); return; }
 
-            // 检查配置是否有效
             if (!dingWebhook || dingWebhook.indexOf('oapi.dingtalk.com') === -1) {
                 showToast('⚠️ 系统配置错误：钉钉 Webhook 无效', true); return;
             }
@@ -357,7 +354,6 @@
                 showToast('⚠️ 系统配置错误：代理地址无效', true); return;
             }
 
-            // 构造消息（必须包含关键词「报备」）
             var purposeValue = purposeRadio.value;
             if (purposeValue === '其他' && purposeOther) purposeValue = '其他: ' + purposeOther;
 
@@ -366,7 +362,6 @@
                 String(now.getDate()).padStart(2,'0') + ' ' + String(now.getHours()).padStart(2,'0') + ':' +
                 String(now.getMinutes()).padStart(2,'0');
 
-            // ⚠️ 消息必须包含关键词「报备」（钉钉机器人安全设置）
             var msgContent = '📋 报备通知\n\n' +
                 '🕐 时间：' + timeStr + '\n' +
                 '🏢 单位：' + unit + '\n' +
@@ -386,14 +381,12 @@
 
             var title = '🚁 无人机飞行报备通知';
 
-            // 执行推送
             submitBtn.classList.add('loading');
             submitBtn.textContent = '⏳ 提交中...';
             showToast('⏳ 正在提交报备...', false);
 
             var pushPromises = [];
 
-            // 1. PushPlus（可选）
             var pushToken = '17a791bc78be42e1a9968d676fca0d01';
             var pushTopic = '20260713';
             if (pushToken && pushToken !== '') {
@@ -410,7 +403,6 @@
                 );
             }
 
-            // 2. 钉钉（通过 Netlify 代理）
             pushPromises.push(
                 sendDingTalkViaProxy(proxyUrl, dingWebhook, msgContent)
                     .then(function(result) {
@@ -451,7 +443,6 @@
                 });
         });
 
-        // 「其他」提示
         var otherInput = document.getElementById('purposeOther');
         document.querySelectorAll('input[name="purpose"]').forEach(function(radio) {
             radio.addEventListener('change', function() {
@@ -460,7 +451,7 @@
         });
 
         console.log('===== 无人机报备系统已启动 =====');
-        console.log('✅ 配置已隐藏，用户不可见');
+        console.log('✅ 代理地址:', CONFIG_PROXY_URL);
         console.log('=====================================');
     })();
 </script>
