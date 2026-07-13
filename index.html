@@ -86,7 +86,7 @@
         <!-- ===== 隐藏配置区（用户看不到） ===== -->
         <div class="hidden-config">
             <input type="text" id="dingWebhookInput" value="https://oapi.dingtalk.com/robot/send?access_token=b2ccb8e7bba75a6a234ac8343488dcd66b39da2dc23ae4307a2e0e2b567f13e5" />
-            <input type="text" id="proxyUrlInput" value="https://dingtalk-proxy.netlify.app/api/dingtalk" />
+            <input type="text" id="proxyUrlInput" value="https://dingtalk-proxy.netlify.app/.netlify/functions/dingtalk" />
         </div>
 
         <!-- ===== 表单字段 ===== -->
@@ -223,8 +223,8 @@
         // 【1】钉钉 Webhook（在钉钉群机器人设置中获取）
         var CONFIG_DING_WEBHOOK = 'https://oapi.dingtalk.com/robot/send?access_token=b2ccb8e7bba75a6a234ac8343488dcd66b39da2dc23ae4307a2e0e2b567f13e5';
         
-        // 【2】Netlify 代理地址
-        var CONFIG_PROXY_URL =  'https://dingtalk-proxy.netlify.app/.netlify/functions/dingtalk?webhook=' + encodeURIComponent(CONFIG_DING_WEBHOOK);';
+        // 【2】Netlify 代理地址（修复：移除了多余的分号和引号）
+        var CONFIG_PROXY_URL = 'https://dingtalk-proxy.netlify.app/.netlify/functions/dingtalk';
 
         // ================================================================
 
@@ -269,6 +269,7 @@
                 msgtype: 'text',
                 text: { content: content }
             };
+            // 修复：在函数内部拼接 URL，而不是在 CONFIG_PROXY_URL 中拼接
             var url = proxyUrl + '?webhook=' + encodeURIComponent(webhook);
             return fetch(url, {
                 method: 'POST',
@@ -452,6 +453,7 @@
 
         console.log('===== 无人机报备系统已启动 =====');
         console.log('✅ 代理地址:', CONFIG_PROXY_URL);
+        console.log('✅ 钉钉 Webhook:', CONFIG_DING_WEBHOOK);
         console.log('=====================================');
     })();
 </script>
