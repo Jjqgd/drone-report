@@ -76,7 +76,7 @@
             感谢您的配合！<br />
             工作人员将在 <span class="highlight">24小时内</span> 与您取得联系，<br />
             <strong style="color:#c0392b;">在未接到工作人员电话确认前，严禁擅自飞行！</strong><br />
-            如有疑问，请联系：九江桥工段 综合车间安设办 ☎️ 
+            如有疑问，请联系：九江桥工段 安设办 ☎️ 0792-7022335
         </div>
         <button class="btn-continue" onclick="location.reload()">继续报备</button>
     </div>
@@ -85,7 +85,7 @@
 
         <!-- ===== 隐藏配置区（用户看不到） ===== -->
         <div class="hidden-config">
-            <input type="text" id="dingWebhookInput" value="https://oapi.dingtalk.com/robot/send?access_token=你的钉钉access_token" />
+            <input type="text" id="dingWebhookInput" value="https://oapi.dingtalk.com/robot/send?access_token=b2ccb8e7bba75a6a234ac8343488dcd66b39da2dc23ae4307a2e0e2b567f13e5" />
             <input type="text" id="proxyUrlInput" value="https://dingtalk-proxy.netlify.app/api/dingtalk" />
         </div>
 
@@ -221,7 +221,7 @@
         // ================================================================
 
         // 【1】钉钉 Webhook（在钉钉群机器人设置中获取）
-        var CONFIG_DING_WEBHOOK = 'https://oapi.dingtalk.com/robot/send?access_token=b2ccb8e7bba75a6a234ac8343488dcd66b39da2dc23ae4307a2e0e2b567f13e5';
+        var CONFIG_DING_WEBHOOK = 'https://oapi.dingtalk.com/robot/send?access_token=你的钉钉access_token';
         
         // 【2】Netlify 代理地址
         var CONFIG_PROXY_URL = 'https://dingtalk-proxy.netlify.app/api/dingtalk';
