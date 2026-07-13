@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>九江桥工段 - 无人机报备</title>
+    <title>九江桥工段 · 无人机报备</title>
     <style>
         * {
             box-sizing: border-box;
@@ -28,7 +28,6 @@
             padding: 20px 18px 24px;
         }
 
-        /* ===== 标题：红字居中 ===== */
         .main-title {
             font-size: 22px;
             font-weight: 700;
@@ -82,7 +81,6 @@
             -webkit-appearance: none;
             appearance: none;
         }
-        /* 下拉箭头自定义 */
         select:not([multiple]) {
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239aabb8' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
             background-repeat: no-repeat;
@@ -195,7 +193,6 @@
             word-break: break-all;
         }
 
-        /* ===== 宣传提醒区域 ===== */
         .warning-box {
             background: #fef6f5;
             border-left: 4px solid #c0392b;
@@ -284,10 +281,19 @@
             margin-top: 4px;
             padding-left: 2px;
         }
-        /* 点击多选提示可聚焦 */
         .multi-hint-click {
             cursor: pointer;
             text-decoration: underline dotted #9aabb8;
+        }
+
+        .btn-submit.loading {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        /* 身份证单独占一行，与姓名区分 */
+        .id-row {
+            margin-top: -2px;
         }
     </style>
 </head>
@@ -295,7 +301,6 @@
 
 <div class="container">
 
-    <!-- ===== 标题：红字居中 ===== -->
     <div class="main-title">九江桥工段铁路沿线无人机飞行报备</div>
     <div class="subhead">铁路沿线安全报备 · 请如实填写</div>
 
@@ -307,19 +312,17 @@
             <input type="text" id="unit" placeholder="请输入单位名称" required />
         </div>
 
-        <!-- 姓名 + 身份证 -->
-        <div class="inline-group">
-            <div class="form-group">
-                <label>姓名 <span class="required">*</span></label>
-                <input type="text" id="fullName" placeholder="姓名" required />
-            </div>
-            <div class="form-group">
-                <label>身份证号码 <span class="required">*</span></label>
-                <input type="text" id="idNumber" placeholder="18 位身份证号" required />
-            </div>
+        <!-- 姓名 + 身份证（身份证单独一行，在姓名下方） -->
+        <div class="form-group">
+            <label>姓名 <span class="required">*</span></label>
+            <input type="text" id="fullName" placeholder="姓名" required />
+        </div>
+        <div class="form-group id-row">
+            <label>身份证号码 <span class="required">*</span></label>
+            <input type="text" id="idNumber" placeholder="18 位身份证号" required />
         </div>
 
-        <!-- 联系电话 + 无人机品牌 -->
+        <!-- 联系电话 + 无人机品牌（并列一行） -->
         <div class="inline-group">
             <div class="form-group">
                 <label>联系电话 <span class="required">*</span></label>
@@ -337,7 +340,7 @@
             <input type="text" id="droneModel" placeholder="型号及机身编号" required />
         </div>
 
-        <!-- 飞行区域：改为普通下拉（单选） -->
+        <!-- 飞行区域：普通下拉 -->
         <div class="form-group">
             <label>飞行区域 <span class="required">*</span></label>
             <select id="flightArea" required>
@@ -359,7 +362,7 @@
             </select>
         </div>
 
-        <!-- 地点/里程 (选填) -->
+        <!-- 地点/里程 -->
         <div class="form-group">
             <label>地点 / 里程 / 接触网支柱编号 <span class="optional-tag">选填</span></label>
             <input type="text" id="locationDetail" placeholder="例：京九线 K1313+200" />
@@ -388,7 +391,7 @@
             </div>
         </div>
 
-        <!-- ===== 宣传提醒：黑飞违法 + 数据真实 ===== -->
+        <!-- 宣传提醒 -->
         <div class="warning-box">
             <div class="warn-title">⚠️ 依法飞行，安全第一</div>
             <div class="warn-desc">
@@ -397,12 +400,11 @@
             </div>
         </div>
 
-        <button type="submit" class="btn-submit">📨 提交报备</button>
+        <button type="submit" class="btn-submit" id="submitBtn">📨 提交报备</button>
     </form>
 
     <div id="toastMessage" class="toast">✅ 报备已提交</div>
 
-    <!-- ===== 底部 ===== -->
     <div class="footer-note">中国铁路南昌局集团公司九江桥工段</div>
 </div>
 
@@ -413,7 +415,9 @@
         var fileInput = document.getElementById('certFile');
         var fileStatus = document.getElementById('fileStatus');
         var uploadBox = document.getElementById('uploadBox');
+        var submitBtn = document.getElementById('submitBtn');
 
+        // ----- 文件选择反馈 -----
         fileInput.addEventListener('change', function(e) {
             if (this.files && this.files.length > 0) {
                 var file = this.files[0];
@@ -432,9 +436,21 @@
             }
         });
 
+        // ----- 辅助：显示toast -----
+        function showToast(msg, isError) {
+            toast.textContent = msg;
+            toast.className = 'toast show' + (isError ? ' error' : '');
+            clearTimeout(toast._timer);
+            toast._timer = setTimeout(function() {
+                toast.classList.remove('show');
+            }, 4500);
+        }
+
+        // ----- 提交逻辑 (模拟真实提交) -----
         form.addEventListener('submit', function(e) {
             e.preventDefault();
 
+            // 1. 收集字段
             var unit = document.getElementById('unit').value.trim();
             var name = document.getElementById('fullName').value.trim();
             var idNum = document.getElementById('idNumber').value.trim();
@@ -442,43 +458,45 @@
             var brand = document.getElementById('droneBrand').value.trim();
             var model = document.getElementById('droneModel').value.trim();
             var area = document.getElementById('flightArea').value;
+            var locationDetail = document.getElementById('locationDetail').value.trim();
             var purposeRadio = document.querySelector('input[name="purpose"]:checked');
+            var purposeOther = document.getElementById('purposeOther').value.trim();
             var certFile = fileInput.files && fileInput.files.length > 0;
 
-            function showError(msg) {
-                toast.textContent = '⚠️ ' + msg;
-                toast.className = 'toast show error';
-                setTimeout(function() { toast.classList.remove('show'); }, 3500);
-            }
-
+            // 2. 基础校验
             if (!unit || !name || !idNum || !phone || !brand || !model) {
-                showError('请完整填写所有带 * 号的必填项');
+                showToast('⚠️ 请完整填写所有带 * 号的必填项', true);
                 return;
             }
             if (idNum.length < 15) {
-                showError('请填写有效的身份证号码');
+                showToast('⚠️ 请填写有效的身份证号码', true);
+                return;
+            }
+            if (!/^\d{11}$/.test(phone)) {
+                showToast('⚠️ 请填写正确的11位手机号', true);
                 return;
             }
             if (!area) {
-                showError('请选择飞行区域');
+                showToast('⚠️ 请选择飞行区域', true);
                 return;
             }
             if (!purposeRadio) {
-                showError('请选择飞行用途');
+                showToast('⚠️ 请选择飞行用途', true);
+                return;
+            }
+            if (purposeRadio.value === '其他' && !purposeOther) {
+                showToast('⚠️ 请备注「其他」的具体用途', true);
                 return;
             }
             if (!certFile) {
-                showError('请拍照上传操作人员资质证书');
+                showToast('⚠️ 请拍照上传操作人员资质证书', true);
                 return;
             }
 
-            var otherText = document.getElementById('purposeOther').value.trim();
+            // 3. 构造数据
             var purposeValue = purposeRadio.value;
-            if (purposeValue === '其他' && otherText) {
-                purposeValue = '其他: ' + otherText;
-            } else if (purposeValue === '其他' && !otherText) {
-                showError('请备注「其他」的具体用途');
-                return;
+            if (purposeValue === '其他' && purposeOther) {
+                purposeValue = '其他: ' + purposeOther;
             }
 
             var formData = {
@@ -489,16 +507,69 @@
                 无人机品牌: brand,
                 型号编号: model,
                 飞行区域: area,
-                地点里程: document.getElementById('locationDetail').value.trim() || '未填写',
+                地点里程: locationDetail || '未填写',
                 飞行用途: purposeValue,
                 资质文件: fileInput.files[0] ? fileInput.files[0].name : '未上传'
             };
 
-            console.log('📋 报备数据:', formData);
+            // 4. 模拟提交
+            submitBtn.classList.add('loading');
+            submitBtn.textContent = '⏳ 提交中...';
+            showToast('⏳ 正在提交报备，请稍候...', false);
 
-            toast.textContent = '✅ 报备已提交（演示模式）';
-            toast.className = 'toast show';
-            setTimeout(function() { toast.classList.remove('show'); }, 4000);
+            // 模拟异步请求（演示环境）
+            fetch('/api/drone-report', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            })
+            .then(function(response) {
+                if (!response.ok) throw new Error('网络响应异常');
+                return response.json();
+            })
+            .then(function(data) {
+                console.log('📋 报备数据:', formData);
+                showToast('✅ 报备已成功提交（演示）', false);
+            })
+            .catch(function(error) {
+                console.warn('模拟提交: 因为无真实接口，使用延迟模拟成功');
+                return new Promise(function(resolve) {
+                    setTimeout(function() {
+                        resolve({ status: 'ok', message: '演示提交成功' });
+                    }, 800);
+                });
+            })
+            .then(function(result) {
+                console.log('✅ 提交结果:', result);
+                showToast('✅ 报备已成功提交（演示）', false);
+                submitBtn.classList.remove('loading');
+                submitBtn.textContent = '📨 提交报备';
+            })
+            .catch(function(err) {
+                console.error('提交失败:', err);
+                showToast('❌ 提交失败，请检查网络或稍后重试', true);
+                submitBtn.classList.remove('loading');
+                submitBtn.textContent = '📨 提交报备';
+            });
+
+            // 兜底恢复按钮
+            setTimeout(function() {
+                submitBtn.classList.remove('loading');
+                submitBtn.textContent = '📨 提交报备';
+            }, 5000);
+        });
+
+        // ----- 对「其他」输入框的辅助提示 -----
+        var otherInput = document.getElementById('purposeOther');
+        var purposeRadios = document.querySelectorAll('input[name="purpose"]');
+        purposeRadios.forEach(function(radio) {
+            radio.addEventListener('change', function() {
+                if (this.value === '其他') {
+                    otherInput.placeholder = '请备注具体用途（必填）';
+                } else {
+                    otherInput.placeholder = '选择「其他」时请备注';
+                }
+            });
         });
     })();
 </script>
