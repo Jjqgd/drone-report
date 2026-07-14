@@ -41,7 +41,7 @@
             min-height: 100vh;
         }
 
-        /* 标题 - 无图标 */
+        /* 标题 */
         h1 {
             font-size: 18px;
             color: #c0392b;
@@ -150,7 +150,7 @@
             flex-shrink: 0;
         }
 
-        /* 新的定位按钮 - 清爽风格 */
+        /* 定位按钮 */
         .btn-gps {
             height: 42px;
             padding: 0 14px;
@@ -441,53 +441,77 @@
             font-weight: bold;
         }
 
+        /* 加载状态 */
+        .loading-mask {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255,255,255,0.85);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .loading-mask.show {
+            display: flex;
+        }
+        .loading-mask .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #e0e0e0;
+            border-top-color: #c0392b;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .loading-mask p {
+            color: #555;
+            font-size: 14px;
+        }
+
         /* 小屏手机适配 */
         @media screen and (max-width: 360px) {
             .box {
                 padding: 12px 8px 16px;
             }
-
             h1 {
                 font-size: 16px;
             }
-
             .row label {
                 font-size: 13px;
             }
-
             .row input,
             .row select {
                 padding: 8px 8px;
                 font-size: 14px;
             }
-
             .btn-sub {
                 font-size: 15px;
                 padding: 10px;
             }
-
             .f2 {
                 flex-direction: column;
                 gap: 12px;
             }
-
             .radios {
                 gap: 4px;
             }
-
             .radios label {
                 padding: 5px 8px;
                 font-size: 12px;
             }
-
             .f3 {
                 gap: 4px;
             }
-
             .f3 input[type="number"] {
                 max-width: 65px !important;
             }
-
             .btn-gps {
                 padding: 0 10px;
                 font-size: 12px;
@@ -495,24 +519,20 @@
             }
         }
 
-        /* 中等屏幕 */
         @media screen and (min-width: 361px) and (max-width: 480px) {
             .box {
                 padding: 16px 12px 20px;
             }
-
             .f2 {
                 gap: 8px;
             }
         }
 
-        /* 大屏居中 */
         @media screen and (min-width: 768px) {
             body {
                 background: linear-gradient(135deg, #e8ecf1 0%, #d5dce6 100%);
                 padding: 20px 0;
             }
-
             .box {
                 border-radius: 12px;
                 box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
@@ -523,11 +543,14 @@
     </style>
 </head>
 <body>
+    <!-- 加载遮罩 -->
+    <div class="loading-mask" id="loadingMask">
+        <div class="spinner"></div>
+        <p>页面加载中...</p>
+    </div>
 
     <div class="box">
-        <h1>
-            九江桥工段铁路沿线无人机飞行报备
-        </h1>
+        <h1>九江桥工段铁路沿线无人机飞行报备</h1>
         <div class="sub">铁路沿线安全报备 · 请如实填写</div>
 
         <!-- 成功提示 -->
@@ -686,6 +709,10 @@
     <script>
         (function() {
             'use strict';
+
+            // 立即隐藏加载遮罩（页面内容已就绪）
+            var loadingMask = document.getElementById('loadingMask');
+            if (loadingMask) loadingMask.classList.remove('show');
 
             // ========== 配置 ==========
             var WEBHOOK = 'https://oapi.dingtalk.com/robot/send?access_token=b2ccb8e7bba75a6a234ac8343488dcd66b39da2dc23ae4307a2e0e2b567f13e5';
@@ -969,7 +996,7 @@
                     } else {
                         tip.textContent = '网络异常，请手动输入';
                         show(tip);
-                        toast('网络异常', true);
+                        toast('请手动输入地址', true);
                     }
                 };
 
@@ -1067,8 +1094,9 @@
                 }
             }
 
-            // ========== 消息推送 ==========
-            function sendDingtalk(content, callback) {
+            // ========== 消息推送（带重试和降级） ==========
+            function sendDingtalk(content, callback, retry) {
+                retry = retry || 0;
                 var url = PROXY + '/dingtalk?webhook=' + encodeURIComponent(WEBHOOK);
                 var body = JSON.stringify({
                     msgtype: 'text',
@@ -1086,14 +1114,27 @@
                             callback(data && data.errcode === 0);
                         })
                         .catch(function() {
-                            callback(false);
+                            if (retry < 2) {
+                                setTimeout(function() {
+                                    sendDingtalk(content, callback, retry + 1);
+                                }, 1000);
+                            } else {
+                                callback(false);
+                            }
                         });
                 } catch (e) {
-                    callback(false);
+                    if (retry < 2) {
+                        setTimeout(function() {
+                            sendDingtalk(content, callback, retry + 1);
+                        }, 1000);
+                    } else {
+                        callback(false);
+                    }
                 }
             }
 
-            function sendWechat(title, content, callback) {
+            function sendWechat(title, content, callback, retry) {
+                retry = retry || 0;
                 if (!PPCODE) {
                     callback(true);
                     return;
@@ -1117,10 +1158,22 @@
                             callback(data && data.code === 200);
                         })
                         .catch(function() {
-                            callback(false);
+                            if (retry < 2) {
+                                setTimeout(function() {
+                                    sendWechat(title, content, callback, retry + 1);
+                                }, 1000);
+                            } else {
+                                callback(false);
+                            }
                         });
                 } catch (e) {
-                    callback(false);
+                    if (retry < 2) {
+                        setTimeout(function() {
+                            sendWechat(title, content, callback, retry + 1);
+                        }, 1000);
+                    } else {
+                        callback(false);
+                    }
                 }
             }
 
@@ -1293,6 +1346,20 @@
                     sendWechat('无人机飞行报备 - ' + name, wc, function(ok) { wxOk = ok;
                         checkDone(); });
                 });
+            }
+
+            // 检测是否在钉钉或微信内置浏览器中，显示兼容提示
+            var ua = navigator.userAgent || '';
+            if (/DingTalk/i.test(ua) || /MicroMessenger/i.test(ua)) {
+                console.log('检测到在钉钉/微信内置浏览器中打开，已启用兼容模式');
+                // 给页面增加一个轻微的底部提示（不打扰用户）
+                var foot = document.querySelector('.foot');
+                if (foot) {
+                    var tipCompat = document.createElement('div');
+                    tipCompat.style.cssText = 'font-size:11px;color:#aaa;text-align:center;margin-top:6px;';
+                    tipCompat.textContent = '💡 如在钉钉中显示异常，请点击右上角「在浏览器中打开」';
+                    foot.parentNode.insertBefore(tipCompat, foot.nextSibling);
+                }
             }
 
             console.log('✅ 九江桥工段无人机报备系统已就绪');
