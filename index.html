@@ -41,7 +41,7 @@
             min-height: 100vh;
         }
 
-        /* 标题 */
+        /* 标题 - 无图标 */
         h1 {
             font-size: 18px;
             color: #c0392b;
@@ -54,11 +54,6 @@
             justify-content: center;
             flex-wrap: wrap;
             gap: 4px;
-        }
-
-        h1 .icon {
-            font-size: 20px;
-            display: inline-block;
         }
 
         .sub {
@@ -155,27 +150,41 @@
             flex-shrink: 0;
         }
 
-        /* GPS按钮 */
+        /* 新的定位按钮 - 清爽风格 */
         .btn-gps {
-            width: 42px;
             height: 42px;
-            background: #4facfe;
-            color: #fff;
-            border: none;
+            padding: 0 14px;
+            background: #e8f0fe;
+            color: #1a73e8;
+            border: 1px solid #d2e3fc;
             border-radius: 8px;
-            font-size: 18px;
+            font-size: 14px;
+            font-weight: 500;
             cursor: pointer;
-            text-align: center;
-            line-height: 42px;
-            padding: 0;
+            white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
             flex-shrink: 0;
             -webkit-tap-highlight-color: transparent;
             touch-action: manipulation;
+            transition: all 0.2s ease;
+            letter-spacing: 0.3px;
+        }
+
+        .btn-gps .icon {
+            font-size: 16px;
+            line-height: 1;
         }
 
         .btn-gps:active {
-            background: #3d8fd4;
-            transform: scale(0.95);
+            background: #d2e3fc;
+            transform: scale(0.96);
+        }
+
+        .btn-gps:disabled {
+            opacity: 0.6;
+            transform: none;
         }
 
         /* 用途选择 */
@@ -478,6 +487,12 @@
             .f3 input[type="number"] {
                 max-width: 65px !important;
             }
+
+            .btn-gps {
+                padding: 0 10px;
+                font-size: 12px;
+                height: 38px;
+            }
         }
 
         /* 中等屏幕 */
@@ -511,9 +526,7 @@
 
     <div class="box">
         <h1>
-            <span class="icon"></span>
-            九江桥工段铁路沿线
-            <span>无人机飞行报备</span>
+            九江桥工段铁路沿线无人机飞行报备
         </h1>
         <div class="sub">铁路沿线安全报备 · 请如实填写</div>
 
@@ -593,8 +606,10 @@
             <div class="row">
                 <label>飞行行政区域（附近村庄） <span class="r">*</span></label>
                 <div class="f3">
-                    <input type="text" id="addr" placeholder="点击右侧GPS定位，或手动输入地址" required />
-                    <button type="button" class="btn-gps" id="btnGps" title="GPS定位">📍</button>
+                    <input type="text" id="addr" placeholder="点击右侧定位，或手动输入地址" required />
+                    <button type="button" class="btn-gps" id="btnGps">
+                        <span class="icon">📍</span> GPS
+                    </button>
                 </div>
                 <div class="tip" id="tip"></div>
             </div>
@@ -714,6 +729,53 @@
                 }, 4000);
             }
 
+            // ========== 获取设备信息 ==========
+            function getDeviceInfo() {
+                var ua = navigator.userAgent || '';
+                var os = '未知';
+                var platform = '未知';
+
+                if (/iPhone|iPad|iPod/i.test(ua)) {
+                    os = 'iOS';
+                } else if (/Android/i.test(ua)) {
+                    os = 'Android';
+                } else if (/HarmonyOS|鸿蒙/i.test(ua) || /OpenHarmony/i.test(ua)) {
+                    os = 'HarmonyOS (鸿蒙)';
+                } else if (/Windows/i.test(ua)) {
+                    os = 'Windows';
+                } else if (/Mac/i.test(ua)) {
+                    os = 'macOS';
+                } else if (/Linux/i.test(ua)) {
+                    os = 'Linux';
+                }
+
+                if (/MicroMessenger/i.test(ua)) {
+                    platform = '微信';
+                } else if (/DingTalk/i.test(ua)) {
+                    platform = '钉钉';
+                } else if (/Safari/i.test(ua) && !/Chrome/i.test(ua)) {
+                    platform = 'Safari浏览器';
+                } else if (/Chrome/i.test(ua)) {
+                    platform = 'Chrome浏览器';
+                } else if (/Firefox/i.test(ua)) {
+                    platform = 'Firefox浏览器';
+                } else if (/Edge/i.test(ua)) {
+                    platform = 'Edge浏览器';
+                } else if (/UCBrowser/i.test(ua)) {
+                    platform = 'UC浏览器';
+                } else if (/QQBrowser/i.test(ua)) {
+                    platform = 'QQ浏览器';
+                } else if (/MQQBrowser/i.test(ua)) {
+                    platform = 'QQ浏览器';
+                } else if (/baiduboxapp/i.test(ua)) {
+                    platform = '百度浏览器';
+                } else {
+                    platform = '浏览器';
+                }
+
+                return os + ' · ' + platform;
+            }
+
             // ========== 用途单选处理 ==========
             var purposeRadios = document.getElementsByName('purpose');
             var purposeLabels = document.querySelectorAll('#purposeGroup label');
@@ -729,11 +791,9 @@
                 });
             }
 
-            // 监听radio变化
             for (var i = 0; i < purposeRadios.length; i++) {
                 purposeRadios[i].addEventListener('change', function() {
                     updateRadioStyles();
-
                     if (this.value === '其他') {
                         show(otherBox);
                         setTimeout(function() {
@@ -746,13 +806,11 @@
                 });
             }
 
-            // 点击label切换radio（兼容老手机）
             purposeLabels.forEach(function(label) {
                 label.addEventListener('click', function(e) {
                     var radio = this.querySelector('input[type="radio"]');
                     if (radio && !radio.checked) {
                         radio.checked = true;
-                        // 触发change事件
                         var event;
                         if (typeof Event === 'function') {
                             event = new Event('change', { bubbles: true });
@@ -765,7 +823,6 @@
                 });
             });
 
-            // 初始样式
             updateRadioStyles();
 
             // ========== 默认时间 ==========
@@ -816,7 +873,6 @@
             function resetGps() {
                 locking = false;
                 if (btnGps) {
-                    btnGps.style.opacity = '1';
                     btnGps.disabled = false;
                 }
             }
@@ -831,7 +887,6 @@
                     }
 
                     locking = true;
-                    btnGps.style.opacity = '0.5';
                     btnGps.disabled = true;
                     show(tip);
                     tip.textContent = '正在获取GPS位置...';
@@ -1075,7 +1130,6 @@
                     e.preventDefault();
                     if (submitting) return;
 
-                    // 获取数据
                     var unit = (document.getElementById('unit').value || '').trim();
                     var name = (document.getElementById('name').value || '').trim();
                     var idcard = (document.getElementById('idcard').value || '').trim();
@@ -1095,7 +1149,6 @@
                     var dmax = (document.getElementById('dMax').value || '').trim();
                     var cert = (document.getElementById('cert').value || '').trim();
 
-                    // 验证
                     if (!unit || !name || !idcard || !phone || !brand || !model) {
                         toast('请完整填写所有必填项', true);
                         return;
@@ -1156,15 +1209,14 @@
                         return;
                     }
 
-                    // 用途
                     var purpose = purp.value;
                     if (purpose === '其他' && other) {
                         purpose += '（' + other + '）';
                     }
 
                     var nowStr = formatDate(new Date().toISOString());
+                    var deviceInfo = getDeviceInfo();
 
-                    // 钉钉消息
                     var dc = '【无人机飞行报备通知】\n\n' +
                         '📋 申请单位：' + unit + '\n' +
                         '👤 申请人：' + name + '\n' +
@@ -1181,9 +1233,9 @@
                         '📐 距铁路：' + dmin + 'm ~ ' + dmax + 'm\n' +
                         '📝 证件编码：' + cert + '\n' +
                         '\n⏰ 报备时间：' + nowStr + '\n' +
+                        '📱 提交设备：' + deviceInfo + '\n' +
                         '⚠️ 请工作人员24小时内核实确认。';
 
-                    // 微信消息
                     var wc = '<h2 style="color:#c0392b;">🚁 无人机飞行报备通知</h2>' +
                         '<table style="width:100%;border-collapse:collapse;font-size:14px;">' +
                         '<tr><td style="padding:6px;border:1px solid #eee;background:#f5f5f5;"><b>📋 单位</b></td><td style="padding:6px;border:1px solid #eee;">' + unit + '</td></tr>' +
@@ -1200,9 +1252,9 @@
                         '<tr><td style="padding:6px;border:1px solid #eee;background:#f5f5f5;"><b>📝 证件</b></td><td style="padding:6px;border:1px solid #eee;">' + cert + '</td></tr>' +
                         '</table>' +
                         '<p style="color:#999;font-size:12px;">⏰ 报备时间：' + nowStr + '</p>' +
+                        '<p style="color:#666;font-size:12px;">📱 提交设备：' + deviceInfo + '</p>' +
                         '<p style="color:#c0392b;font-weight:bold;">⚠️ 请工作人员24小时内核实确认。</p>';
 
-                    // 发送
                     submitting = true;
                     btnSub.disabled = true;
                     btnSub.textContent = '⏳ 正在提交...';
