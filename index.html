@@ -5,441 +5,1125 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>九江桥工段 · 无人机报备</title>
     <style>
-        body { font-family: "PingFang SC","Helvetica Neue","Microsoft YaHei",Arial,sans-serif; background:#eef2f7; margin:0; padding:8px; }
-        .box { max-width:520px; margin:0 auto; background:#fff; border-radius:12px; padding:16px 14px 20px; }
-        h1 { font-size:20px; color:#c0392b; text-align:center; margin:0 0 12px 0; }
-        .sub { font-size:12px; color:#999; text-align:center; margin-bottom:14px; padding-bottom:10px; border-bottom:1px solid #eee; }
-        .row { margin-bottom:12px; }
-        .row label { display:block; font-size:14px; font-weight:bold; color:#333; margin-bottom:4px; }
-        .row label .r { color:#c0392b; }
-        .row input,.row select { width:100%; padding:10px 12px; font-size:14px; border:1px solid #ddd; border-radius:6px; background:#fafcff; box-sizing:border-box; }
-        .row select { height:40px; }
-        .f2 { display:flex; gap:8px; }
-        .f2 .row { flex:1; margin-bottom:0; }
-        .f3 { display:flex; gap:6px; align-items:center; }
-        .f3 input { flex:1; min-width:0; }
-        .f3 span { font-size:13px; color:#999; white-space:nowrap; }
-        .btn-gps { width:44px; height:44px; background:#4facfe; color:#fff; border:none; border-radius:10px; font-size:22px; cursor:pointer; text-align:center; line-height:44px; padding:0; flex-shrink:0; }
-        .radios { background:#f7faff; padding:10px; border-radius:8px; border:1px solid #e8eff6; font-size:13px; }
-        .radios label { margin-right:12px; cursor:pointer; display:inline-block; margin-bottom:4px; font-weight:normal; }
-        .radios input { width:auto; margin-right:3px; }
-        .other-box { display:none; margin-top:6px; }
-        .other-box.on { display:block; }
-        .upbox { border:2px dashed #ddd; border-radius:8px; padding:14px; text-align:center; background:#f8fbfe; cursor:pointer; }
-        .upbox input { display:none; }
-        .upbox span { background:#e6eef7; padding:6px 16px; border-radius:20px; font-size:14px; color:#333; }
-        .warn { background:#fef6f5; border-left:3px solid #c0392b; padding:8px 10px; margin:10px 0; font-size:12px; color:#666; border-radius:4px; }
-        .warn b { color:#c0392b; }
-        .btn-sub { display:block; width:100%; padding:12px; background:#c0392b; color:#fff; border:none; border-radius:24px; font-size:17px; font-weight:bold; cursor:pointer; text-align:center; }
-        .tip { display:none; margin-top:6px; padding:8px 10px; background:#f0f8ff; border-radius:6px; border-left:3px solid #4facfe; font-size:12px; color:#1a5276; }
-        .tip.on { display:block; }
-        .ok-box { display:none; text-align:center; padding:20px; background:#f0faf5; border:2px solid #2d7a4f; border-radius:10px; margin-bottom:12px; }
-        .ok-box.on { display:block; }
-        .ok-box .big { font-size:36px; }
-        .ok-box h2 { font-size:18px; color:#2d7a4f; margin:6px 0; }
-        .ok-box p { font-size:13px; color:#666; }
-        .ok-box .note { background:#fff8e1; border-left:3px solid #f39c12; padding:10px; margin-top:10px; text-align:left; font-size:12px; color:#666; line-height:1.6; }
-        .ok-box button { margin-top:10px; padding:8px 20px; background:#c0392b; color:#fff; border:none; border-radius:20px; font-size:14px; cursor:pointer; }
-        .msg { display:none; background:#1d3b2f; color:#fff; padding:10px 14px; border-radius:24px; text-align:center; margin-top:10px; font-size:13px; }
-        .msg.on { display:block; }
-        .msg.err { background:#8b2c2c; }
-        .foot { text-align:center; font-size:13px; color:#c0392b; margin-top:14px; padding-top:10px; border-top:1px solid #eee; font-weight:bold; }
-        .file-info { font-size:12px; color:#2a5f3a; margin-top:6px; word-break:break-all; }
+        body {
+            font-family: "PingFang SC", "Helvetica Neue", "Microsoft YaHei", Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 12px;
+            min-height: 100vh;
+        }
+
+        .box {
+            max-width: 520px;
+            margin: 0 auto;
+            background: #fff;
+            border-radius: 16px;
+            padding: 20px 16px 24px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+        }
+
+        h1 {
+            font-size: 20px;
+            color: #c0392b;
+            text-align: center;
+            margin: 0 0 8px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        h1 .icon {
+            font-size: 24px;
+        }
+
+        .sub {
+            font-size: 12px;
+            color: #999;
+            text-align: center;
+            margin-bottom: 14px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .row {
+            margin-bottom: 14px;
+        }
+
+        .row label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 6px;
+        }
+
+        .row label .r {
+            color: #c0392b;
+            margin-left: 2px;
+        }
+
+        .row input,
+        .row select {
+            width: 100%;
+            padding: 10px 12px;
+            font-size: 14px;
+            border: 1.5px solid #e0e0e0;
+            border-radius: 8px;
+            background: #fafcff;
+            box-sizing: border-box;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .row input:focus,
+        .row select:focus {
+            outline: none;
+            border-color: #4facfe;
+            box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.1);
+        }
+
+        .row select {
+            height: 42px;
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 20px;
+            padding-right: 36px;
+        }
+
+        .f2 {
+            display: flex;
+            gap: 10px;
+        }
+
+        .f2 .row {
+            flex: 1;
+            margin-bottom: 0;
+        }
+
+        .f3 {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .f3 input {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .f3 span {
+            font-size: 13px;
+            color: #999;
+            white-space: nowrap;
+        }
+
+        .btn-gps {
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-size: 20px;
+            cursor: pointer;
+            text-align: center;
+            line-height: 44px;
+            padding: 0;
+            flex-shrink: 0;
+            transition: transform 0.1s, opacity 0.2s;
+            box-shadow: 0 2px 8px rgba(79, 172, 254, 0.3);
+        }
+
+        .btn-gps:active {
+            transform: scale(0.95);
+        }
+
+        .radios {
+            background: #f7faff;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1.5px solid #e8eff6;
+            font-size: 13px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .radios label {
+            margin-right: 0;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            margin-bottom: 0;
+            font-weight: normal;
+            background: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            border: 1.5px solid #e0e0e0;
+            transition: all 0.2s;
+            font-size: 13px;
+        }
+
+        .radios label:has(input:checked) {
+            background: #e3f2fd;
+            border-color: #4facfe;
+            color: #1976d2;
+        }
+
+        .radios input {
+            width: auto;
+            margin-right: 4px;
+            accent-color: #4facfe;
+        }
+
+        .other-box {
+            display: none;
+            margin-top: 8px;
+        }
+
+        .other-box.on {
+            display: block;
+        }
+
+        .other-box input {
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-8px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .upbox {
+            border: 2px dashed #d0d0d0;
+            border-radius: 10px;
+            padding: 16px;
+            text-align: center;
+            background: #f8fbfe;
+            cursor: pointer;
+            transition: border-color 0.2s, background 0.2s;
+            position: relative;
+        }
+
+        .upbox:hover {
+            border-color: #4facfe;
+            background: #f0f7ff;
+        }
+
+        .upbox input {
+            display: none;
+        }
+
+        .upbox span {
+            background: #e6eef7;
+            padding: 8px 18px;
+            border-radius: 20px;
+            font-size: 14px;
+            color: #333;
+            display: inline-block;
+        }
+
+        .warn {
+            background: #fef6f5;
+            border-left: 4px solid #c0392b;
+            padding: 10px 12px;
+            margin: 14px 0;
+            font-size: 12px;
+            color: #666;
+            border-radius: 6px;
+            line-height: 1.6;
+        }
+
+        .warn b {
+            color: #c0392b;
+        }
+
+        .btn-sub {
+            display: block;
+            width: 100%;
+            padding: 13px;
+            background: linear-gradient(135deg, #c0392b 0%, #e74c3c 100%);
+            color: #fff;
+            border: none;
+            border-radius: 24px;
+            font-size: 17px;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(192, 57, 43, 0.3);
+            transition: transform 0.1s, box-shadow 0.2s;
+        }
+
+        .btn-sub:active {
+            transform: scale(0.98);
+            box-shadow: 0 2px 6px rgba(192, 57, 43, 0.3);
+        }
+
+        .btn-sub:disabled {
+            background: #ccc;
+            box-shadow: none;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .tip {
+            display: none;
+            margin-top: 8px;
+            padding: 10px 12px;
+            background: #f0f8ff;
+            border-radius: 8px;
+            border-left: 4px solid #4facfe;
+            font-size: 12px;
+            color: #1a5276;
+            line-height: 1.5;
+        }
+
+        .tip.on {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        .ok-box {
+            display: none;
+            text-align: center;
+            padding: 24px 16px;
+            background: #f0faf5;
+            border: 2px solid #2d7a4f;
+            border-radius: 12px;
+            margin-bottom: 14px;
+            animation: slideDown 0.4s ease;
+        }
+
+        .ok-box.on {
+            display: block;
+        }
+
+        .ok-box .big {
+            font-size: 48px;
+            margin-bottom: 8px;
+        }
+
+        .ok-box h2 {
+            font-size: 20px;
+            color: #2d7a4f;
+            margin: 8px 0;
+        }
+
+        .ok-box p {
+            font-size: 14px;
+            color: #666;
+            margin: 6px 0;
+        }
+
+        .ok-box .note {
+            background: #fff8e1;
+            border-left: 4px solid #f39c12;
+            padding: 12px;
+            margin-top: 12px;
+            text-align: left;
+            font-size: 13px;
+            color: #666;
+            line-height: 1.7;
+            border-radius: 6px;
+        }
+
+        .ok-box button {
+            margin-top: 14px;
+            padding: 10px 24px;
+            background: #c0392b;
+            color: #fff;
+            border: none;
+            border-radius: 24px;
+            font-size: 15px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .ok-box button:hover {
+            background: #a93226;
+        }
+
+        .msg {
+            display: none;
+            background: #1d3b2f;
+            color: #fff;
+            padding: 12px 16px;
+            border-radius: 24px;
+            text-align: center;
+            margin-top: 12px;
+            font-size: 13px;
+            animation: slideDown 0.3s ease;
+        }
+
+        .msg.on {
+            display: block;
+        }
+
+        .msg.err {
+            background: #8b2c2c;
+        }
+
+        .foot {
+            text-align: center;
+            font-size: 13px;
+            color: #c0392b;
+            margin-top: 16px;
+            padding-top: 12px;
+            border-top: 1px solid #eee;
+            font-weight: bold;
+        }
+
+        .file-info {
+            font-size: 12px;
+            color: #2a5f3a;
+            margin-top: 8px;
+            word-break: break-all;
+            min-height: 18px;
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 6px;
+            }
+            .box {
+                border-radius: 12px;
+                padding: 16px 12px 20px;
+            }
+            .f2 {
+                flex-direction: column;
+                gap: 14px;
+            }
+            .radios {
+                gap: 6px;
+            }
+            .radios label {
+                padding: 5px 10px;
+                font-size: 12px;
+            }
+        }
     </style>
 </head>
 <body>
 
-<div class="box">
-    <h1>九江桥工段铁路沿线无人机飞行报备</h1>
-    <div class="sub">铁路沿线安全报备 · 请如实填写</div>
+    <div class="box">
+        <h1>
+            <span class="icon">🚁</span>
+            九江桥工段铁路沿线无人机飞行报备
+        </h1>
+        <div class="sub">铁路沿线安全报备 · 请如实填写</div>
 
-    <div class="ok-box" id="okBox">
-        <div class="big">✅</div>
-        <h2>报备提交成功！</h2>
-        <p id="okDesc">通知已发送至管理部门</p>
-        <div class="note">
-            <b>📢 温馨提示：</b><br />
-            感谢您的配合！工作人员将在 <b style="color:#e67e22;">24小时内</b> 与您取得联系。<br />
-            <b style="color:#c0392b;">在未接到工作人员电话确认前，严禁擅自飞行！</b><br />
-            如有疑问：九江桥工段 安设办 ☎️ 0792-7022335
+        <!-- 成功提示 -->
+        <div class="ok-box" id="okBox">
+            <div class="big">✅</div>
+            <h2>报备提交成功！</h2>
+            <p id="okDesc">通知已发送至管理部门</p>
+            <div class="note">
+                <b>📢 温馨提示：</b><br />
+                感谢您的配合！工作人员将在 <b style="color:#e67e22;">24小时内</b> 与您取得联系。<br />
+                <b style="color:#c0392b;">在未接到工作人员电话确认前，严禁擅自飞行！</b><br />
+                如有疑问：九江桥工段 安设办 ☎️ 0792-7022335
+            </div>
+            <button onclick="location.reload()">继续报备</button>
         </div>
-        <button onclick="location.reload()">继续报备</button>
+
+        <!-- 表单 -->
+        <form id="frm" onsubmit="return false;" novalidate>
+            <div class="row"><label>申请单位 <span class="r">*</span></label><input type="text" id="unit" placeholder="请输入申请单位名称" required autocomplete="organization" /></div>
+            <div class="row"><label>申请人 <span class="r">*</span></label><input type="text" id="name" placeholder="申请人姓名" required autocomplete="name" /></div>
+            <div class="row"><label>身份证号码 <span class="r">*</span></label><input type="text" id="idcard" placeholder="18位身份证号" required maxlength="18" autocomplete="off" /></div>
+            <div class="f2">
+                <div class="row"><label>联系电话 <span class="r">*</span></label><input type="tel" id="phone" placeholder="手机号" required maxlength="11" autocomplete="tel" /></div>
+                <div class="row"><label>无人机品牌 <span class="r">*</span></label><input type="text" id="brand" placeholder="如：大疆" required /></div>
+            </div>
+            <div class="row"><label>无人机型号/编号 <span class="r">*</span></label><input type="text" id="model" placeholder="型号及机身编号" required /></div>
+            <div class="row">
+                <label>飞行区域铁路线路 <span class="r">*</span></label>
+                <select id="area" required>
+                    <option value="">-- 请选择 --</option>
+                    <option>衢九线</option><option>铜九线</option><option>湖口疏解线</option>
+                    <option>京九线</option><option>昌九城际</option><option>京港高铁</option>
+                    <option>武九线</option><option>武九客专</option><option>西到线</option>
+                    <option>发西线</option><option>沙浔线</option><option>九江上行疏解线</option>
+                    <option>武九西南联络线</option><option>武九客专九江联络线</option>
+                </select>
+            </div>
+            <div class="row"><label>地点/里程/支柱编号（选填）</label><input type="text" id="location" placeholder="例：京九线 K1313+200" /></div>
+            <div class="row">
+                <label>飞行行政区域（附近村庄） <span class="r">*</span></label>
+                <div class="f3">
+                    <input type="text" id="addr" placeholder="点击右侧GPS定位，或手动输入地址" required />
+                    <button type="button" class="btn-gps" id="btnGps" title="GPS定位">📍</button>
+                </div>
+                <div class="tip" id="tip"></div>
+            </div>
+            <div class="row">
+                <label>飞行用途 <span class="r">*</span></label>
+                <div class="radios" id="purposeGroup">
+                    <label><input type="radio" name="purpose" value="农业打药" />农业打药</label>
+                    <label><input type="radio" name="purpose" value="航拍" />航拍</label>
+                    <label><input type="radio" name="purpose" value="勘察测量" />勘察测量</label>
+                    <label><input type="radio" name="purpose" value="应急救援" />应急救援</label>
+                    <label><input type="radio" name="purpose" value="其他" />其他</label>
+                </div>
+                <div class="other-box" id="otherBox"><input type="text" id="otherText" placeholder="请备注具体用途" /></div>
+            </div>
+            <div class="row">
+                <label>作业起止时间 <span class="r">*</span></label>
+                <div class="f3">
+                    <input type="datetime-local" id="timeStart" required />
+                    <span>至</span>
+                    <input type="datetime-local" id="timeEnd" required />
+                </div>
+            </div>
+            <div class="row">
+                <label>飞行高度区间（米） <span class="r">*</span></label>
+                <div class="f3">
+                    <input type="number" id="hMin" placeholder="最低" min="0" required style="max-width:90px;" />
+                    <span>~</span>
+                    <input type="number" id="hMax" placeholder="最高" min="0" required style="max-width:90px;" />
+                    <span>米</span>
+                </div>
+            </div>
+            <div class="row">
+                <label>距离铁路距离区间（米） <span class="r">*</span></label>
+                <div class="f3">
+                    <input type="number" id="dMin" placeholder="最近" min="0" required style="max-width:90px;" />
+                    <span>~</span>
+                    <input type="number" id="dMax" placeholder="最远" min="0" required style="max-width:90px;" />
+                    <span>米</span>
+                </div>
+            </div>
+            <div class="row"><label>操作证件编码 <span class="r">*</span></label><input type="text" id="cert" placeholder="如：CAAC-2024-001" required /></div>
+            <div class="row">
+                <label>操作人员资质拍照（选填）</label>
+                <div class="upbox" id="upbox">
+                    <input type="file" id="file" accept="image/*" capture="environment" />
+                    <span>📸 拍照/选择图片</span>
+                    <div class="file-info" id="fileInfo">未选择文件</div>
+                </div>
+            </div>
+            <div class="warn">
+                <b>⚠️ 依法飞行，安全第一</b><br />
+                铁路沿线无人机 <b>黑飞属于违法行为</b>，请确保数据<b>真实完整</b>。
+            </div>
+            <button type="submit" class="btn-sub" id="btnSub">📨 提交报备</button>
+        </form>
+        <div class="msg" id="msg"></div>
+        <div class="foot">中国铁路南昌局集团公司九江桥工段</div>
     </div>
 
-    <form id="frm" onsubmit="return false;">
-        <div class="row"><label>申请单位 <span class="r">*</span></label><input type="text" id="unit" placeholder="请输入申请单位名称" required /></div>
-        <div class="row"><label>申请人 <span class="r">*</span></label><input type="text" id="name" placeholder="申请人姓名" required /></div>
-        <div class="row"><label>身份证号码 <span class="r">*</span></label><input type="text" id="idcard" placeholder="18位身份证号" required maxlength="18" /></div>
-        <div class="f2">
-            <div class="row"><label>联系电话 <span class="r">*</span></label><input type="tel" id="phone" placeholder="手机号" required maxlength="11" /></div>
-            <div class="row"><label>无人机品牌 <span class="r">*</span></label><input type="text" id="brand" placeholder="如：大疆" required /></div>
-        </div>
-        <div class="row"><label>无人机型号/编号 <span class="r">*</span></label><input type="text" id="model" placeholder="型号及机身编号" required /></div>
-        <div class="row">
-            <label>飞行区域铁路线路 <span class="r">*</span></label>
-            <select id="area" required>
-                <option value="">-- 请选择 --</option>
-                <option>衢九线</option><option>铜九线</option><option>湖口疏解线</option>
-                <option>京九线</option><option>昌九城际</option><option>京港高铁</option>
-                <option>武九线</option><option>武九客专</option><option>西到线</option>
-                <option>发西线</option><option>沙浔线</option><option>九江上行疏解线</option>
-                <option>武九西南联络线</option><option>武九客专九江联络线</option>
-            </select>
-        </div>
-        <div class="row"><label>地点/里程/支柱编号（选填）</label><input type="text" id="location" placeholder="例：京九线 K1313+200" /></div>
-        <div class="row">
-            <label>飞行行政区域（附近村庄） <span class="r">*</span></label>
-            <div class="f3">
-                <input type="text" id="addr" placeholder="点击右侧GPS定位，或手动输入地址" required />
-                <button type="button" class="btn-gps" id="btnGps">⊕</button>
-            </div>
-            <div class="tip" id="tip"></div>
-        </div>
-        <div class="row">
-            <label>飞行用途 <span class="r">*</span></label>
-            <div class="radios">
-                <label><input type="radio" name="purpose" value="农业打药" />农业打药</label>
-                <label><input type="radio" name="purpose" value="航拍" />航拍</label>
-                <label><input type="radio" name="purpose" value="勘察测量" />勘察测量</label>
-                <label><input type="radio" name="purpose" value="应急救援" />应急救援</label>
-                <label><input type="radio" name="purpose" value="其他" />其他</label>
-            </div>
-            <div class="other-box" id="otherBox"><input type="text" id="otherText" placeholder="请备注具体用途" /></div>
-        </div>
-        <div class="row">
-            <label>作业起止时间 <span class="r">*</span></label>
-            <div class="f3">
-                <input type="datetime-local" id="timeStart" required />
-                <span>至</span>
-                <input type="datetime-local" id="timeEnd" required />
-            </div>
-        </div>
-        <div class="row">
-            <label>飞行高度区间（米） <span class="r">*</span></label>
-            <div class="f3">
-                <input type="number" id="hMin" placeholder="最低" min="0" required style="max-width:80px;" />
-                <span>~</span>
-                <input type="number" id="hMax" placeholder="最高" min="0" required style="max-width:80px;" />
-                <span>米</span>
-            </div>
-        </div>
-        <div class="row">
-            <label>距离铁路距离区间（米） <span class="r">*</span></label>
-            <div class="f3">
-                <input type="number" id="dMin" placeholder="最近" min="0" required style="max-width:80px;" />
-                <span>~</span>
-                <input type="number" id="dMax" placeholder="最远" min="0" required style="max-width:80px;" />
-                <span>米</span>
-            </div>
-        </div>
-        <div class="row"><label>操作证件编码 <span class="r">*</span></label><input type="text" id="cert" placeholder="如：CAAC-2024-001" required /></div>
-        <div class="row">
-            <label>操作人员资质拍照（选填）</label>
-            <div class="upbox" id="upbox"><input type="file" id="file" accept="image/*" /><span>📸 拍照/选择图片</span><div class="file-info" id="fileInfo">未选择文件</div></div>
-        </div>
-        <div class="warn"><b>⚠️ 依法飞行，安全第一</b><br />铁路沿线无人机 <b>黑飞属于违法行为</b>，请确保数据<b>真实完整</b>。</div>
-        <button type="submit" class="btn-sub" id="btnSub">📨 提交报备</button>
-    </form>
-    <div class="msg" id="msg"></div>
-    <div class="foot">中国铁路南昌局集团公司九江桥工段</div>
-</div>
+    <script>
+        (function() {
+            'use strict';
 
-<script>
-// 延迟100ms执行，确保页面先渲染
-setTimeout(function() {
+            // ========== 配置 ==========
+            var WEBHOOK = 'https://oapi.dingtalk.com/robot/send?access_token=b2ccb8e7bba75a6a234ac8343488dcd66b39da2dc23ae4307a2e0e2b567f13e5';
+            var PPCODE = '20260713';
+            var PROXY = 'https://dingtalk-proxy.netlify.app/.netlify/functions';
+            var AMAPKEY = '944cb277c68d71409d48d100bb305244';
 
-var WEBHOOK = 'https://oapi.dingtalk.com/robot/send?access_token=b2ccb8e7bba75a6a234ac8343488dcd66b39da2dc23ae4307a2e0e2b567f13e5';
-var PPCODE = '20260713';
-var PROXY = 'https://dingtalk-proxy.netlify.app/.netlify/functions';
-var AMAPKEY = '944cb277c68d71409d48d100bb305244';
+            // ========== DOM元素 ==========
+            var btnSub = document.getElementById('btnSub');
+            var btnGps = document.getElementById('btnGps');
+            var tip = document.getElementById('tip');
+            var addr = document.getElementById('addr');
+            var msg = document.getElementById('msg');
+            var okBox = document.getElementById('okBox');
+            var okDesc = document.getElementById('okDesc');
+            var otherBox = document.getElementById('otherBox');
+            var otherText = document.getElementById('otherText');
+            var fileInfo = document.getElementById('fileInfo');
+            var frm = document.getElementById('frm');
 
-var loc = { lat:null, lng:null };
-var locking = false;
+            var loc = { lat: null, lng: null };
+            var locking = false;
+            var submitting = false;
+            var toastTimer = null;
 
-var btnSub = document.getElementById('btnSub');
-var btnGps = document.getElementById('btnGps');
-var tip = document.getElementById('tip');
-var addr = document.getElementById('addr');
-var msg = document.getElementById('msg');
-var okBox = document.getElementById('okBox');
-var okDesc = document.getElementById('okDesc');
-var otherBox = document.getElementById('otherBox');
-var fileInfo = document.getElementById('fileInfo');
-var frm = document.getElementById('frm');
+            // ========== Toast消息 ==========
+            function toast(txt, err) {
+                if (toastTimer) clearTimeout(toastTimer);
+                msg.textContent = txt;
+                msg.className = 'msg on' + (err ? ' err' : '');
+                toastTimer = setTimeout(function() {
+                    msg.className = 'msg';
+                }, 4000);
+            }
 
-var tmr = null;
-function toast(txt, err) {
-    msg.innerHTML = txt;
-    msg.className = 'msg on' + (err ? ' err' : '');
-    if (tmr) clearTimeout(tmr);
-    tmr = setTimeout(function(){ msg.className = 'msg'; }, 4000);
-}
+            // ========== GPS定位 ==========
+            function resetGpsButton() {
+                locking = false;
+                btnGps.style.opacity = '1';
+                btnGps.disabled = false;
+            }
 
-// GPS定位
-btnGps.onclick = function() {
-    if (locking) return;
-    if (!navigator.geolocation) { toast('浏览器不支持GPS，请手动输入地址', true); return; }
-    locking = true;
-    btnGps.style.opacity = '0.5';
-    tip.className = 'tip on';
-    tip.innerHTML = '正在获取GPS位置...';
-    
-    navigator.geolocation.getCurrentPosition(function(pos){
-        loc.lat = pos.coords.latitude;
-        loc.lng = pos.coords.longitude;
-        tip.innerHTML = 'GPS成功！正在解析地址...';
-        getAddr(loc.lat, loc.lng);
-    }, function(err){
-        locking = false;
-        btnGps.style.opacity = '1';
-        var s = 'GPS失败';
-        if (err.code===1) s='请允许定位权限';
-        else if (err.code===2) s='请开启GPS';
-        else if (err.code===3) s='定位超时';
-        tip.innerHTML = s + '，请手动输入';
-        tip.className = 'tip on';
-        toast(s, true);
-    }, { enableHighAccuracy:true, timeout:20000, maximumAge:60000 });
-};
+            btnGps.addEventListener('click', function() {
+                if (locking || submitting) return;
 
-function getAddr(lat, lng) {
-    var x = new XMLHttpRequest();
-    x.open('GET', 'https://restapi.amap.com/v3/geocode/regeo?key='+AMAPKEY+'&location='+lng+','+lat+'&output=JSON', true);
-    x.timeout = 15000;
-    x.onreadystatechange = function(){
-        if (x.readyState!==4) return;
-        locking = false;
-        btnGps.style.opacity = '1';
-        if (x.status===200) {
-            try {
-                var d = JSON.parse(x.responseText);
-                if (d&&d.status==='1'&&d.regeocode) {
-                    var adr = '';
-                    var ac = d.regeocode.addressComponent;
-                    if (ac) {
-                        var p = [];
-                        if (ac.province&&ac.province!=='[]') p.push(ac.province);
-                        if (ac.city&&ac.city!=='[]') p.push(ac.city);
-                        if (ac.district&&ac.district!=='[]') p.push(ac.district);
-                        if (ac.township&&ac.township!=='[]') p.push(ac.township);
-                        if (ac.streetNumber&&ac.streetNumber.street&&ac.streetNumber.street!=='[]') {
-                            p.push(ac.streetNumber.street);
-                            if (ac.streetNumber.number&&ac.streetNumber.number!=='[]') p.push(ac.streetNumber.number+'号');
-                        }
-                        var pois = d.regeocode.pois||[];
-                        if (pois.length>0) p.push('('+pois[0].name+'附近)');
-                        adr = p.join('');
-                    }
-                    if (!adr) adr = d.regeocode.formatted_address||'';
-                    if (adr) {
-                        addr.value = adr;
-                        tip.innerHTML = '✅ 定位成功！<br><b>'+adr+'</b>';
-                        toast('定位成功');
-                        setTimeout(function(){ tip.className='tip'; }, 5000);
-                    } else {
-                        tip.innerHTML = '无法解析地址，请手动输入';
-                        toast('请手动输入地址', true);
-                    }
-                } else {
-                    tip.innerHTML = '无法解析地址，请手动输入';
-                    toast('请手动输入地址', true);
+                if (!navigator.geolocation) {
+                    toast('浏览器不支持GPS，请手动输入地址', true);
+                    return;
                 }
-            } catch(e) {
-                tip.innerHTML = '解析异常，请手动输入';
-                toast('请手动输入地址', true);
+
+                locking = true;
+                btnGps.style.opacity = '0.5';
+                btnGps.disabled = true;
+                tip.className = 'tip on';
+                tip.textContent = '正在获取GPS位置...';
+
+                var options = {
+                    enableHighAccuracy: true,
+                    timeout: 15000,
+                    maximumAge: 60000
+                };
+
+                navigator.geolocation.getCurrentPosition(
+                    function(pos) {
+                        loc.lat = pos.coords.latitude;
+                        loc.lng = pos.coords.longitude;
+                        tip.textContent = 'GPS成功！正在解析地址...';
+                        getAddressFromCoords(loc.lat, loc.lng);
+                    },
+                    function(err) {
+                        resetGpsButton();
+                        var errorMsg = 'GPS定位失败';
+                        switch (err.code) {
+                            case 1:
+                                errorMsg = '请允许浏览器定位权限';
+                                break;
+                            case 2:
+                                errorMsg = '请开启设备GPS定位';
+                                break;
+                            case 3:
+                                errorMsg = '定位超时，请重试';
+                                break;
+                        }
+                        tip.textContent = errorMsg + '，请手动输入地址';
+                        tip.className = 'tip on';
+                        toast(errorMsg, true);
+                    },
+                    options
+                );
+            });
+
+            function getAddressFromCoords(lat, lng) {
+                var xhr = new XMLHttpRequest();
+                var url = 'https://restapi.amap.com/v3/geocode/regeo?key=' + AMAPKEY +
+                    '&location=' + lng + ',' + lat + '&output=JSON&radius=1000&extensions=all';
+
+                xhr.open('GET', url, true);
+                xhr.timeout = 10000;
+
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState !== 4) return;
+
+                    resetGpsButton();
+
+                    if (xhr.status === 200) {
+                        try {
+                            var data = JSON.parse(xhr.responseText);
+                            if (data && data.status === '1' && data.regeocode) {
+                                var address = buildAddress(data.regeocode);
+                                if (address) {
+                                    addr.value = address;
+                                    tip.innerHTML = '✅ 定位成功！<br><b>' + address + '</b>';
+                                    tip.className = 'tip on';
+                                    toast('定位成功');
+                                    setTimeout(function() {
+                                        if (tip.textContent.indexOf(address) !== -1) {
+                                            tip.className = 'tip';
+                                        }
+                                    }, 6000);
+                                } else {
+                                    tip.textContent = '无法解析地址，请手动输入';
+                                    tip.className = 'tip on';
+                                    toast('请手动输入地址', true);
+                                }
+                            } else {
+                                tip.textContent = '地址解析失败，请手动输入';
+                                tip.className = 'tip on';
+                                toast('请手动输入地址', true);
+                            }
+                        } catch (e) {
+                            tip.textContent = '地址解析异常，请手动输入';
+                            tip.className = 'tip on';
+                            toast('请手动输入地址', true);
+                        }
+                    } else {
+                        tip.textContent = '网络异常，请手动输入地址';
+                        tip.className = 'tip on';
+                        toast('网络异常', true);
+                    }
+                };
+
+                xhr.onerror = function() {
+                    resetGpsButton();
+                    tip.textContent = '网络异常，请手动输入地址';
+                    tip.className = 'tip on';
+                    toast('网络异常', true);
+                };
+
+                xhr.ontimeout = function() {
+                    resetGpsButton();
+                    tip.textContent = '请求超时，请手动输入地址';
+                    tip.className = 'tip on';
+                    toast('请求超时', true);
+                };
+
+                xhr.send();
             }
-        } else {
-            tip.innerHTML = '网络异常，请手动输入';
-            toast('网络异常', true);
-        }
-    };
-    x.onerror = function(){ locking=false; btnGps.style.opacity='1'; tip.innerHTML='网络异常，请手动输入'; toast('网络异常',true); };
-    x.ontimeout = function(){ locking=false; btnGps.style.opacity='1'; tip.innerHTML='请求超时，请手动输入'; toast('请求超时',true); };
-    x.send();
-}
 
-// 用途
-var rads = document.getElementsByName('purpose');
-for (var i=0; i<rads.length; i++) {
-    rads[i].onchange = function(){
-        if (this.value==='其他') { otherBox.className='other-box on'; document.getElementById('otherText').focus(); }
-        else { otherBox.className='other-box'; document.getElementById('otherText').value=''; }
-    };
-}
+            function buildAddress(regeocode) {
+                var parts = [];
+                var ac = regeocode.addressComponent;
 
-// 默认时间
-(function(){
-    var n = new Date();
-    var t = new Date(n.getTime()+86400000);
-    function f(d){ return d.getFullYear()+'-'+(d.getMonth()+1<10?'0':'')+(d.getMonth()+1)+'-'+(d.getDate()<10?'0':'')+d.getDate()+'T'+(d.getHours()<10?'0':'')+d.getHours()+':'+(d.getMinutes()<10?'0':'')+d.getMinutes(); }
-    var ts = document.getElementById('timeStart'), te = document.getElementById('timeEnd');
-    if (!ts.value) ts.value = f(n);
-    if (!te.value) te.value = f(t);
-})();
+                if (ac) {
+                    // 省份
+                    if (ac.province && ac.province !== '[]') parts.push(ac.province);
+                    // 城市（可能和省份重复）
+                    if (ac.city && ac.city !== '[]' && ac.city !== ac.province) parts.push(ac.city);
+                    // 区县
+                    if (ac.district && ac.district !== '[]') parts.push(ac.district);
+                    // 乡镇/街道
+                    if (ac.township && ac.township !== '[]') parts.push(ac.township);
+                    // 街道+门牌号
+                    if (ac.streetNumber && ac.streetNumber.street && ac.streetNumber.street !== '[]') {
+                        var streetAddr = ac.streetNumber.street;
+                        if (ac.streetNumber.number && ac.streetNumber.number !== '[]') {
+                            streetAddr += ac.streetNumber.number + '号';
+                        }
+                        parts.push(streetAddr);
+                    }
+                }
 
-// 输入限制
-document.getElementById('idcard').oninput = function(){ this.value=this.value.replace(/[^\dXx]/g,'').toUpperCase(); if(this.value.length>18)this.value=this.value.slice(0,18); };
-document.getElementById('phone').oninput = function(){ this.value=this.value.replace(/[^\d]/g,''); if(this.value.length>11)this.value=this.value.slice(0,11); };
+                // 添加附近POI
+                var pois = regeocode.pois || [];
+                if (pois.length > 0) {
+                    var poiName = pois[0].name;
+                    if (poiName && poiName !== '[]') {
+                        parts.push('(' + poiName + '附近)');
+                    }
+                }
 
-// 文件
-document.getElementById('file').onchange = function(){
-    if (this.files&&this.files.length>0) {
-        var f=this.files[0], s=(f.size/1024).toFixed(1);
-        fileInfo.innerHTML = '已选: '+f.name+' ('+(s>1024?(f.size/1048576).toFixed(1)+' MB':s+' KB')+')';
-        fileInfo.style.color='#1a6e3a';
-    } else { fileInfo.innerHTML='未选择文件'; fileInfo.style.color='#9aabb8'; }
-};
-document.getElementById('upbox').onclick = function(e){ if(e.target.tagName!=='INPUT')document.getElementById('file').click(); };
-
-function fmtDt(s) {
-    if (!s) return '未填写';
-    try {
-        var d=new Date(s); if(isNaN(d.getTime()))return s;
-        return d.getFullYear()+'年'+(d.getMonth()+1<10?'0':'')+(d.getMonth()+1)+'月'+(d.getDate()<10?'0':'')+d.getDate()+'日 '+(d.getHours()<10?'0':'')+d.getHours()+':'+(d.getMinutes()<10?'0':'')+d.getMinutes();
-    } catch(e){ return s; }
-}
-
-// ===== 钉钉推送（fetch方式） =====
-function sendDing(content, callback) {
-    var url = PROXY + '/dingtalk?webhook=' + encodeURIComponent(WEBHOOK);
-    var body = JSON.stringify({msgtype:'text',text:{content:content}});
-    try {
-        fetch(url, {method:'POST',headers:{'Content-Type':'application/json'},body:body})
-        .then(function(r){ return r.json(); })
-        .then(function(r){ callback(r&&r.errcode===0); })
-        .catch(function(){ callback(false); });
-    } catch(e) { callback(false); }
-}
-
-// ===== 微信推送（fetch方式） =====
-function sendWx(title, content, callback) {
-    if (!PPCODE) { callback(true); return; }
-    var url = PROXY + '/pushplus';
-    var body = JSON.stringify({token:PPCODE,title:title,content:content,template:'html'});
-    try {
-        fetch(url, {method:'POST',headers:{'Content-Type':'application/json'},body:body})
-        .then(function(r){ return r.json(); })
-        .then(function(r){ callback(r&&r.code===200); })
-        .catch(function(){ callback(false); });
-    } catch(e) { callback(false); }
-}
-
-// 提交
-frm.onsubmit = function(e) {
-    e.preventDefault();
-    
-    var unit = document.getElementById('unit').value.trim();
-    var name = document.getElementById('name').value.trim();
-    var idcard = document.getElementById('idcard').value.trim();
-    var phone = document.getElementById('phone').value.trim();
-    var brand = document.getElementById('brand').value.trim();
-    var model = document.getElementById('model').value.trim();
-    var area = document.getElementById('area').value;
-    var location = document.getElementById('location').value.trim();
-    var admin = document.getElementById('addr').value.trim();
-    var purp = document.querySelector('input[name="purpose"]:checked');
-    var other = document.getElementById('otherText').value.trim();
-    var ts = document.getElementById('timeStart').value;
-    var te = document.getElementById('timeEnd').value;
-    var hmin = document.getElementById('hMin').value.trim();
-    var hmax = document.getElementById('hMax').value.trim();
-    var dmin = document.getElementById('dMin').value.trim();
-    var dmax = document.getElementById('dMax').value.trim();
-    var cert = document.getElementById('cert').value.trim();
-
-    if (!unit||!name||!idcard||!phone||!brand||!model) { toast('请完整填写必填项',true); return; }
-    if (idcard.length<15) { toast('请填写有效身份证号',true); return; }
-    if (!/^\d{11}$/.test(phone)) { toast('请填写11位手机号',true); return; }
-    if (!area) { toast('请选择铁路线路',true); return; }
-    if (!admin) { toast('请填写行政区域',true); return; }
-    if (!purp) { toast('请选择飞行用途',true); return; }
-    if (!ts||!te) { toast('请设置作业时间',true); return; }
-    if (new Date(ts)>=new Date(te)) { toast('结束时间必须晚于开始时间',true); return; }
-    if (!hmin||!hmax) { toast('请填写高度区间',true); return; }
-    if (parseFloat(hmin)>parseFloat(hmax)) { toast('最高应大于最低',true); return; }
-    if (!dmin||!dmax) { toast('请填写距离区间',true); return; }
-    if (parseFloat(dmin)>parseFloat(dmax)) { toast('最远应大于最近',true); return; }
-    if (!cert) { toast('请填写证件编码',true); return; }
-
-    var purpose = purp.value;
-    if (purpose==='其他'&&other) purpose += '（'+other+'）';
-
-    // 钉钉消息（不含GPS坐标）
-    var dc = '【无人机飞行报备通知】\n\n';
-    dc += '📋 申请单位：' + unit + '\n';
-    dc += '👤 申请人：' + name + '\n';
-    dc += '🆔 身份证号：' + idcard + '\n';
-    dc += '📱 联系电话：' + phone + '\n';
-    dc += '🚁 无人机品牌：' + brand + '\n';
-    dc += '🔧 型号/编号：' + model + '\n';
-    dc += '🛤️ 飞行线路：' + area + '\n';
-    if (location) dc += '📍 地点里程：' + location + '\n';
-    dc += '🏘️ 行政区域：' + admin + '\n';
-    dc += '🎯 飞行用途：' + purpose + '\n';
-    dc += '⏰ 作业时间：' + fmtDt(ts) + ' 至 ' + fmtDt(te) + '\n';
-    dc += '📏 飞行高度：' + hmin + 'm ~ ' + hmax + 'm\n';
-    dc += '📐 距铁路：' + dmin + 'm ~ ' + dmax + 'm\n';
-    dc += '📝 证件编码：' + cert + '\n';
-    dc += '\n⏰ 报备时间：' + fmtDt(new Date().toISOString()) + '\n';
-    dc += '⚠️ 请工作人员24小时内核实确认。';
-
-    // 微信消息（不含GPS坐标）
-    var wc = '<h2 style="color:#c0392b;">🚁 无人机飞行报备通知</h2>';
-    wc += '<table style="width:100%;border-collapse:collapse;font-size:14px;">';
-    wc += '<tr><td style="padding:6px;border:1px solid #eee;background:#f5f5f5;"><b>📋 单位</b></td><td style="padding:6px;border:1px solid #eee;">'+unit+'</td></tr>';
-    wc += '<tr><td style="padding:6px;border:1px solid #eee;background:#f5f5f5;"><b>👤 申请人</b></td><td style="padding:6px;border:1px solid #eee;">'+name+'</td></tr>';
-    wc += '<tr><td style="padding:6px;border:1px solid #eee;background:#f5f5f5;"><b>📱 电话</b></td><td style="padding:6px;border:1px solid #eee;color:#c0392b;">'+phone+'</td></tr>';
-    wc += '<tr><td style="padding:6px;border:1px solid #eee;background:#f5f5f5;"><b>🛤️ 线路</b></td><td style="padding:6px;border:1px solid #eee;color:#c0392b;">'+area+'</td></tr>';
-    wc += '<tr><td style="padding:6px;border:1px solid #eee;background:#f5f5f5;"><b>🏘️ 区域</b></td><td style="padding:6px;border:1px solid #eee;">'+admin+'</td></tr>';
-    wc += '<tr><td style="padding:6px;border:1px solid #eee;background:#f5f5f5;"><b>🎯 用途</b></td><td style="padding:6px;border:1px solid #eee;">'+purpose+'</td></tr>';
-    wc += '<tr><td style="padding:6px;border:1px solid #eee;background:#f5f5f5;"><b>⏰ 时间</b></td><td style="padding:6px;border:1px solid #eee;">'+fmtDt(ts)+'<br/>至 '+fmtDt(te)+'</td></tr>';
-    wc += '<tr><td style="padding:6px;border:1px solid #eee;background:#f5f5f5;"><b>📏 高度</b></td><td style="padding:6px;border:1px solid #eee;">'+hmin+'m~'+hmax+'m</td></tr>';
-    wc += '<tr><td style="padding:6px;border:1px solid #eee;background:#f5f5f5;"><b>📐 距离</b></td><td style="padding:6px;border:1px solid #eee;">'+dmin+'m~'+dmax+'m</td></tr>';
-    wc += '<tr><td style="padding:6px;border:1px solid #eee;background:#f5f5f5;"><b>📝 证件</b></td><td style="padding:6px;border:1px solid #eee;">'+cert+'</td></tr>';
-    wc += '</table>';
-    wc += '<p style="color:#999;font-size:12px;">⏰ '+fmtDt(new Date().toISOString())+'</p>';
-    wc += '<div style="background:#fff3cd;padding:10px;border-left:3px solid #ffc107;margin-top:8px;"><b style="color:#c0392b;">⚠️ 请24小时内核实确认。</b></div>';
-
-    btnSub.textContent = '提交中...';
-    btnSub.disabled = true;
-    btnSub.style.opacity = '0.7';
-
-    var done = 0;
-    var results = [];
-    
-    function checkAll() {
-        if (done >= 2) {
-            var oks = [];
-            for (var i=0; i<results.length; i++) { if (results[i]) oks.push(results[i]); }
-            if (oks.length > 0) {
-                frm.style.display = 'none';
-                okBox.className = 'ok-box on';
-                okDesc.innerHTML = '已发送至：' + oks.join('、');
-                toast('报备成功！');
-                window.scrollTo(0, 0);
-            } else {
-                toast('推送失败，请重试', true);
-                btnSub.textContent = '📨 重新提交';
-                btnSub.disabled = false;
-                btnSub.style.opacity = '1';
+                var result = parts.join('');
+                if (!result) {
+                    result = regeocode.formatted_address || '';
+                }
+                return result;
             }
-        }
-    }
 
-    sendDing(dc, function(ok) {
-        results.push(ok ? '钉钉' : null);
-        done++;
-        checkAll();
-    });
+            // ========== 飞行用途切换 ==========
+            var purposeRadios = document.getElementsByName('purpose');
+            for (var i = 0; i < purposeRadios.length; i++) {
+                purposeRadios[i].addEventListener('change', function() {
+                    if (this.value === '其他') {
+                        otherBox.className = 'other-box on';
+                        setTimeout(function() {
+                            otherText.focus();
+                        }, 100);
+                    } else {
+                        otherBox.className = 'other-box';
+                        otherText.value = '';
+                    }
+                });
+            }
 
-    sendWx('【无人机报备】'+name+' - '+unit+' - '+area, wc, function(ok) {
-        results.push(ok ? '微信' : null);
-        done++;
-        checkAll();
-    });
-};
+            // 点击用途标签也可以选中
+            document.getElementById('purposeGroup').addEventListener('click', function(e) {
+                var label = e.target.closest('label');
+                if (label) {
+                    var radio = label.querySelector('input[type="radio"]');
+                    if (radio && !radio.checked) {
+                        radio.checked = true;
+                        radio.dispatchEvent(new Event('change', { bubbles: true }));
+                    }
+                }
+            });
 
-}, 100); // 延迟100ms执行
-</script>
+            // ========== 默认时间设置 ==========
+            function setDefaultTimes() {
+                var now = new Date();
+                // 默认开始时间为明天早上8点
+                var tomorrow = new Date(now);
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                tomorrow.setHours(8, 0, 0, 0);
+
+                // 默认结束时间为明天下午17点
+                var endTime = new Date(tomorrow);
+                endTime.setHours(17, 0, 0, 0);
+
+                var ts = document.getElementById('timeStart');
+                var te = document.getElementById('timeEnd');
+
+                if (!ts.value) {
+                    ts.value = formatDatetimeLocal(tomorrow);
+                }
+                if (!te.value) {
+                    te.value = formatDatetimeLocal(endTime);
+                }
+            }
+
+            function formatDatetimeLocal(date) {
+                var year = date.getFullYear();
+                var month = String(date.getMonth() + 1).padStart(2, '0');
+                var day = String(date.getDate()).padStart(2, '0');
+                var hours = String(date.getHours()).padStart(2, '0');
+                var minutes = String(date.getMinutes()).padStart(2, '0');
+                return year + '-' + month + '-' + day + 'T' + hours + ':' + minutes;
+            }
+
+            setDefaultTimes();
+
+            // ========== 输入限制 ==========
+            document.getElementById('idcard').addEventListener('input', function() {
+                this.value = this.value.replace(/[^\dXx]/g, '').toUpperCase();
+                if (this.value.length > 18) this.value = this.value.slice(0, 18);
+            });
+
+            document.getElementById('phone').addEventListener('input', function() {
+                this.value = this.value.replace(/[^\d]/g, '');
+                if (this.value.length > 11) this.value = this.value.slice(0, 11);
+            });
+
+            // ========== 文件上传 ==========
+            document.getElementById('file').addEventListener('change', function() {
+                if (this.files && this.files.length > 0) {
+                    var file = this.files[0];
+                    var sizeKB = (file.size / 1024).toFixed(1);
+                    var sizeDisplay = sizeKB > 1024 ?
+                        (file.size / 1048576).toFixed(1) + ' MB' :
+                        sizeKB + ' KB';
+                    fileInfo.textContent = '已选: ' + file.name + ' (' + sizeDisplay + ')';
+                    fileInfo.style.color = '#1a6e3a';
+                } else {
+                    fileInfo.textContent = '未选择文件';
+                    fileInfo.style.color = '#9aabb8';
+                }
+            });
+
+            document.getElementById('upbox').addEventListener('click', function(e) {
+                if (e.target.tagName !== 'INPUT') {
+                    document.getElementById('file').click();
+                }
+            });
+
+            // ========== 日期格式化 ==========
+            function formatDate(isoString) {
+                if (!isoString) return '未填写';
+                try {
+                    var d = new Date(isoString);
+                    if (isNaN(d.getTime())) return isoString;
+                    return d.getFullYear() + '年' +
+                        String(d.getMonth() + 1).padStart(2, '0') + '月' +
+                        String(d.getDate()).padStart(2, '0') + '日 ' +
+                        String(d.getHours()).padStart(2, '0') + ':' +
+                        String(d.getMinutes()).padStart(2, '0');
+                } catch (e) {
+                    return isoString;
+                }
+            }
+
+            // ========== 钉钉推送 ==========
+            function sendDingtalk(content, callback) {
+                var url = PROXY + '/dingtalk?webhook=' + encodeURIComponent(WEBHOOK);
+                var body = JSON.stringify({
+                    msgtype: 'text',
+                    text: { content: content }
+                });
+
+                fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: body
+                    })
+                    .then(function(response) {
+                        if (!response.ok) throw new Error('HTTP ' + response.status);
+                        return response.json();
+                    })
+                    .then(function(data) {
+                        callback(data && data.errcode === 0);
+                    })
+                    .catch(function() {
+                        callback(false);
+                    });
+            }
+
+            // ========== 微信推送 ==========
+            function sendWechat(title, content, callback) {
+                if (!PPCODE) {
+                    callback(true);
+                    return;
+                }
+                var url = PROXY + '/pushplus';
+                var body = JSON.stringify({
+                    token: PPCODE,
+                    title: title,
+                    content: content,
+                    template: 'html'
+                });
+
+                fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: body
+                    })
+                    .then(function(response) {
+                        if (!response.ok) throw new Error('HTTP ' + response.status);
+                        return response.json();
+                    })
+                    .then(function(data) {
+                        callback(data && data.code === 200);
+                    })
+                    .catch(function() {
+                        callback(false);
+                    });
+            }
+
+            // ========== 表单提交 ==========
+            frm.addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                if (submitting) return;
+
+                // 获取表单数据
+                var unit = document.getElementById('unit').value.trim();
+                var name = document.getElementById('name').value.trim();
+                var idcard = document.getElementById('idcard').value.trim();
+                var phone = document.getElementById('phone').value.trim();
+                var brand = document.getElementById('brand').value.trim();
+                var model = document.getElementById('model').value.trim();
+                var area = document.getElementById('area').value;
+                var location = document.getElementById('location').value.trim();
+                var admin = document.getElementById('addr').value.trim();
+                var purp = document.querySelector('input[name="purpose"]:checked');
+                var other = document.getElementById('otherText').value.trim();
+                var ts = document.getElementById('timeStart').value;
+                var te = document.getElementById('timeEnd').value;
+                var hmin = document.getElementById('hMin').value.trim();
+                var hmax = document.getElementById('hMax').value.trim();
+                var dmin = document.getElementById('dMin').value.trim();
+                var dmax = document.getElementById('dMax').value.trim();
+                var cert = document.getElementById('cert').value.trim();
+
+                // 基础验证
+                if (!unit || !name || !idcard || !phone || !brand || !model) {
+                    toast('请完整填写所有必填项', true);
+                    highlightEmpty(['unit', 'name', 'idcard', 'phone', 'brand', 'model']);
+                    return;
+                }
+
+                if (idcard.length < 15) {
+                    toast('请填写有效身份证号', true);
+                    document.getElementById('idcard').focus();
+                    return;
+                }
+
+                if (!/^\d{11}$/.test(phone)) {
+                    toast('请填写11位手机号', true);
+                    document.getElementById('phone').focus();
+                    return;
+                }
+
+                if (!area) {
+                    toast('请选择铁路线路', true);
+                    document.getElementById('area').focus();
+                    return;
+                }
+
+                if (!admin) {
+                    toast('请填写行政区域或使用GPS定位', true);
+                    document.getElementById('addr').focus();
+                    return;
+                }
+
+                if (!purp) {
+                    toast('请选择飞行用途', true);
+                    return;
+                }
+
+                if (!ts || !te) {
+                    toast('请设置作业起止时间', true);
+                    return;
+                }
+
+                var startDate = new Date(ts);
+                var endDate = new Date(te);
+
+                if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+                    toast('请设置有效的时间', true);
+                    return;
+                }
+
+                if (startDate >= endDate) {
+                    toast('结束时间必须晚于开始时间', true);
+                    return;
+                }
+
+                if (!hmin || !hmax) {
+                    toast('请填写飞行高度区间', true);
+                    return;
+                }
+
+                var hMinVal = parseFloat(hmin);
+                var hMaxVal = parseFloat(hmax);
+                if (isNaN(hMinVal) || isNaN(hMaxVal) || hMinVal > hMaxVal) {
+                    toast('最高高度应大于最低高度', true);
+                    return;
+                }
+
+                if (!dmin || !dmax) {
+                    toast('请填写距离铁路区间', true);
+                    return;
+                }
+
+                var dMinVal = parseFloat(dmin);
+                var dMaxVal = parseFloat(dmax);
+                if (isNaN(dMinVal) || isNaN(dMaxVal) || dMinVal > dMaxVal) {
+                    toast('最远距离应大于最近距离', true);
+                    return;
+                }
+
+                if (!cert) {
+                    toast('请填写操作证件编码', true);
+                    document.getElementById('cert').focus();
+                    return;
+                }
+
+                // 构建用途文本
+                var purpose = purp.value;
+                if (purpose === '其他' && other) {
+                    purpose += '（' + other + '）';
+                }
+
+                var nowStr = formatDate(new Date().toISOString());
+
+                // 钉钉消息
+                var dingtalkContent = '【无人机飞行报备通知】\n\n' +
+                    '📋 申请单位：' + unit + '\n' +
+                    '👤 申请人：' + name + '\n' +
+                    '🆔 身份证号：' + idcard + '\n' +
+                    '📱 联系电话：' + phone + '\n' +
+                    '🚁 无人机品牌：' + brand + '\n' +
+                    '🔧 型号/编号：' + model + '\n' +
+                    '🛤️ 飞行线路：' + area + '\n' +
+                    (location ? '📍 地点里程：' + location + '\n' : '') +
+                    '🏘️ 行政区域：' + admin + '\n' +
+                    '🎯 飞行用途：' + purpose + '\n' +
+                    '⏰ 作业时间：' + formatDate(ts) + ' 至 ' + formatDate(te) + '\n' +
+                    '📏 飞行高度：' + hmin + 'm ~ ' + hmax + 'm\n' +
+                    '📐 距铁路：' + dmin + 'm ~ ' + dmax + 'm\n' +
+                    '📝 证件编码：' + cert + '\n' +
+                    '\n⏰ 报备时间：' + nowStr + '\n' +
+                    '⚠️ 请工作人员24小时内核实确认。';
+
+                // 微信消息
+                var wechatContent = '<h2 style="color:#c0392b;">🚁 无人机飞行报备通知</h2>' +
+                    '<table style="width:100%;border-collapse:collapse;font-size:14px;">' +
+                    '<tr><td style="padding:8px;border:1px solid #eee;background:#f5f5f5;font-weight:bold;">📋 单位</td><td style="padding:8px;border:1px solid #eee;">' +
+                    unit + '</td></tr>' +
+                    '<tr><td style="padding:8px;border:1px solid #eee;background:#f5f5f5;font-weight:bold;">👤 申请人</td><td style="padding:8px;border:1px solid #eee;">' +
+                    name + '</td></tr>' +
+                    '<tr><td style="padding:8px;border:1px solid #eee;background:#f5f5f5;font-weight:bold;">📱 电话</td><td style="padding:8px;border:1px solid #eee;">' +
+                    phone + '</td></tr>' +
+                    '<tr><td style="padding:8px;border:1px solid #eee;background:#f5f5f5;font-weight:bold;">🚁 无人机</td><td style="padding:8px;border:1px solid #eee;">' +
+                    brand + ' - ' + model + '</td></tr>' +
+                    '<tr><td style="padding:8px;border:1px solid #eee;background:#f5f5f5;font-weight:bold;">🛤️ 线路</td><td style="padding:8px;border:1px solid #eee;">' +
+                    area + '</td></tr>' +
+                    (location ? '<tr><td style="padding:8px;border:1px solid #eee;background:#f5f5f5;font-weight:bold;">📍 地点</td><td style="padding:8px;border:1px solid #eee;">' +
+                        location + '</td></tr>' : '') +
+                    '<tr><td style="padding:8px;border:1px solid #eee;background:#f5f5f5;font-weight:bold;">🏘️ 区域</td><td style="padding:8px;border:1px solid #eee;">' +
+                    admin + '</td></tr>' +
+                    '<tr><td style="padding:8px;border:1px solid #eee;background:#f5f5f5;font-weight:bold;">🎯 用途</td><td style="padding:8px;border:1px solid #eee;">' +
+                    purpose + '</td></tr>' +
+                    '<tr><td style="padding:8px;border:1px solid #eee;background:#f5f5f5;font-weight:bold;">⏰ 时间</td><td style="padding:8px;border:1px solid #eee;">' +
+                    formatDate(ts) + ' 至 ' + formatDate(te) + '</td></tr>' +
+                    '<tr><td style="padding:8px;border:1px solid #eee;background:#f5f5f5;font-weight:bold;">📏 高度</td><td style="padding:8px;border:1px solid #eee;">' +
+                    hmin + 'm ~ ' + hmax + 'm</td></tr>' +
+                    '<tr><td style="padding:8px;border:1px solid #eee;background:#f5f5f5;font-weight:bold;">📐 距离</td><td style="padding:8px;border:1px solid #eee;">' +
+                    dmin + 'm ~ ' + dmax + 'm</td></tr>' +
+                    '<tr><td style="padding:8px;border:1px solid #eee;background:#f5f5f5;font-weight:bold;">📝 证件</td><td style="padding:8px;border:1px solid #eee;">' +
+                    cert + '</td></tr>' +
+                    '</table>' +
+                    '<p style="color:#999;font-size:12px;">⏰ 报备时间：' + nowStr + '</p>' +
+                    '<p style="color:#c0392b;font-weight:bold;">⚠️ 请工作人员24小时内核实确认。</p>';
+
+                // 禁用提交按钮
+                submitting = true;
+                btnSub.disabled = true;
+                btnSub.textContent = '⏳ 正在提交...';
+                toast('正在提交报备信息...');
+
+                // 发送消息
+                var dingtalkOk = false;
+                var wechatOk = false;
+                var completed = 0;
+
+                function checkAllDone() {
+                    completed++;
+                    if (completed >= 2) {
+                        submitting = false;
+                        btnSub.disabled = false;
+                        btnSub.textContent = '📨 提交报备';
+
+                        if (dingtalkOk || wechatOk) {
+                            // 至少一个渠道成功
+                            frm.style.display = 'none';
+                            okBox.className = 'ok-box on';
+                            if (dingtalkOk && wechatOk) {
+                                okDesc.textContent = '通知已通过钉钉和微信发送至管理部门';
+                            } else if (dingtalkOk) {
+                                okDesc.textContent = '通知已通过钉钉发送至管理部门';
+                            } else {
+                                okDesc.textContent = '通知已通过微信发送至管理部门';
+                            }
+                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                        } else {
+                            toast('提交失败，请检查网络后重试', true);
+                        }
+                    }
+                }
+
+                sendDingtalk(dingtalkContent, function(ok) {
+                    dingtalkOk = ok;
+                    checkAllDone();
+                });
+
+                sendWechat('无人机飞行报备 - ' + name, wechatContent, function(ok) {
+                    wechatOk = ok;
+                    checkAllDone();
+                });
+            });
+
+            // ========== 高亮空字段 ==========
+            function highlightEmpty(ids) {
+                ids.forEach(function(id) {
+                    var el = document.getElementById(id);
+                    if (el && !el.value.trim()) {
+                        el.style.borderColor = '#e74c3c';
+                        el.style.boxShadow = '0 0 0 3px rgba(231, 76, 60, 0.15)';
+                        setTimeout(function() {
+                            el.style.borderColor = '#e0e0e0';
+                            el.style.boxShadow = 'none';
+                        }, 2000);
+                    }
+                });
+            }
+
+            // ========== 初始化 ==========
+            console.log('✅ 九江桥工段无人机报备系统已就绪');
+            console.log('📍 GPS定位功能：' + (navigator.geolocation ? '可用' : '不可用'));
+            console.log('📡 消息推送：钉钉 + 微信双通道');
+
+        })();
+    </script>
 </body>
 </html>
