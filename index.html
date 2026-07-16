@@ -56,6 +56,11 @@
             gap: 4px;
         }
 
+        h1 .icon {
+            font-size: 20px;
+            display: inline-block;
+        }
+
         .sub {
             font-size: 12px;
             color: #999;
@@ -506,8 +511,9 @@
 
     <div class="box">
         <h1>
-            <span class="icon"></span>
-            九江桥工段铁路沿线无人机飞行报备</span>
+            <span class="icon">🚁</span>
+            九江桥工段铁路沿线
+            <span>无人机飞行报备</span>
         </h1>
         <div class="sub">铁路沿线安全报备 · 请如实填写</div>
 
@@ -1130,7 +1136,6 @@
                     var phone = (document.getElementById('phone').value || '').trim();
                     var brand = (document.getElementById('brand').value || '').trim();
                     var model = (document.getElementById('model').value || '').trim();
-                    // 新增：获取SN码和UOM账号
                     var sn = (document.getElementById('sn').value || '').trim();
                     var uom = (document.getElementById('uom').value || '').trim();
                     var area = document.getElementById('area').value;
