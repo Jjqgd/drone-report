@@ -150,41 +150,27 @@
             flex-shrink: 0;
         }
 
-        /* 定位按钮 */
+        /* GPS按钮 */
         .btn-gps {
+            width: 42px;
             height: 42px;
-            padding: 0 14px;
-            background: #e8f0fe;
-            color: #1a73e8;
-            border: 1px solid #d2e3fc;
+            background: #4facfe;
+            color: #fff;
+            border: none;
             border-radius: 8px;
-            font-size: 14px;
-            font-weight: 500;
+            font-size: 18px;
             cursor: pointer;
-            white-space: nowrap;
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
+            text-align: center;
+            line-height: 42px;
+            padding: 0;
             flex-shrink: 0;
             -webkit-tap-highlight-color: transparent;
             touch-action: manipulation;
-            transition: all 0.2s ease;
-            letter-spacing: 0.3px;
-        }
-
-        .btn-gps .icon {
-            font-size: 16px;
-            line-height: 1;
         }
 
         .btn-gps:active {
-            background: #d2e3fc;
-            transform: scale(0.96);
-        }
-
-        .btn-gps:disabled {
-            opacity: 0.6;
-            transform: none;
+            background: #3d8fd4;
+            transform: scale(0.95);
         }
 
         /* 用途选择 */
@@ -441,98 +427,72 @@
             font-weight: bold;
         }
 
-        /* 加载状态 */
-        .loading-mask {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(255,255,255,0.85);
-            z-index: 9999;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            gap: 12px;
-        }
-        .loading-mask.show {
-            display: flex;
-        }
-        .loading-mask .spinner {
-            width: 40px;
-            height: 40px;
-            border: 4px solid #e0e0e0;
-            border-top-color: #c0392b;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        .loading-mask p {
-            color: #555;
-            font-size: 14px;
-        }
-
         /* 小屏手机适配 */
         @media screen and (max-width: 360px) {
             .box {
                 padding: 12px 8px 16px;
             }
+
             h1 {
                 font-size: 16px;
             }
+
             .row label {
                 font-size: 13px;
             }
+
             .row input,
             .row select {
                 padding: 8px 8px;
                 font-size: 14px;
             }
+
             .btn-sub {
                 font-size: 15px;
                 padding: 10px;
             }
+
             .f2 {
                 flex-direction: column;
                 gap: 12px;
             }
+
             .radios {
                 gap: 4px;
             }
+
             .radios label {
                 padding: 5px 8px;
                 font-size: 12px;
             }
+
             .f3 {
                 gap: 4px;
             }
+
             .f3 input[type="number"] {
                 max-width: 65px !important;
             }
-            .btn-gps {
-                padding: 0 10px;
-                font-size: 12px;
-                height: 38px;
-            }
         }
 
+        /* 中等屏幕 */
         @media screen and (min-width: 361px) and (max-width: 480px) {
             .box {
                 padding: 16px 12px 20px;
             }
+
             .f2 {
                 gap: 8px;
             }
         }
 
+        /* 大屏居中 */
         @media screen and (min-width: 768px) {
             body {
                 background: linear-gradient(135deg, #e8ecf1 0%, #d5dce6 100%);
                 padding: 20px 0;
             }
+
             .box {
                 border-radius: 12px;
                 box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
@@ -543,14 +503,13 @@
     </style>
 </head>
 <body>
-    <!-- 加载遮罩 -->
-    <div class="loading-mask" id="loadingMask">
-        <div class="spinner"></div>
-        <p>页面加载中...</p>
-    </div>
 
     <div class="box">
-        <h1>九江桥工段铁路沿线无人机飞行报备</h1>
+        <h1>
+            <span class="icon">🚁</span>
+            九江桥工段铁路沿线
+            <span>无人机飞行报备</span>
+        </h1>
         <div class="sub">铁路沿线安全报备 · 请如实填写</div>
 
         <!-- 成功提示 -->
@@ -600,16 +559,16 @@
                 <input type="text" id="model" placeholder="型号及机身编号" required />
             </div>
 
-            <!-- 新增：无人机SM码 -->
+            <!-- 新增：无人机SN码 -->
             <div class="row">
-                <label>无人机SM码 <span class="r">*</span></label>
-                <input type="text" id="smCode" placeholder="例：SM-2024-0001" required />
+                <label>无人机SN码 <span class="r">*</span></label>
+                <input type="text" id="sn" placeholder="请输入无人机SN码" required />
             </div>
 
             <!-- 新增：UOM账号 -->
             <div class="row">
                 <label>UOM账号 <span class="r">*</span></label>
-                <input type="text" id="uomAccount" placeholder="例：uom.jjqgd@example.com" required />
+                <input type="text" id="uom" placeholder="请输入UOM账号" required />
             </div>
 
             <div class="row">
@@ -641,10 +600,8 @@
             <div class="row">
                 <label>飞行行政区域（附近村庄） <span class="r">*</span></label>
                 <div class="f3">
-                    <input type="text" id="addr" placeholder="点击右侧定位，或手动输入地址" required />
-                    <button type="button" class="btn-gps" id="btnGps">
-                        <span class="icon">📍</span> GPS
-                    </button>
+                    <input type="text" id="addr" placeholder="点击右侧GPS定位，或手动输入地址" required />
+                    <button type="button" class="btn-gps" id="btnGps" title="GPS定位">📍</button>
                 </div>
                 <div class="tip" id="tip"></div>
             </div>
@@ -711,291 +668,636 @@
                 铁路沿线无人机 <b>黑飞属于违法行为</b>，请确保数据<b>真实完整</b>。
             </div>
 
-            <button type="submit" class="btn-sub" id="btnS">提交报备</button>
+            <button type="submit" class="btn-sub" id="btnSub">📨 提交报备</button>
         </form>
 
-        <div class="foot">中国铁路南昌路集团公司九江桥工段</div>
+        <div class="msg" id="msg"></div>
+        <div class="foot">中国铁路南昌局集团公司九江桥工段</div>
     </div>
 
     <script>
         (function() {
             'use strict';
 
-            // DOM 引用
-            const frm = document.getElementById('frm');
-            const btnS = document.getElementById('btnS');
-            const okBox = document.getElementById('okBox');
-            const loadingMask = document.getElementById('loadingMask');
+            // ========== 配置 ==========
+            var WEBHOOK = 'https://oapi.dingtalk.com/robot/send?access_token=b2ccb8e7bba75a6a234ac8343488dcd66b39da2dc23ae4307a2e0e2b567f13e5';
+            var PPCODE = '20260713';
+            var PROXY = 'https://dingtalk-proxy.netlify.app/.netlify/functions';
+            var AMAPKEY = '944cb277c68d71409d48d100bb305244';
 
-            // 字段
-            const unit = document.getElementById('unit');
-            const name = document.getElementById('name');
-            const idcard = document.getElementById('idcard');
-            const phone = document.getElementById('phone');
-            const brand = document.getElementById('brand');
-            const model = document.getElementById('model');
-            const smCode = document.getElementById('smCode');       // 新增SM码
-            const uomAccount = document.getElementById('uomAccount'); // 新增UOM账号
-            const area = document.getElementById('area');
-            const location = document.getElementById('location');
-            const addr = document.getElementById('addr');
-            const tip = document.getElementById('tip');
-            const timeStart = document.getElementById('timeStart');
-            const timeEnd = document.getElementById('timeEnd');
-            const hMin = document.getElementById('hMin');
-            const hMax = document.getElementById('hMax');
-            const dMin = document.getElementById('dMin');
-            const dMax = document.getElementById('dMax');
-            const cert = document.getElementById('cert');
-            const file = document.getElementById('file');
-            const fileInfo = document.getElementById('fileInfo');
-            const purposeRadios = document.querySelectorAll('input[name="purpose"]');
-            const otherBox = document.getElementById('otherBox');
-            const otherText = document.getElementById('otherText');
-            const btnGps = document.getElementById('btnGps');
+            // ========== DOM 元素 ==========
+            var btnSub = document.getElementById('btnSub');
+            var btnGps = document.getElementById('btnGps');
+            var tip = document.getElementById('tip');
+            var addr = document.getElementById('addr');
+            var msg = document.getElementById('msg');
+            var okBox = document.getElementById('okBox');
+            var okDesc = document.getElementById('okDesc');
+            var otherBox = document.getElementById('otherBox');
+            var otherText = document.getElementById('otherText');
+            var fileInfo = document.getElementById('fileInfo');
+            var frm = document.getElementById('frm');
 
-            // ---- 辅助 ----
-            function showMsg(text, isErr) {
-                let m = document.getElementById('msg');
-                if (!m) {
-                    m = document.createElement('div');
-                    m.id = 'msg';
-                    m.className = 'msg';
-                    frm.parentNode.insertBefore(m, frm.nextSibling);
+            var loc = { lat: null, lng: null };
+            var locking = false;
+            var submitting = false;
+            var toastTimer = null;
+
+            // ========== 工具函数 ==========
+            function show(el) {
+                if (el) el.classList.add('show');
+            }
+
+            function hide(el) {
+                if (el) el.classList.remove('show');
+            }
+
+            function toast(txt, isError) {
+                if (toastTimer) clearTimeout(toastTimer);
+                msg.textContent = txt;
+                msg.className = 'msg show' + (isError ? ' err' : '');
+                toastTimer = setTimeout(function() {
+                    msg.className = 'msg';
+                }, 4000);
+            }
+
+            // ========== 获取设备信息 ==========
+            function getDeviceInfo() {
+                var ua = navigator.userAgent || '';
+                var os = '未知';
+                var platform = '未知';
+
+                if (/iPhone|iPad|iPod/i.test(ua)) {
+                    os = 'iOS';
+                } else if (/Android/i.test(ua)) {
+                    os = 'Android';
+                } else if (/HarmonyOS|鸿蒙/i.test(ua) || /OpenHarmony/i.test(ua)) {
+                    os = 'HarmonyOS (鸿蒙)';
+                } else if (/Windows/i.test(ua)) {
+                    os = 'Windows';
+                } else if (/Mac/i.test(ua)) {
+                    os = 'macOS';
+                } else if (/Linux/i.test(ua)) {
+                    os = 'Linux';
                 }
-                m.textContent = text;
-                m.className = 'msg show' + (isErr ? ' err' : '');
-                setTimeout(() => { m.className = 'msg'; }, 4000);
-            }
 
-            function hideMsg() {
-                const m = document.getElementById('msg');
-                if (m) m.className = 'msg';
-            }
-
-            // 文件上传显示
-            file.addEventListener('change', function() {
-                if (this.files && this.files.length > 0) {
-                    fileInfo.textContent = this.files[0].name + ' (' + (this.files[0].size / 1024).toFixed(1) + ' KB)';
+                if (/MicroMessenger/i.test(ua)) {
+                    platform = '微信';
+                } else if (/DingTalk/i.test(ua)) {
+                    platform = '钉钉';
+                } else if (/Safari/i.test(ua) && !/Chrome/i.test(ua)) {
+                    platform = 'Safari浏览器';
+                } else if (/Chrome/i.test(ua)) {
+                    platform = 'Chrome浏览器';
+                } else if (/Firefox/i.test(ua)) {
+                    platform = 'Firefox浏览器';
+                } else if (/Edge/i.test(ua)) {
+                    platform = 'Edge浏览器';
+                } else if (/UCBrowser/i.test(ua)) {
+                    platform = 'UC浏览器';
+                } else if (/QQBrowser/i.test(ua)) {
+                    platform = 'QQ浏览器';
+                } else if (/MQQBrowser/i.test(ua)) {
+                    platform = 'QQ浏览器';
+                } else if (/baiduboxapp/i.test(ua)) {
+                    platform = '百度浏览器';
                 } else {
-                    fileInfo.textContent = '未选择文件';
+                    platform = '浏览器';
                 }
-            });
 
-            // 点击上传区域触发文件选择
-            document.getElementById('upbox').addEventListener('click', function(e) {
-                if (e.target.tagName !== 'INPUT') {
-                    file.click();
-                }
-            });
+                return os + ' · ' + platform;
+            }
 
-            // 用途单选切换 “其他”
-            purposeRadios.forEach(r => {
-                r.addEventListener('change', function() {
-                    const parentLabel = this.closest('label');
-                    document.querySelectorAll('.radios label').forEach(l => l.classList.remove('active'));
-                    if (parentLabel) parentLabel.classList.add('active');
-                    if (this.value === '其他') {
-                        otherBox.classList.add('show');
-                        otherText.setAttribute('required', 'required');
+            // ========== 用途单选处理 ==========
+            var purposeRadios = document.getElementsByName('purpose');
+            var purposeLabels = document.querySelectorAll('#purposeGroup label');
+
+            function updateRadioStyles() {
+                purposeLabels.forEach(function(label) {
+                    var radio = label.querySelector('input[type="radio"]');
+                    if (radio && radio.checked) {
+                        label.classList.add('active');
                     } else {
-                        otherBox.classList.remove('show');
-                        otherText.removeAttribute('required');
+                        label.classList.remove('active');
+                    }
+                });
+            }
+
+            for (var i = 0; i < purposeRadios.length; i++) {
+                purposeRadios[i].addEventListener('change', function() {
+                    updateRadioStyles();
+
+                    if (this.value === '其他') {
+                        show(otherBox);
+                        setTimeout(function() {
+                            if (otherText) otherText.focus();
+                        }, 150);
+                    } else {
+                        hide(otherBox);
+                        if (otherText) otherText.value = '';
+                    }
+                });
+            }
+
+            purposeLabels.forEach(function(label) {
+                label.addEventListener('click', function(e) {
+                    var radio = this.querySelector('input[type="radio"]');
+                    if (radio && !radio.checked) {
+                        radio.checked = true;
+                        var event;
+                        if (typeof Event === 'function') {
+                            event = new Event('change', { bubbles: true });
+                        } else {
+                            event = document.createEvent('Event');
+                            event.initEvent('change', true, true);
+                        }
+                        radio.dispatchEvent(event);
                     }
                 });
             });
-            // 默认选中第一个
-            const firstRadio = document.querySelector('input[name="purpose"]');
-            if (firstRadio) {
-                firstRadio.checked = true;
-                firstRadio.closest('label').classList.add('active');
+
+            updateRadioStyles();
+
+            // ========== 默认时间 ==========
+            function setDefaultTimes() {
+                var now = new Date();
+                var tomorrow = new Date(now);
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                tomorrow.setHours(8, 0, 0, 0);
+
+                var endTime = new Date(tomorrow);
+                endTime.setHours(17, 0, 0, 0);
+
+                function formatDT(d) {
+                    var y = d.getFullYear();
+                    var m = String(d.getMonth() + 1).padStart(2, '0');
+                    var day = String(d.getDate()).padStart(2, '0');
+                    var h = String(d.getHours()).padStart(2, '0');
+                    var min = String(d.getMinutes()).padStart(2, '0');
+                    return y + '-' + m + '-' + day + 'T' + h + ':' + min;
+                }
+
+                var ts = document.getElementById('timeStart');
+                var te = document.getElementById('timeEnd');
+                if (ts && !ts.value) ts.value = formatDT(tomorrow);
+                if (te && !te.value) te.value = formatDT(endTime);
             }
 
-            // ---- GPS定位 ----
-            btnGps.addEventListener('click', function() {
-                if (!navigator.geolocation) {
-                    tip.textContent = '⚠️ 浏览器不支持定位，请手动输入地址。';
-                    tip.className = 'tip show';
-                    return;
+            setDefaultTimes();
+
+            // ========== 输入限制 ==========
+            var idcardEl = document.getElementById('idcard');
+            if (idcardEl) {
+                idcardEl.addEventListener('input', function() {
+                    this.value = this.value.replace(/[^\dXx]/g, '').toUpperCase();
+                    if (this.value.length > 18) this.value = this.value.slice(0, 18);
+                });
+            }
+
+            var phoneEl = document.getElementById('phone');
+            if (phoneEl) {
+                phoneEl.addEventListener('input', function() {
+                    this.value = this.value.replace(/[^\d]/g, '');
+                    if (this.value.length > 11) this.value = this.value.slice(0, 11);
+                });
+            }
+
+            // ========== GPS定位 ==========
+            function resetGps() {
+                locking = false;
+                if (btnGps) {
+                    btnGps.style.opacity = '1';
+                    btnGps.disabled = false;
                 }
-                btnGps.disabled = true;
-                btnGps.textContent = '定位中...';
-                tip.textContent = '⏳ 正在获取位置...';
-                tip.className = 'tip show';
-                navigator.geolocation.getCurrentPosition(
-                    function(pos) {
-                        const { latitude, longitude } = pos.coords;
-                        const url = `https://api.map.baidu.com/reverse_geocoding/v3/?ak=默认密钥&output=json&coordtype=wgs84ll&location=${latitude},${longitude}`;
-                        // 为了演示，使用高德地图跨域代理（仅演示，实际生产需后端代理或使用百度/高德SDK）
-                        // 使用高德地图API（需key）这里用模拟结果，因为浏览器限制
-                        // 实际生产请替换为真实key或后端代理
-                        // 这里为了演示，使用模拟地址，同时展示真实坐标
-                        const fakeAddr = `江西省九江市濂溪区（约${latitude.toFixed(4)}, ${longitude.toFixed(4)}）`;
-                        addr.value = fakeAddr;
-                        tip.textContent = `✅ 定位成功 (${latitude.toFixed(5)}, ${longitude.toFixed(5)})，请核对地址。`;
-                        tip.className = 'tip show';
-                        btnGps.disabled = false;
-                        btnGps.innerHTML = '<span class="icon">📍</span> GPS';
-                    },
-                    function(err) {
-                        tip.textContent = '⚠️ 定位失败: ' + err.message + '，请手动输入地址。';
-                        tip.className = 'tip show';
-                        btnGps.disabled = false;
-                        btnGps.innerHTML = '<span class="icon">📍</span> GPS';
-                    },
-                    { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
-                );
-            });
+            }
 
-            // ---- 表单验证与提交 ----
-            frm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                hideMsg();
+            if (btnGps) {
+                btnGps.addEventListener('click', function() {
+                    if (locking || submitting) return;
 
-                // 基本非空验证 (新增SM码和UOM账号)
-                const requiredFields = [
-                    { el: unit, name: '申请单位' },
-                    { el: name, name: '申请人' },
-                    { el: idcard, name: '身份证号' },
-                    { el: phone, name: '联系电话' },
-                    { el: brand, name: '无人机品牌' },
-                    { el: model, name: '无人机型号/编号' },
-                    { el: smCode, name: '无人机SM码' },
-                    { el: uomAccount, name: 'UOM账号' },
-                    { el: area, name: '飞行区域铁路线路' },
-                    { el: addr, name: '飞行行政区域' },
-                    { el: timeStart, name: '作业开始时间' },
-                    { el: timeEnd, name: '作业结束时间' },
-                    { el: hMin, name: '飞行高度最低' },
-                    { el: hMax, name: '飞行高度最高' },
-                    { el: dMin, name: '距离铁路最近距离' },
-                    { el: dMax, name: '距离铁路最远距离' },
-                    { el: cert, name: '操作证件编码' }
-                ];
-
-                for (let f of requiredFields) {
-                    if (!f.el.value.trim()) {
-                        showMsg('请填写: ' + f.name, true);
-                        f.el.focus();
+                    if (!navigator.geolocation) {
+                        toast('浏览器不支持GPS，请手动输入地址', true);
                         return;
                     }
-                }
 
-                // 检查用途
-                let purposeVal = '';
-                for (let r of purposeRadios) {
-                    if (r.checked) {
-                        purposeVal = r.value;
-                        break;
+                    locking = true;
+                    btnGps.style.opacity = '0.5';
+                    btnGps.disabled = true;
+                    show(tip);
+                    tip.textContent = '正在获取GPS位置...';
+
+                    navigator.geolocation.getCurrentPosition(
+                        function(pos) {
+                            loc.lat = pos.coords.latitude;
+                            loc.lng = pos.coords.longitude;
+                            tip.textContent = 'GPS成功！正在解析地址...';
+                            getAddress(loc.lat, loc.lng);
+                        },
+                        function(err) {
+                            resetGps();
+                            var errMsg = 'GPS定位失败';
+                            switch (err.code) {
+                                case 1:
+                                    errMsg = '请允许浏览器定位权限';
+                                    break;
+                                case 2:
+                                    errMsg = '请开启设备GPS定位';
+                                    break;
+                                case 3:
+                                    errMsg = '定位超时，请重试';
+                                    break;
+                            }
+                            tip.textContent = errMsg + '，请手动输入地址';
+                            show(tip);
+                            toast(errMsg, true);
+                        }, {
+                            enableHighAccuracy: true,
+                            timeout: 15000,
+                            maximumAge: 60000
+                        }
+                    );
+                });
+            }
+
+            function getAddress(lat, lng) {
+                var xhr = new XMLHttpRequest();
+                var url = 'https://restapi.amap.com/v3/geocode/regeo?key=' + AMAPKEY +
+                    '&location=' + lng + ',' + lat + '&output=JSON&radius=1000&extensions=all';
+
+                xhr.open('GET', url, true);
+                xhr.timeout = 10000;
+
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState !== 4) return;
+                    resetGps();
+
+                    if (xhr.status === 200) {
+                        try {
+                            var data = JSON.parse(xhr.responseText);
+                            if (data && data.status === '1' && data.regeocode) {
+                                var address = buildAddress(data.regeocode);
+                                if (address) {
+                                    if (addr) addr.value = address;
+                                    tip.innerHTML = '✅ 定位成功！<br><b>' + address + '</b>';
+                                    show(tip);
+                                    toast('定位成功');
+                                    setTimeout(function() {
+                                        if (tip.textContent.indexOf(address) !== -1) {
+                                            hide(tip);
+                                        }
+                                    }, 6000);
+                                } else {
+                                    tip.textContent = '无法解析地址，请手动输入';
+                                    show(tip);
+                                    toast('请手动输入地址', true);
+                                }
+                            } else {
+                                tip.textContent = '地址解析失败，请手动输入';
+                                show(tip);
+                                toast('请手动输入地址', true);
+                            }
+                        } catch (e) {
+                            tip.textContent = '解析异常，请手动输入';
+                            show(tip);
+                            toast('请手动输入地址', true);
+                        }
+                    } else {
+                        tip.textContent = '网络异常，请手动输入';
+                        show(tip);
+                        toast('网络异常', true);
                     }
-                }
-                if (!purposeVal) {
-                    showMsg('请选择飞行用途', true);
-                    return;
-                }
-                if (purposeVal === '其他' && !otherText.value.trim()) {
-                    showMsg('请备注具体用途', true);
-                    otherText.focus();
-                    return;
-                }
-
-                // 身份证简单校验
-                const idReg = /^[1-9]\d{5}(18|19|20)?\d{2}(0[1-9]|1[0-2])(0[1-9]|[12]\d|3[01])\d{3}[\dXx]$/;
-                if (!idReg.test(idcard.value.trim())) {
-                    showMsg('身份证号码格式不正确，请检查', true);
-                    idcard.focus();
-                    return;
-                }
-
-                // 手机号简单校验
-                if (!/^1[3-9]\d{9}$/.test(phone.value.trim())) {
-                    showMsg('手机号格式不正确，请检查', true);
-                    phone.focus();
-                    return;
-                }
-
-                // 时间逻辑
-                const start = new Date(timeStart.value);
-                const end = new Date(timeEnd.value);
-                if (isNaN(start.getTime()) || isNaN(end.getTime())) {
-                    showMsg('请正确选择作业起止时间', true);
-                    return;
-                }
-                if (end <= start) {
-                    showMsg('结束时间必须晚于开始时间', true);
-                    timeEnd.focus();
-                    return;
-                }
-
-                // 高度/距离逻辑
-                const hmin = parseFloat(hMin.value);
-                const hmax = parseFloat(hMax.value);
-                if (isNaN(hmin) || isNaN(hmax) || hmin < 0 || hmax < 0 || hmin > hmax) {
-                    showMsg('飞行高度区间请正确填写（最低≤最高，且≥0）', true);
-                    return;
-                }
-
-                const dmin = parseFloat(dMin.value);
-                const dmax = parseFloat(dMax.value);
-                if (isNaN(dmin) || isNaN(dmax) || dmin < 0 || dmax < 0 || dmin > dmax) {
-                    showMsg('距离铁路区间请正确填写（最近≤最远，且≥0）', true);
-                    return;
-                }
-
-                // 组装数据（模拟提交）
-                const data = {
-                    unit: unit.value.trim(),
-                    name: name.value.trim(),
-                    idcard: idcard.value.trim(),
-                    phone: phone.value.trim(),
-                    brand: brand.value.trim(),
-                    model: model.value.trim(),
-                    smCode: smCode.value.trim(),
-                    uomAccount: uomAccount.value.trim(),
-                    area: area.value,
-                    location: location.value.trim(),
-                    addr: addr.value.trim(),
-                    purpose: purposeVal === '其他' ? otherText.value.trim() : purposeVal,
-                    timeStart: timeStart.value,
-                    timeEnd: timeEnd.value,
-                    hMin: hmin,
-                    hMax: hmax,
-                    dMin: dmin,
-                    dMax: dmax,
-                    cert: cert.value.trim(),
-                    file: file.files.length > 0 ? file.files[0].name : '未上传'
                 };
 
-                // 模拟提交loading
-                btnS.disabled = true;
-                btnS.textContent = '提交中...';
-                loadingMask.classList.add('show');
+                xhr.onerror = function() {
+                    resetGps();
+                    tip.textContent = '网络异常，请手动输入';
+                    show(tip);
+                    toast('网络异常', true);
+                };
 
-                // 模拟异步请求
-                setTimeout(() => {
-                    loadingMask.classList.remove('show');
-                    btnS.disabled = false;
-                    btnS.textContent = '提交报备';
+                xhr.ontimeout = function() {
+                    resetGps();
+                    tip.textContent = '请求超时，请手动输入';
+                    show(tip);
+                    toast('请求超时', true);
+                };
 
-                    // 成功展示
-                    okBox.classList.add('show');
-                    frm.style.display = 'none';
-                    // 滚动到成功提示
-                    okBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    // 记录成功信息
-                    document.getElementById('okDesc').textContent = `✅ 报备人：${data.name}，单位：${data.unit}`;
-                }, 1200);
-            });
+                xhr.send();
+            }
 
-            // 隐藏加载遮罩
-            window.addEventListener('load', function() {
-                loadingMask.classList.remove('show');
-            });
+            function buildAddress(regeocode) {
+                var parts = [];
+                var ac = regeocode.addressComponent;
 
-            // 如果页面加载慢，最多3秒后隐藏遮罩
-            setTimeout(() => {
-                loadingMask.classList.remove('show');
-            }, 3000);
+                if (ac) {
+                    if (ac.province && ac.province !== '[]') parts.push(ac.province);
+                    if (ac.city && ac.city !== '[]' && ac.city !== ac.province) parts.push(ac.city);
+                    if (ac.district && ac.district !== '[]') parts.push(ac.district);
+                    if (ac.township && ac.township !== '[]') parts.push(ac.township);
+                    if (ac.streetNumber && ac.streetNumber.street && ac.streetNumber.street !== '[]') {
+                        var s = ac.streetNumber.street;
+                        if (ac.streetNumber.number && ac.streetNumber.number !== '[]') {
+                            s += ac.streetNumber.number + '号';
+                        }
+                        parts.push(s);
+                    }
+                }
+
+                var pois = regeocode.pois || [];
+                if (pois.length > 0 && pois[0].name && pois[0].name !== '[]') {
+                    parts.push('(' + pois[0].name + '附近)');
+                }
+
+                var result = parts.join('');
+                if (!result) result = regeocode.formatted_address || '';
+                return result;
+            }
+
+            // ========== 文件上传 ==========
+            var fileInput = document.getElementById('file');
+            var upbox = document.getElementById('upbox');
+
+            if (fileInput) {
+                fileInput.addEventListener('change', function() {
+                    if (this.files && this.files.length > 0) {
+                        var f = this.files[0];
+                        var sizeKB = (f.size / 1024).toFixed(1);
+                        var sizeDisplay = sizeKB > 1024 ?
+                            (f.size / 1048576).toFixed(1) + ' MB' :
+                            sizeKB + ' KB';
+                        if (fileInfo) {
+                            fileInfo.textContent = '已选: ' + f.name + ' (' + sizeDisplay + ')';
+                            fileInfo.style.color = '#1a6e3a';
+                        }
+                    } else {
+                        if (fileInfo) {
+                            fileInfo.textContent = '未选择文件';
+                            fileInfo.style.color = '#9aabb8';
+                        }
+                    }
+                });
+            }
+
+            if (upbox) {
+                upbox.addEventListener('click', function(e) {
+                    if (e.target.tagName !== 'INPUT' && fileInput) {
+                        fileInput.click();
+                    }
+                });
+            }
+
+            // ========== 日期格式化 ==========
+            function formatDate(isoStr) {
+                if (!isoStr) return '未填写';
+                try {
+                    var d = new Date(isoStr);
+                    if (isNaN(d.getTime())) return isoStr;
+                    return d.getFullYear() + '年' +
+                        String(d.getMonth() + 1).padStart(2, '0') + '月' +
+                        String(d.getDate()).padStart(2, '0') + '日 ' +
+                        String(d.getHours()).padStart(2, '0') + ':' +
+                        String(d.getMinutes()).padStart(2, '0');
+                } catch (e) {
+                    return isoStr;
+                }
+            }
+
+            // ========== 消息推送 ==========
+            function sendDingtalk(content, callback) {
+                var url = PROXY + '/dingtalk?webhook=' + encodeURIComponent(WEBHOOK);
+                var body = JSON.stringify({
+                    msgtype: 'text',
+                    text: { content: content }
+                });
+
+                try {
+                    fetch(url, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: body
+                        })
+                        .then(function(res) { return res.json(); })
+                        .then(function(data) {
+                            callback(data && data.errcode === 0);
+                        })
+                        .catch(function() {
+                            callback(false);
+                        });
+                } catch (e) {
+                    callback(false);
+                }
+            }
+
+            function sendWechat(title, content, callback) {
+                if (!PPCODE) {
+                    callback(true);
+                    return;
+                }
+                var url = PROXY + '/pushplus';
+                var body = JSON.stringify({
+                    token: PPCODE,
+                    title: title,
+                    content: content,
+                    template: 'html'
+                });
+
+                try {
+                    fetch(url, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: body
+                        })
+                        .then(function(res) { return res.json(); })
+                        .then(function(data) {
+                            callback(data && data.code === 200);
+                        })
+                        .catch(function() {
+                            callback(false);
+                        });
+                } catch (e) {
+                    callback(false);
+                }
+            }
+
+            // ========== 表单提交 ==========
+            if (frm) {
+                frm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    if (submitting) return;
+
+                    var unit = (document.getElementById('unit').value || '').trim();
+                    var name = (document.getElementById('name').value || '').trim();
+                    var idcard = (document.getElementById('idcard').value || '').trim();
+                    var phone = (document.getElementById('phone').value || '').trim();
+                    var brand = (document.getElementById('brand').value || '').trim();
+                    var model = (document.getElementById('model').value || '').trim();
+                    // 新增：获取SN码和UOM账号
+                    var sn = (document.getElementById('sn').value || '').trim();
+                    var uom = (document.getElementById('uom').value || '').trim();
+                    var area = document.getElementById('area').value;
+                    var location = (document.getElementById('location').value || '').trim();
+                    var admin = (document.getElementById('addr').value || '').trim();
+                    var purp = document.querySelector('input[name="purpose"]:checked');
+                    var other = (document.getElementById('otherText').value || '').trim();
+                    var ts = document.getElementById('timeStart').value;
+                    var te = document.getElementById('timeEnd').value;
+                    var hmin = (document.getElementById('hMin').value || '').trim();
+                    var hmax = (document.getElementById('hMax').value || '').trim();
+                    var dmin = (document.getElementById('dMin').value || '').trim();
+                    var dmax = (document.getElementById('dMax').value || '').trim();
+                    var cert = (document.getElementById('cert').value || '').trim();
+
+                    if (!unit || !name || !idcard || !phone || !brand || !model || !sn || !uom) {
+                        toast('请完整填写所有必填项', true);
+                        return;
+                    }
+                    if (idcard.length < 15) {
+                        toast('请填写有效身份证号', true);
+                        return;
+                    }
+                    if (!/^\d{11}$/.test(phone)) {
+                        toast('请填写11位手机号', true);
+                        return;
+                    }
+                    if (!area) {
+                        toast('请选择铁路线路', true);
+                        return;
+                    }
+                    if (!admin) {
+                        toast('请填写行政区域或使用GPS定位', true);
+                        return;
+                    }
+                    if (!purp) {
+                        toast('请选择飞行用途', true);
+                        return;
+                    }
+                    if (!ts || !te) {
+                        toast('请设置作业起止时间', true);
+                        return;
+                    }
+
+                    var startD = new Date(ts);
+                    var endD = new Date(te);
+                    if (isNaN(startD.getTime()) || isNaN(endD.getTime())) {
+                        toast('请设置有效的时间', true);
+                        return;
+                    }
+                    if (startD >= endD) {
+                        toast('结束时间必须晚于开始时间', true);
+                        return;
+                    }
+                    if (!hmin || !hmax) {
+                        toast('请填写飞行高度区间', true);
+                        return;
+                    }
+                    if (parseFloat(hmin) > parseFloat(hmax)) {
+                        toast('最高高度应大于最低高度', true);
+                        return;
+                    }
+                    if (!dmin || !dmax) {
+                        toast('请填写距离铁路区间', true);
+                        return;
+                    }
+                    if (parseFloat(dmin) > parseFloat(dmax)) {
+                        toast('最远距离应大于最近距离', true);
+                        return;
+                    }
+                    if (!cert) {
+                        toast('请填写操作证件编码', true);
+                        return;
+                    }
+
+                    var purpose = purp.value;
+                    if (purpose === '其他' && other) {
+                        purpose += '（' + other + '）';
+                    }
+
+                    var nowStr = formatDate(new Date().toISOString());
+                    var deviceInfo = getDeviceInfo();
+
+                    var dc = '【无人机飞行报备通知】\n\n' +
+                        '📋 申请单位：' + unit + '\n' +
+                        '👤 申请人：' + name + '\n' +
+                        '🆔 身份证号：' + idcard + '\n' +
+                        '📱 联系电话：' + phone + '\n' +
+                        '🚁 无人机品牌：' + brand + '\n' +
+                        '🔧 型号/编号：' + model + '\n' +
+                        '🔢 无人机SN码：' + sn + '\n' +
+                        '👤 UOM账号：' + uom + '\n' +
+                        '🛤️ 飞行线路：' + area + '\n' +
+                        (location ? '📍 地点里程：' + location + '\n' : '') +
+                        '🏘️ 行政区域：' + admin + '\n' +
+                        '🎯 飞行用途：' + purpose + '\n' +
+                        '⏰ 作业时间：' + formatDate(ts) + ' 至 ' + formatDate(te) + '\n' +
+                        '📏 飞行高度：' + hmin + 'm ~ ' + hmax + 'm\n' +
+                        '📐 距铁路：' + dmin + 'm ~ ' + dmax + 'm\n' +
+                        '📝 证件编码：' + cert + '\n' +
+                        '\n⏰ 报备时间：' + nowStr + '\n' +
+                        '📱 提交设备：' + deviceInfo + '\n' +
+                        '⚠️ 请工作人员24小时内核实确认。';
+
+                    var wc = '<h2 style="color:#c0392b;">🚁 无人机飞行报备通知</h2>' +
+                        '<table style="width:100%;border-collapse:collapse;font-size:14px;">' +
+                        '<tr><td style="padding:6px;border:1px solid #eee;background:#f5f5f5;"><b>📋 单位</b></td><td style="padding:6px;border:1px solid #eee;">' + unit + '</td></tr>' +
+                        '<tr><td style="padding:6px;border:1px solid #eee;background:#f5f5f5;"><b>👤 申请人</b></td><td style="padding:6px;border:1px solid #eee;">' + name + '</td></tr>' +
+                        '<tr><td style="padding:6px;border:1px solid #eee;background:#f5f5f5;"><b>📱 电话</b></td><td style="padding:6px;border:1px solid #eee;">' + phone + '</td></tr>' +
+                        '<tr><td style="padding:6px;border:1px solid #eee;background:#f5f5f5;"><b>🚁 无人机</b></td><td style="padding:6px;border:1px solid #eee;">' + brand + ' - ' + model + '</td></tr>' +
+                        '<tr><td style="padding:6px;border:1px solid #eee;background:#f5f5f5;"><b>🔢 SN码</b></td><td style="padding:6px;border:1px solid #eee;">' + sn + '</td></tr>' +
+                        '<tr><td style="padding:6px;border:1px solid #eee;background:#f5f5f5;"><b>👤 UOM账号</b></td><td style="padding:6px;border:1px solid #eee;">' + uom + '</td></tr>' +
+                        '<tr><td style="padding:6px;border:1px solid #eee;background:#f5f5f5;"><b>🛤️ 线路</b></td><td style="padding:6px;border:1px solid #eee;">' + area + '</td></tr>' +
+                        (location ? '<tr><td style="padding:6px;border:1px solid #eee;background:#f5f5f5;"><b>📍 地点</b></td><td style="padding:6px;border:1px solid #eee;">' + location + '</td></tr>' : '') +
+                        '<tr><td style="padding:6px;border:1px solid #eee;background:#f5f5f5;"><b>🏘️ 区域</b></td><td style="padding:6px;border:1px solid #eee;">' + admin + '</td></tr>' +
+                        '<tr><td style="padding:6px;border:1px solid #eee;background:#f5f5f5;"><b>🎯 用途</b></td><td style="padding:6px;border:1px solid #eee;">' + purpose + '</td></tr>' +
+                        '<tr><td style="padding:6px;border:1px solid #eee;background:#f5f5f5;"><b>⏰ 时间</b></td><td style="padding:6px;border:1px solid #eee;">' + formatDate(ts) + ' 至 ' + formatDate(te) + '</td></tr>' +
+                        '<tr><td style="padding:6px;border:1px solid #eee;background:#f5f5f5;"><b>📏 高度</b></td><td style="padding:6px;border:1px solid #eee;">' + hmin + 'm ~ ' + hmax + 'm</td></tr>' +
+                        '<tr><td style="padding:6px;border:1px solid #eee;background:#f5f5f5;"><b>📐 距离</b></td><td style="padding:6px;border:1px solid #eee;">' + dmin + 'm ~ ' + dmax + 'm</td></tr>' +
+                        '<tr><td style="padding:6px;border:1px solid #eee;background:#f5f5f5;"><b>📝 证件</b></td><td style="padding:6px;border:1px solid #eee;">' + cert + '</td></tr>' +
+                        '</table>' +
+                        '<p style="color:#999;font-size:12px;">⏰ 报备时间：' + nowStr + '</p>' +
+                        '<p style="color:#666;font-size:12px;">📱 提交设备：' + deviceInfo + '</p>' +
+                        '<p style="color:#c0392b;font-weight:bold;">⚠️ 请工作人员24小时内核实确认。</p>';
+
+                    submitting = true;
+                    btnSub.disabled = true;
+                    btnSub.textContent = '⏳ 正在提交...';
+                    toast('正在提交报备信息...');
+
+                    var ddOk = false;
+                    var wxOk = false;
+                    var done = 0;
+
+                    function checkDone() {
+                        done++;
+                        if (done >= 2) {
+                            submitting = false;
+                            btnSub.disabled = false;
+                            btnSub.textContent = '📨 提交报备';
+
+                            if (ddOk || wxOk) {
+                                frm.style.display = 'none';
+                                show(okBox);
+                                if (ddOk && wxOk) {
+                                    okDesc.textContent = '通知已通过钉钉和微信发送至管理部门';
+                                } else if (ddOk) {
+                                    okDesc.textContent = '通知已通过钉钉发送至管理部门';
+                                } else {
+                                    okDesc.textContent = '通知已通过微信发送至管理部门';
+                                }
+                                window.scrollTo({ top: 0, behavior: 'smooth' });
+                            } else {
+                                toast('提交失败，请检查网络后重试', true);
+                            }
+                        }
+                    }
+
+                    sendDingtalk(dc, function(ok) { ddOk = ok;
+                        checkDone(); });
+                    sendWechat('无人机飞行报备 - ' + name, wc, function(ok) { wxOk = ok;
+                        checkDone(); });
+                });
+            }
+
+            console.log('✅ 九江桥工段无人机报备系统已就绪');
 
         })();
     </script>
